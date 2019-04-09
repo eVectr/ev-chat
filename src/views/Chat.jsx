@@ -3,6 +3,7 @@ import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
 
+
 let socket = null
 
 const ChatWindow = ({ activeChatUser }) => {
@@ -101,7 +102,7 @@ const Chat = () => {
                         }
                     </ul>
                 </aside>
-                { activeChatUser ? 
+                { activeChatUser ?
                     <ChatWindow
                         activeChatUser={activeChatUser}
                     />
