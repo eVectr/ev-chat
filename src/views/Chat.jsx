@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
+//const Conversation = require('../App/main')
 
+//const conversation = new Conversation()
 
 let socket = null
 
@@ -20,6 +22,7 @@ const ChatWindow = ({ activeChatUser }) => {
     }, [])
 
     const appendMessages = data => {
+      console.log("append =>", data);
         setMessages(prevMessages => {
             const updatedMessages = prevMessages.concat(data)
             return updatedMessages
@@ -55,10 +58,12 @@ const ChatWindow = ({ activeChatUser }) => {
             <div className="message-list">
                 {
                     messages.map(
+
                         (message, index) => (
                             <div key={index} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                 <div class="alert alert-light message-bubble">
                                     {message.content}
+
                                 </div>
                             </div>
                         )
