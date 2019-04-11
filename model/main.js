@@ -24,8 +24,8 @@ test(){
     let conversation_id1 = conversation_id.split('#')
     let conversation_id2 = conversation_id1[1].concat('#',conversation_id1[0]);
 
-    console.log("1st id ==>",conversation_id)
-    console.log("2nd id==>",conversation_id2)
+    //console.log("1st id ==>",conversation_id)
+    //console.log("2nd id==>",conversation_id2)
 
     client.lrange("conversation"+participates, 0, -1,
     (err,data) =>   {
@@ -33,44 +33,63 @@ test(){
          console.log(err)
      }else{
        console.log("first data[1]==> ", data[1])
-       if (data[1] !== conversation_id2 ) {
+       if (data[1] !== conversation_id ) {
          client.lrange("conversation"+participates1, 0, -1,
          (err,data) =>{
            if(err){console.log("err")}
            else{
-             console.log(" second data[1]==>",data[1])
-             if(data[1] == (conversation_id || conversation_id2) ){
+             console.log("second data[1]==>",data[1])
+             if(data[1] == conversation_id2 ){
                console.log("conversation_id already exist")
 
-             }else{
-               client.rpush("conversation"+participates1,participates,conversation_id )
 
+             }else{
+               client.rpush("conversation"+participates,participates,conversation_id )
                console.log("conversation_id created")
-             }  }  })
+
+        }  }  })
 
      }else{
-       res.send(data)
+
        console.log("conversation_id already exist")
      }
    }
    })
-      return conversation_id;
+
  }////////////////// method end ///////////////
 
   ////////============== GET CONVERSATION ID ================////////////
-   get_conv_id(){
-     let participates = req.params.participates
+    get_conv_id(author_id, to_id){
+     var conversationId;
+     let participates = author_id.concat(','+to_id);
+     let participates1 = participates.split(',')
+     let participates2 = participates1[1].concat(',',participates1[0]);
 
       client.lrange("conversation"+participates, 0, -1,
        (err,data) =>
        {
          if(err){
-             res.json({message: " error "});
+             console.log(err)
          }else{
-           console.log(data[1])
-           res.send({data})
+            if (typeof(data[1]) != "undefined"){
+               conversationId = data[1]
+              console.log(conversationId )
+
+            }else{
+              client.lrange("conversation"+participates2, 0, -1,(err,data)=>{
+                if(err){
+                  console.log(err)
+                }else{
+                  if (typeof(data[1]) != "undefined"){
+                    conversationId = data[1]
+                    console.log(conversationId )
+                  }else{console.log("no id")}
+                }
+              })
+            }
            }
        })
+       return conversationId
    }//////////////// method end ///////////////////
 
 //===================  SAVE MESSAGE   ==================//////////////////////
@@ -89,9 +108,7 @@ save_message(author_id, to_id, conversation_id, content){
       if(err){
           console.log(err)
       }else{
-
         console.log("message saved")
-
     }
   })
 } //////////// method end /////////////////////

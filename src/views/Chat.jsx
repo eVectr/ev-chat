@@ -18,6 +18,7 @@ const ChatWindow = ({ activeChatUser }) => {
     useEffect(() => {
         socket = io('http://localhost:8080')
         socket.emit('newConnection', user)
+        socket.emit('join', {author:'user.username', to:'activeChatUser'})
         socket.on('receivedMessage', appendMessages)
     }, [])
 
