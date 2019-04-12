@@ -28,7 +28,7 @@ app.get('/message', (req, res, next ) =>{
 
 
 const conversation = new Conversation()
-
+//
 // conversation.delete_message('love#trivedi')
 // conversation.delete_conversation_id('love,trivedi')
 // conversation.delete_message('trivedi#love')
@@ -53,31 +53,30 @@ io.on('connection', socket => {
     socket.on('sendMessage', data => {
 
       conversation.set_conv_id(data.author, data.to)//create conv ID
-      const conversation_id = conversation.get_conv_id(data.author, data.to)//get conv ID
-      console.log("created conv id=>",conversation_id)
-      conversation.save_message(data.author, data.to, conversation_id, data.content) // SAVE MESSAGE
+      conversation.get_conv_id(data.author, data.to)
+      .then(data=> {conversation.save_message(data.author, data.to, data, data.content)})
 
       const user = findUser(data.to)
       if (user) socket.broadcast.to(user.socketId).emit('receivedMessage', data)
-      console.log(data)
+      //console.log(data)
     })
 
-//////================================================================////////////////
-    socket.on('join', obj => {
-      let conversation_id =  obj.author.concat('#'+obj.to)
-      client.lrange("message"+conversation_id, 0, -1,(err,response) =>
-      {
-        if(err){
-              console.log(err)
-        }else{
-            console.log("response ==>",response)
-
-            const user = findUser(response.to_id)
-
-            if (user)  socket.broadcast.to(user.socketId).emit('receivedMessage', response)
-        }
-      })
-    })
+// //////================================================================////////////////
+//     socket.on('join', obj => {
+//       let conversation_id =  obj.author.concat('#'+obj.to)
+//       client.lrange("message"+conversation_id, 0, -1,(err,response) =>
+//       {
+//         if(err){
+//               console.log(err)
+//         }else{
+//             console.log("response ==>",response)
+//
+//             const user = findUser(response.to_id)
+//
+//             if (user)  socket.broadcast.to(user.socketId).emit('receivedMessage', response)
+//         }
+//       })
+//     })
 //////////////////////==============================================////////////////////
 
     socket.on('disconnect', () => {

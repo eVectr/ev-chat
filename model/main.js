@@ -60,36 +60,43 @@ test(){
 
   ////////============== GET CONVERSATION ID ================////////////
     get_conv_id(author_id, to_id){
-     var conversationId;
-     let participates = author_id.concat(','+to_id);
-     let participates1 = participates.split(',')
-     let participates2 = participates1[1].concat(',',participates1[0]);
+      return new Promise((resolve, reject)=>{
 
-      client.lrange("conversation"+participates, 0, -1,
-       (err,data) =>
-       {
-         if(err){
-             console.log(err)
-         }else{
-            if (typeof(data[1]) != "undefined"){
-               conversationId = data[1]
-              console.log(conversationId )
+        var conversationId;
+        let participates = author_id.concat(','+to_id);
+        let participates1 = participates.split(',')
+        let participates2 = participates1[1].concat(',',participates1[0]);
 
+         client.lrange("conversation"+participates, 0, -1,
+          (err,data) =>
+          {
+            if(err){
+                console.log(err)
+                reject(err)
             }else{
-              client.lrange("conversation"+participates2, 0, -1,(err,data)=>{
-                if(err){
-                  console.log(err)
-                }else{
-                  if (typeof(data[1]) != "undefined"){
-                    conversationId = data[1]
-                    console.log(conversationId )
-                  }else{console.log("no id")}
-                }
-              })
-            }
-           }
-       })
-       return conversationId
+               if (typeof(data[1]) != "undefined"){
+                  resolve(data[1])
+                 console.log(data[1])
+
+               }else{
+                 client.lrange("conversation"+participates2, 0, -1,(err,data)=>{
+                   if(err){
+                     console.log(err)
+                     reject(err)
+                   }else{
+                     if (typeof(data[1]) != "undefined"){
+                       resolve(data[1])
+                       console.log(data[1])
+                     }else{console.log("no id")}
+                   }
+                 })
+               }
+              }
+          })
+
+      })
+
+
    }//////////////// method end ///////////////////
 
 //===================  SAVE MESSAGE   ==================//////////////////////
