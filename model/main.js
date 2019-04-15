@@ -3,100 +3,166 @@ const redis = require('redis');
 
 let client = redis.createClient();
 client.on('connect', ()=>{
-  
 })
 
 module.exports = class Conversation {
-
-test(){
-  console.log('test');
-}
-
   //--------- CREATE CONVERSATION ID -----------------------/////
- set_conv_id(author_id , to_id ) {
+ set_conv_id(author , to ) {
 
-    let conversation_id =  author_id.concat('#'+to_id);
-    let participates = author_id.concat(','+to_id);
+    //let conversation_id =  author.concat('#'+to);
+    let conversation_id =  author.concat('@'+to);
+    let participates = author.concat(','+to);
 
-    client.lrange("conversation"+participates, 0, -1, (err,data) =>
-    {
-        if(err){
-          console.log(err)
-        }else{
-              if(data[1] != conversation_id )
-                {
-                  client.rpush("conversation"+participates,participates,conversation_id )
-                  console.log("conversation_id created")
-                }else{
-                  console.log("conversation_id already exist")
-                  console.log(data)
-                }
-            }
-      })
-      return conversation_id;
+    let participates1 = participates.split(',')
+    let participates2 = participates1[1].concat(',',participates1[0]);
+
+    // let conversation_id1 = conversation_id.split('#')
+    // let conversation_id2 = conversation_id1[1].concat('#',conversation_id1[0]);
+    let conversation_id1 = conversation_id.split('@')
+    let conversation_id2 = conversation_id1[1].concat('@',conversation_id1[0]);
+
+ 
+
+    client.lrange("conversation"+participates, 0, -1,
+    (err,data) =>   {
+     if(err){
+         console.log(err)
+     }else{
+       console.log("first data[1]==> ", data[1])
+       if (data[1] !== conversation_id ) {
+         client.lrange("conversation"+participates2, 0, -1,
+         (err,data) =>{
+           if(err){console.log("err")}
+           else{
+             console.log("second data[1]==>",data[1])
+             if(data[1] == conversation_id2 ){
+               console.log("conversation_id already exist")
+
+
+             }else{
+               client.rpush("conversation"+participates,participates,conversation_id )
+               console.log("conversation_id created")
+
+        }  }  })
+
+     }else{
+
+       console.log("conversation_id already exist")
+     }
+   }
+   })
+
  }////////////////// method end ///////////////
 
   ////////============== GET CONVERSATION ID ================////////////
-   get_conv_id(){
-     let participates = req.params.participates
+    get_conv_id(author, to){
+      return new Promise((resolve, reject)=>{
 
-      client.lrange("conversation"+participates, 0, -1,
-       (err,data) =>
-       {
-         if(err){
-             res.json({message: " error "});
-         }else{
-           console.log(data[1])
-           res.send({data})
-           }
-       })
+        var conversationId;
+        let participates = author.concat(','+to);
+        let participates1 = participates.split(',')
+        let participates2 = participates1[1].concat(',',participates1[0]);
+
+         client.lrange("conversation"+participates, 0, -1,
+          (err,data) =>
+          {
+            if(err){
+                console.log(err)
+                reject(err)
+            }else{
+               if (typeof(data[1]) != "undefined"){
+                  resolve(data[1])
+                  //resolve({author:author, to:to, conv:data[1]})
+                 console.log(data[1])
+
+               }else{
+                 client.lrange("conversation"+participates2, 0, -1,(err,data)=>{
+                   if(err){
+                     console.log(err)
+                     reject(err)
+                   }else{
+                     if (typeof(data[1]) != "undefined"){
+                      resolve(data[1])
+                      //resolve({author:autdata[1]})
+                       console.log(data[1])
+                     }else{console.log("no id")}
+                   }
+                 })
+               }
+              }
+          })
+
+      })
+
+
    }//////////////// method end ///////////////////
 
 //===================  SAVE MESSAGE   ==================//////////////////////
 
-  save_message(conversation_id, content){
+save_message(author, to, conversation_id, content){
 
-    client.rpush("message"+conversation_id,content)
-    client.lrange("message"+conversation_id , 0, -1,(err,data) =>
-    {
+    const data ={
+      author:author,
+      to:to,
+      content:content
+    }
+    client.rpush("message"+conversation_id, JSON.stringify(data));
+    client.lrange("message"+conversation_id , 0, -1,
+    (err,data) =>  {
       if(err){
-              res.json({message: " error "});
-            }else{
-              console.log(data)
-            }
-    })
-
-
-  } //////////// method end /////////////////////
-
-
+          console.log(err)
+      }else{
+        //console.log(data)
+        console.log("message saved")
+        //console.log(response)
+    }
+  })
+} //////////// method end /////////////////////
 
 //>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 get_message(conversation_id){
-
-  client.lrange("message"+conversation_id, 0, -1,(err,data) =>
+  let i = 0;
+  client.lrange("message"+conversation_id, 0, -1,(err,response) =>
   {
     if(err){
-          res.json({message: " error "});
+          console.log(err)
     }else{
-          res.send({data})
-          console.log(data)
+      //return response;
+      console.log(response)
+      const l = response.length
+      for( i = 0; i < l; i++){
+      //  console.log(JSON.parse(response[i]).author_id)
+        console.log(JSON.parse(response[i]).content)
+      //  console.log(JSON.parse(response[i]).to_id)
+        console.log("  ")
+     }
+
     }
     })
   } ////////// method end ////////////////////////////
 
   ///-----------------------DELETE -----------------////////////
 
-  delete_message(){
+delete_message(conversation_id){
 
       client.del("message"+conversation_id,(err, data)=>{
         if(err){
-          res.json({err});
+          console.log(err)
         }else{
-          res.json({message: " conversation deleted"});
+          console.log("message deleted")
+
         }
       })
   } /////// method end ////////////////
 
+delete_conversation_id(participates){
+  client.del("conversation"+participates,(err, data)=>{
+    if(err){
+      console.log('err')
+    }else{
+      console.log('deleted')
+    }
+  })
+}
 
 } //////////////////// CLASS END /////////////////////////////////////

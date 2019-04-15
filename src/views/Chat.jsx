@@ -2,9 +2,19 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
+import axios from 'axios';
 
 
 let socket = null
+
+
+// axios.get(`http://localhost:3030/message/`)
+//       .then(response => {
+//           const {  data =  {} } = response
+//          // setMessages(data.data)
+//         
+//        console.log("resposne ==>", response)
+//       })
 
 const ChatWindow = ({ activeChatUser }) => {
 
@@ -17,6 +27,14 @@ const ChatWindow = ({ activeChatUser }) => {
         socket = io('http://localhost:8080')
         socket.emit('newConnection', user)
         socket.on('receivedMessage', appendMessages)
+        axios.get(`http://localhost:3030/message/`)
+      .then(response => {
+          const {  data =  {} } = response
+    
+           setMessages(data.data)
+        
+      })
+        
     }, [])
 
     const appendMessages = data => {
