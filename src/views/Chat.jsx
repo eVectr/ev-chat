@@ -4,6 +4,7 @@ import { getUser } from '../utils/auth'
 import users from '../constants/users';
 import axios from 'axios';
 
+
 let socket = null
 
 
@@ -29,7 +30,7 @@ const ChatWindow = ({ activeChatUser }) => {
         axios.get(`http://localhost:3030/message/`)
       .then(response => {
           const {  data =  {} } = response
-          console.log(data,"hjvbnghvb")
+    
            setMessages(data.data)
         
       })

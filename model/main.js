@@ -3,25 +3,25 @@ const redis = require('redis');
 
 let client = redis.createClient();
 client.on('connect', ()=>{
-
 })
 
 module.exports = class Conversation {
-
   //--------- CREATE CONVERSATION ID -----------------------/////
  set_conv_id(author , to ) {
 
-    let conversation_id =  author.concat('#'+to);
+    //let conversation_id =  author.concat('#'+to);
+    let conversation_id =  author.concat('@'+to);
     let participates = author.concat(','+to);
 
     let participates1 = participates.split(',')
     let participates2 = participates1[1].concat(',',participates1[0]);
 
-    let conversation_id1 = conversation_id.split('#')
-    let conversation_id2 = conversation_id1[1].concat('#',conversation_id1[0]);
+    // let conversation_id1 = conversation_id.split('#')
+    // let conversation_id2 = conversation_id1[1].concat('#',conversation_id1[0]);
+    let conversation_id1 = conversation_id.split('@')
+    let conversation_id2 = conversation_id1[1].concat('@',conversation_id1[0]);
 
-    //console.log("1st id ==>",conversation_id)
-    //console.log("2nd id==>",conversation_id2)
+ 
 
     client.lrange("conversation"+participates, 0, -1,
     (err,data) =>   {
@@ -94,6 +94,7 @@ module.exports = class Conversation {
 
       })
 
+
    }//////////////// method end ///////////////////
 
 //===================  SAVE MESSAGE   ==================//////////////////////
@@ -135,6 +136,7 @@ get_message(conversation_id){
       //  console.log(JSON.parse(response[i]).to_id)
         console.log("  ")
      }
+
     }
     })
   } ////////// method end ////////////////////////////
@@ -148,6 +150,7 @@ delete_message(conversation_id){
           console.log(err)
         }else{
           console.log("message deleted")
+
         }
       })
   } /////// method end ////////////////
@@ -161,6 +164,5 @@ delete_conversation_id(participates){
     }
   })
 }
-
 
 } //////////////////// CLASS END /////////////////////////////////////
