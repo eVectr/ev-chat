@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
-import axios from 'axios';
+//import axios from 'axios';
 
 
 let socket = null
@@ -10,24 +10,25 @@ let socket = null
 const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
 
     const [message, setMessage] = useState('')
+    
 
     let user = getUser()
 
     useEffect(() => {
         socket = io('http://localhost:8080')
         socket.emit('newConnection', user)
-        socket.on('receivedMessage', appendMessages)
-        axios.get(`http://localhost:3030/message/`)
-      .then(response => {
-          const {  data =  {} } = response
+        //socket.on('receivedMessage', appendMessages)
+    //     axios.get(`http://localhost:3030/message/`)
+    //     .then(response => {
+    //       const {  data =  {} } = response
     
-           setMessages(data.data)
+    //      //setMessages(data.data)
         
-      })
+    //   })
         
     }, [])
 
-    let user = getUser()
+
 
     const sendMessage = () => {
 
@@ -99,17 +100,40 @@ const Chat = () => {
         })
     }
 
-    useEffect(() => {
-        socket = io('http://localhost:8080')
-        socket.emit('newConnection', user)
-        socket.on('receivedMessage', data => appendMessages(data.author, data))
-    }, [])
 
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages[activeUserName] || []
 
-    console.log(activeChatMessages, messages[activeUserName], messages)
+    useEffect(() => {
+
+       
+        socket = io('http://localhost:8080')
+        socket.emit('newConnection', user)
+        socket.on('receivedMessage', data => appendMessages(data.author, data))
+        socket.on('message', message =>{
+            console.log("message ==>", message)
+            const {  data =  {} } = message
+            setMessages(data)
+       })
+
+        
+    }, [])
+
+    useEffect(() => {
+        if (activeChatUser) {
+            socket.emit('join', {author:user.username, to: activeChatUser.username })
+            socket.on('message', message =>{
+                console.log("message ==>", message)
+                const {  data =  {} } = message
+                setMessages(data)
+                
+           })  
+        }
+    }, [activeChatUser && activeChatUser.username])
+
+
+    
 
     return (
         <div className="chat-container full-height container-fluid">

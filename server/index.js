@@ -12,10 +12,10 @@ client.on('connect', ()=>{
 
 const conversation = new Conversation()
 
-// conversation.delete_message('love#trivedi')
+// conversation.delete_message('love@trivedi')
 // conversation.delete_conversation_id('love,trivedi')
-// conversation.delete_message('trivedi#love')
-// conversation.delete_conversation_id('trivedi,love')
+// conversation.delete_message('love@ajay')
+// conversation.delete_conversation_id('love,ajay')
 
 
 let users = []
@@ -54,9 +54,6 @@ app.get('/message/:conversation_id', (req, res, next ) =>{
   })
 })
 
-// app.get('/message', (req, res, next ) =>{
-//     res.send({message: " test "}); 
-//   })
 
 const findUser = username => users.find(user => user.username == username)
 
@@ -73,12 +70,17 @@ io.on('connection', socket => {
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
        .then(conv=> {conversation.save_message(data.author, data.to, conv, data.content)})
-       //.then(data=> {console.log("response ==>",data.author)})
-
 
         const user = findUser(data.to)
         if (user) socket.broadcast.to(user.socketId).emit('receivedMessage', data)
 
+    })
+
+    socket.on('join', data =>{
+        conversation.get_conv_id(data.author, data.to)
+        .then(conv=> {conversation.get_message(conv).then(message=>{
+                socket.emit('message', message)
+        })})
     })
 
     socket.on('disconnect', () => {

@@ -121,24 +121,24 @@ save_message(author, to, conversation_id, content){
 
 //>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 get_message(conversation_id){
-  let i = 0;
-  client.lrange("message"+conversation_id, 0, -1,(err,response) =>
-  {
-    if(err){
-          console.log(err)
-    }else{
-      //return response;
-      console.log(response)
-      const l = response.length
-      for( i = 0; i < l; i++){
-      //  console.log(JSON.parse(response[i]).author_id)
-        console.log(JSON.parse(response[i]).content)
-      //  console.log(JSON.parse(response[i]).to_id)
-        console.log("  ")
-     }
 
-    }
-    })
+  return new Promise((resolve, reject)=>{
+  client.lrange("message"+conversation_id, 0, -1,
+  (err,data) =>{
+    if(err){
+        reject(err)
+    }else{ 
+
+         let i =0;
+         let messagedata = [];
+         for (i = 0; i< data.length; i++){
+             messagedata.push(JSON.parse(data[i]))
+         }
+         console.log(messagedata)
+         resolve({data:messagedata})
+ }  
+  })
+})
   } ////////// method end ////////////////////////////
 
   ///-----------------------DELETE -----------------////////////
