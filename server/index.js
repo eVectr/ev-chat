@@ -77,7 +77,6 @@ io.on('connection', socket => {
 
 
         const user = findUser(data.to)
-        console.log(user)
         if (user) socket.broadcast.to(user.socketId).emit('receivedMessage', data)
 
     })

@@ -10,8 +10,12 @@ const users = [
         password: 'trivedi@123'
     },
     {
+<<<<<<< HEAD
         user_id: 3,
         username: 'Ajay',
+=======
+        username: 'ajay',
+>>>>>>> edd0c8a1c1194ea4edebc97301e380abbfbdf1db
         password: 'ajay@123'
     },
     {
