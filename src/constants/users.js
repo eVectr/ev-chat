@@ -8,7 +8,7 @@ const users = [
         password: 'trivedi@123'
     },
     {
-        username: 'Ajay',
+        username: 'ajay',
         password: 'ajay@123'
     },
     {

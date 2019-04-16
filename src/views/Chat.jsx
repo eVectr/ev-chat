@@ -5,43 +5,27 @@ import users from '../constants/users';
 
 let socket = null
 
-const ChatWindow = ({ activeChatUser }) => {
+const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
 
     const [message, setMessage] = useState('')
-    const [messages, setMessages] = useState([])
+
+    console.log(messages)
 
     let user = getUser()
 
-    useEffect(() => {
-        socket = io('http://localhost:8080')
-        socket.emit('newConnection', user)
-        socket.on('receivedMessage', appendMessages)
-    }, [])
-
-    const appendMessages = data => {
-        setMessages(prevMessages => {
-            const updatedMessages = prevMessages.concat(data)
-            return updatedMessages
-        })
-    }
-
     const sendMessage = () => {
 
-        const updatedMessages = messages.concat({
+        const messagePayload = {
             author: user.username,
             content: message,
             to: activeChatUser.username
-        })
+        }
 
-        setMessages(updatedMessages)
+        updateMessages(messagePayload)
         setMessage('')
 
         if (socket) {
-            socket.emit('sendMessage', {
-                author: user.username,
-                content: message,
-                to: activeChatUser.username
-            })
+            socket.emit('sendMessage', messagePayload)
         }
     }
 
@@ -79,7 +63,37 @@ const ChatWindow = ({ activeChatUser }) => {
 
 const Chat = () => {
 
+    const [messages, setMessages] = useState({})
     const [activeChatUser, setActiveChatUser] = useState(null)
+    let user = getUser()
+
+    const appendMessages = (username, data) => {
+        setMessages(prevMessages => {
+
+            const activeUserChat = prevMessages[username] || []
+
+            const updatedChat = activeUserChat.concat(data)
+
+            const updatedMessages = {
+                ...prevMessages,
+                [username]: updatedChat
+            }
+
+            return updatedMessages
+        })
+    }
+
+    useEffect(() => {
+        socket = io('http://localhost:8080')
+        socket.emit('newConnection', user)
+        socket.on('receivedMessage', data => appendMessages(data.author, data))
+    }, [])
+
+    const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
+    const activeUserName = activeChatUser && activeChatUser.username || ''
+    const activeChatMessages = messages[activeUserName] || []
+
+    console.log(activeChatMessages, messages[activeUserName], messages)
 
     return (
         <div className="chat-container full-height container-fluid">
@@ -87,7 +101,7 @@ const Chat = () => {
                 <aside className="users-list col-3">
                     <ul className="list-group">
                         {
-                            users.map(
+                            filteredUser.map(
                                 (user, index) =>
                                     <li
                                         key={index}
@@ -103,7 +117,11 @@ const Chat = () => {
                 </aside>
                 { activeChatUser ? 
                     <ChatWindow
+                        messages={activeChatMessages}
                         activeChatUser={activeChatUser}
+                        updateMessages={
+                            message => appendMessages(activeChatUser.username, message)
+                        }
                     />
                 : null }
             </div>
