@@ -9,25 +9,17 @@ let socket = null
 
 const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
 
+
     const [message, setMessage] = useState('')
-    
+   
 
     let user = getUser()
 
     useEffect(() => {
         socket = io('http://localhost:8080')
         socket.emit('newConnection', user)
-        //socket.on('receivedMessage', appendMessages)
-    //     axios.get(`http://localhost:3030/message/`)
-    //     .then(response => {
-    //       const {  data =  {} } = response
-    
-    //      //setMessages(data.data)
-        
-    //   })
-        
+       // socket.on('receivedMessage', appendMessages)
     }, [])
-
 
 
     const sendMessage = () => {
@@ -45,6 +37,7 @@ const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
             socket.emit('sendMessage', messagePayload)
         }
     }
+
 
 
     return (
@@ -80,61 +73,74 @@ const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
 
 const Chat = () => {
 
-    const [messages, setMessages] = useState({})
+    const [messages, setMessages] = useState([])
     const [activeChatUser, setActiveChatUser] = useState(null)
     let user = getUser()
 
-    const appendMessages = (username, data) => {
+    
+
+    // const appendMessages = (username, data) => {
+    //     setMessages(prevMessages => {
+
+    //         const activeUserChat = prevMessages[username] || []
+
+    //         const updatedChat = activeUserChat.concat(data)
+
+    //         const updatedMessages = {
+    //             ...prevMessages,
+    //             [username]: updatedChat
+    //         }
+
+    //         return updatedMessages
+    //     })
+    // }
+    ////////////////////////////////
+
+
+
+    const appendMessages = data => {
         setMessages(prevMessages => {
-
-            const activeUserChat = prevMessages[username] || []
-
-            const updatedChat = activeUserChat.concat(data)
-
-            const updatedMessages = {
-                ...prevMessages,
-                [username]: updatedChat
-            }
-
+            const updatedMessages = prevMessages.concat(data)
             return updatedMessages
         })
     }
 
-
-    const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
-    const activeUserName = activeChatUser && activeChatUser.username || ''
-    const activeChatMessages = messages[activeUserName] || []
-
+    
+   
     useEffect(() => {
-
-       
         socket = io('http://localhost:8080')
         socket.emit('newConnection', user)
-        socket.on('receivedMessage', data => appendMessages(data.author, data))
-        socket.on('message', message =>{
-            console.log("message ==>", message)
-            const {  data =  {} } = message
-            setMessages(data)
-       })
-
+       // socket.on('receivedMessage', data => appendMessages(data.author, data))
+        socket.on('receivedMessage', appendMessages)
         
     }, [])
+
+  
 
     useEffect(() => {
         if (activeChatUser) {
             socket.emit('join', {author:user.username, to: activeChatUser.username })
-            socket.on('message', message =>{
-                console.log("message ==>", message)
-                const {  data =  {} } = message
+            socket.on('message', conversation =>{
+                const {  data =  {} } = conversation
+                console.log("data =>", data)
                 setMessages(data)
+               // console.log(messages)
                 
-           })  
+           })
+         
         }
     }, [activeChatUser && activeChatUser.username])
 
-
+   
+    const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
+    const activeUserName = activeChatUser && activeChatUser.username || ''
+    //const activeChatMessages = messages[activeUserName] || []
+    const activeChatMessages = messages
     
 
+  
+
+    
     return (
         <div className="chat-container full-height container-fluid">
             <div className="row full-height">
@@ -143,6 +149,7 @@ const Chat = () => {
                         {
                             filteredUser.map(
                                 (user, index) =>
+                               
                                     <li
                                         key={index}
                                         onClick={() => setActiveChatUser(user)}
@@ -160,7 +167,8 @@ const Chat = () => {
                         messages={activeChatMessages}
                         activeChatUser={activeChatUser}
                         updateMessages={
-                            message => appendMessages(activeChatUser.username, message)
+                          // message => appendMessages(activeChatUser.username, message)
+                           message => appendMessages( message)
                         }
                     />
                 : null }

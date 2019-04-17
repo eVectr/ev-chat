@@ -12,10 +12,13 @@ client.on('connect', ()=>{
 
 const conversation = new Conversation()
 
-// conversation.delete_message('love@trivedi')
-// conversation.delete_conversation_id('love,trivedi')
 // conversation.delete_message('love@ajay')
 // conversation.delete_conversation_id('love,ajay')
+ conversation.delete_message('love@kirpal')
+ conversation.delete_conversation_id('love,kirpal')
+//  conversation.delete_conversation_id('kirpal,trivedi')
+
+
 
 
 let users = []
@@ -77,6 +80,7 @@ io.on('connection', socket => {
     })
 
     socket.on('join', data =>{
+        conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> {conversation.get_message(conv).then(message=>{
                 socket.emit('message', message)
