@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
-//import axios from 'axios';
+
 
 
 let socket = null
@@ -18,7 +18,6 @@ const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
     useEffect(() => {
         socket = io('http://localhost:8080')
         socket.emit('newConnection', user)
-       // socket.on('receivedMessage', appendMessages)
     }, [])
 
 
@@ -124,7 +123,6 @@ const Chat = () => {
                 const {  data =  {} } = conversation
                 console.log("data =>", data)
                 setMessages(data)
-               // console.log(messages)
                 
            })
          
