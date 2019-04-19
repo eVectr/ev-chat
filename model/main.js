@@ -9,19 +9,16 @@ module.exports = class Conversation {
   //--------- CREATE CONVERSATION ID -----------------------/////
  set_conv_id(author , to ) {
 
-    //let conversation_id =  author.concat('#'+to);
     let conversation_id =  author.concat('@'+to);
     let participates = author.concat(','+to);
 
     let participates1 = participates.split(',')
     let participates2 = participates1[1].concat(',',participates1[0]);
 
-    // let conversation_id1 = conversation_id.split('#')
-    // let conversation_id2 = conversation_id1[1].concat('#',conversation_id1[0]);
+  
     let conversation_id1 = conversation_id.split('@')
     let conversation_id2 = conversation_id1[1].concat('@',conversation_id1[0]);
 
- 
 
     client.lrange("conversation"+participates, 0, -1,
     (err,data) =>   {
@@ -72,7 +69,6 @@ module.exports = class Conversation {
             }else{
                if (typeof(data[1]) != "undefined"){
                   resolve(data[1])
-                  //resolve({author:author, to:to, conv:data[1]})
                  console.log(data[1])
 
                }else{
@@ -83,7 +79,6 @@ module.exports = class Conversation {
                    }else{
                      if (typeof(data[1]) != "undefined"){
                       resolve(data[1])
-                      //resolve({author:autdata[1]})
                        console.log(data[1])
                      }else{console.log("no id")}
                    }
@@ -112,33 +107,31 @@ save_message(author, to, conversation_id, content){
       if(err){
           console.log(err)
       }else{
-        //console.log(data)
         console.log("message saved")
-        //console.log(response)
     }
   })
 } //////////// method end /////////////////////
 
-//>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 get_message(conversation_id){
-  let i = 0;
-  client.lrange("message"+conversation_id, 0, -1,(err,response) =>
-  {
-    if(err){
-          console.log(err)
-    }else{
-      //return response;
-      console.log(response)
-      const l = response.length
-      for( i = 0; i < l; i++){
-      //  console.log(JSON.parse(response[i]).author_id)
-        console.log(JSON.parse(response[i]).content)
-      //  console.log(JSON.parse(response[i]).to_id)
-        console.log("  ")
-     }
 
-    }
-    })
+  return new Promise((resolve, reject)=>{
+  client.lrange("message"+conversation_id, 0, -1,
+  (err,data) =>{
+    if(err){
+        reject(err)
+    }else{ 
+
+         let i =0;
+         let messagedata = [];
+         for (i = 0; i< data.length; i++){
+             messagedata.push(JSON.parse(data[i]))
+         }
+         console.log(messagedata)
+         resolve({data:messagedata})
+ }  
+  })
+})
   } ////////// method end ////////////////////////////
 
   ///-----------------------DELETE -----------------////////////
