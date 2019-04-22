@@ -1,14 +1,25 @@
-
-const io = require('socket.io')(8080)
+const port = 8080 || process.env.PORT
+const io = require('socket.io')(port)
 const express = require('express')
 const app = express()
 const redis = require('redis');
 const Conversation = require('../model/main')
 
+// let client = redis.createClient();
+// client.on('connect', ()=>{
+//     console.log("Redis Connected")
+
+// })
+
 let client = redis.createClient();
 client.on('connect', ()=>{
+    console.log("Redis Connected")
 
 })
+client.on('error', (err) => {
+    console.log('>>>> REDIS CLIENT ERROR', err)
+ })
+
 
 const conversation = new Conversation()
 
@@ -91,4 +102,5 @@ io.on('connection', socket => {
         users = users.filter(user => user.socketId !== socket.id)
     })
 })
-app.listen(3030, () => console.log(`API  listening`))
+console.log("Listening on port", port)
+
