@@ -67,4 +67,4 @@ io.on('connection', socket => {
     })
 })
 
-server.listen(8080, () => 'API listeneing')
+server.listen(6547, () => 'API listeneing')
