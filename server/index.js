@@ -1,81 +1,36 @@
-const port = 8080 || process.env.PORT
-const io = require('socket.io')(port,
-
-    (req, res, next)=> {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        next();
-
-})
-
+const redis = require('redis')
+const path = require('path')
 const express = require('express')
-const app = express()
-const redis = require('redis');
+
+var app = express()
+var server = require('http').Server(app)
+var io = require('socket.io')(server)
+
+
 const Conversation = require('../model/main')
 
-// let client = redis.createClient();
-// client.on('connect', ()=>{
-//     console.log("Redis Connected")
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
 
-// })
-
-let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
-
 })
-client.on('error', (err) => {
-    console.log('>>>> REDIS CLIENT ERROR', err)
- })
-
 
 const conversation = new Conversation()
 
-// conversation.delete_message('love@Joshua')
-// conversation.delete_conversation_id('love,ajay')
-//  conversation.delete_message('love@kirpal')
-//  conversation.delete_conversation_id('love,kirpal')
-//  conversation.delete_conversation_id('kirpal,trivedi')
-
-
-
-
 let users = []
 
-app.use((req, res, next)=>{
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    next();
-})
-
-// app.get('/message/:conversation_id', (req, res, next ) =>{
-// //   res.setHeader('Access-Control-Allow-Origin', '*');
-// //   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-// //   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//   conversation_id = req.params.conversation_id;
-//   client.lrange("message"+conversation_id, 0, -1,
-//   (err,data) =>{
-//     if(err){
-//         res.json({message: " error "});
-//         console.log(err);
-//     }else{ 
-      
-//         //console.log(JSON.parse(data))
-//         console.log('data == >',data)
-//          let i =0;
-//          let messagedata = [];
-//          for (i = 0; i< data.length; i++){
-//              messagedata.push(JSON.parse(data[i]))
-//          }
-//          console.log(messagedata)
-//          res.send({data:messagedata})
-//  }
-
-    
-//   })
+// app.use((req, res, next)=>{
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//     next();
 // })
+
+app.use(express.static(path.join(__dirname, '../build')))
+
+app.get('*', function(req, res) {
+    res.sendFile(path.join(__dirname, '../build', 'index.html'))
+})
 
 
 const findUser = username => users.find(user => user.username == username)
@@ -99,7 +54,7 @@ io.on('connection', socket => {
 
     })
 
-    socket.on('join', data =>{
+    socket.on('join', data => {
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> {conversation.get_message(conv).then(message=>{
@@ -111,5 +66,5 @@ io.on('connection', socket => {
         users = users.filter(user => user.socketId !== socket.id)
     })
 })
-console.log("Listening on port", port)
 
+server.listen(8080, () => 'API listeneing')
