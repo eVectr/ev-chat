@@ -1,5 +1,14 @@
 const port = 8080 || process.env.PORT
-const io = require('socket.io')(port)
+const io = require('socket.io')(port,
+
+    (req, res, next)=> {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        next();
+
+})
+
 const express = require('express')
 const app = express()
 const redis = require('redis');
@@ -34,12 +43,12 @@ const conversation = new Conversation()
 
 let users = []
 
-// app.use((req, res, next)=>{
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//     next();
-// })
+app.use((req, res, next)=>{
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    next();
+})
 
 // app.get('/message/:conversation_id', (req, res, next ) =>{
 // //   res.setHeader('Access-Control-Allow-Origin', '*');

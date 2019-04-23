@@ -1,11 +1,92 @@
 
 const redis = require('redis');
+const express = require('express')
+const app = express()
+bodyParser = require('body-parser');
 
 let client = redis.createClient();
 client.on('connect', ()=>{
 })
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 module.exports = class Conversation {
+
+//--------- CREATE group -----------------------/////
+create_group(groupname, admin){
+
+  client.lrange(groupname, 0, -1,
+  (err,data) =>{
+
+    if(err){res.send(err)}
+    else{
+        //console.log("Admin ==> ", data[0])
+        if(data[0] == undefined)
+        {
+          client.rpush(groupname,admin)
+          console.log("Group Created")
+        }  
+        else{
+          console.log("admin ==>", data[0])
+        }
+       res.send(data)
+    }
+
+  })
+}
+///////////// END /////////////////////////////////
+
+////////////////// CHECK USER  /////////////////////////
+
+
+ checkuser(array, user)
+{
+    let len = array.length;
+    for(let i = 0; i< len ; i++)
+    {
+      if(array[i]== user){return true}
+    }
+    return false
+}
+//////// END ////////////////////////
+
+////////////////// ADD USER TO GROUP ///////////////\\\\\\\\\\\\\\\\\\\
+add_user(user){
+  client.lrange("group1", 0, -1, (err, data) =>{
+    if(err){res.send(err)}
+    else{
+          let array =[];
+          array = data;
+          let getuser =  checkuser(array , user)
+          if(getuser == false){
+            client.rpush("group1", user)
+            res.send(data)
+          }else{
+            console.log("user already exist")
+            res.send(data)
+          }
+          
+        }
+      }
+  ) }
+////////// END ////////////////////////////////////////////////////////////////
+
+///////////////// delete group ///////////////////////////////////////
+
+delete_group(group){
+
+  client.del("group",(err, data)=>{
+    if(err){
+      console.log('err')
+      res.send(err)
+    }else{
+      console.log('deleted')
+      res.send("deleted")
+    }
+  })
+}
+/////////////////////////////////////////////////////////////
+
   //--------- CREATE CONVERSATION ID -----------------------/////
  set_conv_id(author , to ) {
 
@@ -69,7 +150,7 @@ module.exports = class Conversation {
             }else{
                if (typeof(data[1]) != "undefined"){
                   resolve(data[1])
-                 console.log(data[1])
+                  console.log(data[1])
 
                }else{
                  client.lrange("conversation"+participates2, 0, -1,(err,data)=>{
@@ -159,3 +240,4 @@ delete_conversation_id(participates){
 }
 
 } //////////////////// CLASS END /////////////////////////////////////
+app.listen(4000)
