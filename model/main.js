@@ -1,15 +1,5 @@
 
 const redis = require('redis');
-const express = require('express')
-const app = express()
-bodyParser = require('body-parser');
-
-let client = redis.createClient();
-client.on('connect', ()=>{
-})
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
 module.exports = class Conversation {
 
 //--------- CREATE group -----------------------/////
@@ -240,4 +230,3 @@ delete_conversation_id(participates){
 }
 
 } //////////////////// CLASS END /////////////////////////////////////
-app.listen(4000)
