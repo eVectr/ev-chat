@@ -1,5 +1,11 @@
 
 const redis = require('redis');
+
+let client = redis.createClient();
+client.on('connect', ()=>{})
+
+
+
 module.exports = class Conversation {
 
 //--------- CREATE group -----------------------/////
