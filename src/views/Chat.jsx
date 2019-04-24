@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
+import { GroupButton } from '../components/GroupButton';
+import { Example } from '../components/Modal';
 
 
 
@@ -66,6 +68,7 @@ const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
                     </span>
                 </div>
             </div>
+           
         </div>
     )
 
@@ -142,9 +145,15 @@ const Chat = () => {
 
     
     return (
+        
         <div className="chat-container full-height container-fluid">
+        <modal></modal>
             <div className="row full-height">
+            
                 <aside className="users-list col-3">
+                <Example></Example>
+                
+            
                     <ul className="list-group">
                         {
                             filteredUser.map(
@@ -161,6 +170,7 @@ const Chat = () => {
                             )
                         }
                     </ul>
+                    
                 </aside>
                 { activeChatUser ?
                     <ChatWindow
