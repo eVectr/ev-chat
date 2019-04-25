@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import io from 'socket.io-client'
 import { getUser } from '../utils/auth'
 import users from '../constants/users';
-import { GroupButton } from '../components/GroupButton';
-import { Example } from '../components/Modal';
+
 
 
 
@@ -18,8 +17,10 @@ const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
     let user = getUser()
 
     useEffect(() => {
-        socket = io('http://209.97.142.219:6547')
-        // socket = io('http://localhost:8080')
+        socket = io('http://209.97.142.219:6547',
+        //socket = io('http://localhost:6547',
+        {
+            transports: ['polling']})
         socket.emit('newConnection', user)
     }, [])
 
@@ -111,8 +112,9 @@ const Chat = () => {
     
    
     useEffect(() => {
-        socket = io('http://209.97.142.219:6547')
-        // socket = io('http://localhost:8080')
+       socket = io('http://209.97.142.219:6547',{
+      //  socket = io('http://localhost:6547',{
+            transports: ['polling']})
         socket.emit('newConnection', user)
        // socket.on('receivedMessage', data => appendMessages(data.author, data))
         socket.on('receivedMessage', appendMessages)
@@ -151,8 +153,6 @@ const Chat = () => {
             <div className="row full-height">
             
                 <aside className="users-list col-3">
-                <Example></Example>
-                
             
                     <ul className="list-group">
                         {
