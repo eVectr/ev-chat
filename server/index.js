@@ -67,4 +67,6 @@ io.on('connection', socket => {
     })
 })
 
+// io.set('transports', ['websocket'])
+
 server.listen(6547, () => 'API listeneing')
