@@ -16,11 +16,11 @@ const ChatWindow = ({ activeChatUser, messages, updateMessages }) => {
 
     let user = getUser()
 
-    useEffect(() => {
-       socket = io('http://209.97.142.219:6547')
-       //socket = io('http://localhost:6547')
-        socket.emit('newConnection', user)
-    }, [])
+    // useEffect(() => {
+    //    socket = io('http://209.97.142.219:6547')
+    //    //socket = io('http://localhost:6547')
+    //     socket.emit('newConnection', user)
+    // }, [])
 
 
     const sendMessage = () => {
@@ -110,7 +110,9 @@ const Chat = () => {
     
    
     useEffect(() => {
-       socket = io('http://209.97.142.219:6547')
+       socket = io('http://209.97.142.219:6547', {
+        transports: [ 'websocket' ]
+       })
        // socket = io('http://localhost:6547')
         socket.emit('newConnection', user)
         socket.on('receivedMessage', appendMessages)
