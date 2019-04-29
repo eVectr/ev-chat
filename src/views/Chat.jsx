@@ -1,7 +1,8 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment, useRef } from 'react'
 import io from 'socket.io-client'
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users';
+
 //import groups from '../constants/groups';
 import axios from "axios"
 import { GroupModal } from '../components/GroupModal';
@@ -14,13 +15,13 @@ let socket = null
 const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
 
     const [message, setMessage] = useState('')
-    console.log(groups)
+    
     
    
 
     let user = getUser()
-    //let group = getGroup()
-
+    let msg = useRef(null)
+    
 
     const sendMessage = () => {
         console.log(activeChatUser.username)
@@ -48,75 +49,55 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
         isGroup = !isGroup
     }
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [])
+ 
+    useEffect(() => {
+        scrollToBottom();
+ 
+    }, [message])
+ 
+    const scrollToBottom = () => {
+        document.getElementById('last-msg') && document.getElementById('last-msg').scrollIntoView();
+    }
+
+
 
     return (
-        <div className="col-9 chat-window">
-        
-            {
-                isGroup ? 
-                <Fragment>
-                    <div class="message-header">
-                <h2>{activeChatUser.username}</h2>
-              </div>
-              <div className="message-list">
-                    {
-                        messages.map(
-                            (message, index) => (
-                                <div key={index} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
-                                    <div class="alert alert-light message-bubble">
 
-                                <div>
-                                </div>
-                                
-                                    <div style = {groupstyle}>
-                                    {message.author}
-                                    </div>
-                                    {message.content}
-                                    </div >   </div>
-                                
-                            )
-                        )
-                    }
-                </div>
-                <div class="input-group message-box">
-                    <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-                    <div class="input-group-append" onClick={sendMessage}>
-                        <span class="input-group-text send-icon-container">
-                            <i class="fas fa-paper-plane"></i>
-                        </span>
-                    </div>
-                </div>    
-                </Fragment> : <Fragment>
-                <div class="message-header">
-                <h2>{activeChatUser.username}</h2>
-            </div>
-            <div className="message-list">
-                    {
-                        messages.map(
-                            (message, index) => (
-                                <div key={index} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
-                                    <div class="alert alert-light message-bubble">
-                                   
-                                    {message.content}
-                                    </div >   </div>
-                                
-                            )
-                        )
-                    }
-                </div>
-                <div class="input-group message-box">
-                    <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-                    <div class="input-group-append" onClick={sendMessage}>
-                        <span class="input-group-text send-icon-container">
-                            <i class="fas fa-paper-plane"></i>
-                        </span>
-                    </div>
-                </div>    
-                </Fragment>
-                
-                
-            }
-        </div>
+       <div className="col-9 chat-window">
+
+           <div class="message-header">
+               <h2>{activeChatUser.username}</h2>
+           </div>
+
+           <div className="message-list" ref={(el) => { msg = el; }} >
+
+               {
+                   messages.map(
+                       (message, index) => (
+                           <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
+                               <div class="alert alert-light message-bubble" >
+                                   {message.content}
+                               </div>
+                           </div>
+                       )
+                   )
+               }
+           </div>
+
+
+           <div class="input-group message-box">
+               <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+               <div class="input-group-append" onClick={sendMessage}>
+                   <span class="input-group-text send-icon-container">
+                       <i class="fas fa-paper-plane"></i>
+                   </span>
+               </div>
+           </div>
+
+       </div>
    )
 }
 
@@ -127,36 +108,56 @@ const Chat = () => {
     const [groupMessages, setgroupMessages] = useState([])
     const [activeChatUser, setActiveChatUser] = useState(null)
     let user = getUser()
-   
 
-    axios.get('http://localhost:4000/Getgroup')
-    .then(response => { 
+//     axios.get('http://localhost:4000/Getgroup')
+//     .then(response => { 
         
-        setGroups(response.data)
-        console.log(response)
-  })
+//         setGroups(response.data)
+//         console.log(response)
+//   })
 
 
-    const appendMessages = data => {
-        if (data.from == activeChatUser.username || data.from == user.username) {
+
+    // const appendMessages = (username, data) => {
+    //     setMessages(prevMessages => {
+
+    //         const activeUserChat = prevMessages[username] || []
+
+    //         const updatedChat = activeUserChat.concat(data)
+
+    //         const updatedMessages = {
+    //             ...prevMessages,
+    //             [username]: updatedChat
+    //         }
+
+    //         return updatedMessages
+    //     })
+    // }
+    ////////////////////////////////
+
+    const appendMessages = (data, user, activeChatUser) => {
+       console.log("messages =>",messages)
+       //if (data.author == activeChatUser.username || data.author == user.username) {
             setMessages(prevMessages => {
+               // const activeUserChat = prevMessages.to || []
+                
                 const updatedMessages = prevMessages.concat(data)
                 return updatedMessages
             })
-        }
+      // }
     }
 
     
    
     useEffect(() => {
-       socket = io('http://localhost:6547')
-      // socket = io('http://209.97.142.219:6547')
+       //socket = io('http://localhost:6547')
+       socket = io('http://209.97.142.219:6547')
         socket.emit('newConnection', user)
         socket.on('receivedMessage', appendMessages)
         
     }, [])
-
   
+
 
     useEffect(() => {
         if (activeChatUser) {
