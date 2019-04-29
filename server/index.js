@@ -16,6 +16,8 @@ client.on('connect', ()=>{
 })
 
 const conversation = new Conversation()
+conversation.delete_message('trivedi@love')
+conversation.delete_message('love@trivedi')
 
 let users = []
 

@@ -1,10 +1,69 @@
 
 const redis = require('redis');
 
+const express = require('express') ////////////// REMOVE AFTER API TESTING
+const router = express.Router()
+
 let client = redis.createClient();
 client.on('connect', ()=>{})
 
 
+// app.use((req, res, next)=>{
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//     next();
+// })
+
+// //////////========== CREATE GROUP /////////////////////////
+// app.get('/Creategroup', (req, res, next) =>{
+
+//   let groupname = 'group1'
+//   let admin = "admin1"
+
+//   const payload ={
+//     groupname:groupname,
+//     user:admin
+//   }
+//   client.lrange("grouplist1", 0, -1,
+//     (err,data) =>{
+
+//       if(err){res.send(err)}
+//       else{
+//         //  console.log("Admin ==> ", data[0])
+            
+//             client.rpush("grouplist1",JSON.stringify(payload))
+//             //res.send(data)
+//             console.log(data)
+          
+//          //res.send(data)
+//       }
+
+//     })
+// })//////////////////////////////////////
+
+// app.get('/Getgroup', (req, res, next) =>{
+
+//   client.lrange("grouplist1", 0, -1,
+//     (err,data) =>{
+
+//       if(err){res.send(err)}
+//       else{
+//         //  console.log("Admin ==> ", data[0])
+//           let groups = []
+            
+//             for(let i = 0 ; i<data.length; i++){
+//               groups.push(JSON.parse(data[i]))
+//             }
+//             res.send(groups)
+            
+          
+//          //res.send(data)
+//       }
+//     })
+// })
+
+// ///////////////////////////////
 
 module.exports = class Conversation {
 
