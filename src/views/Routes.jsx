@@ -5,6 +5,7 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import Login from './Login'
 import Chat from './Chat'
 
+
 const history = createBrowserHistory()
 
 const Routes = () => 
@@ -12,6 +13,7 @@ const Routes = () =>
         <Switch>
             <Route exact path="/" component={Login} />
             <Route exact path="/chat" component={Chat} />
+            
         </Switch>
     </Router>
 

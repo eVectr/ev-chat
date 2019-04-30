@@ -57,7 +57,7 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
     useEffect(() => {
         scrollToBottom();
  
-    }, [message])
+    }, [message.length])
  
     const scrollToBottom = () => {
         document.getElementById('last-msg') && document.getElementById('last-msg').scrollIntoView();
@@ -107,31 +107,24 @@ const Chat = () => {
     const [groups, setGroups] = useState([])
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
-    const [activeChatUser, setActiveChatUser] = useState({ username: '' })
+    const [activeChatUser, setActiveChatUser] = useState(null)
     let user = getUser()
+    //let groups = [{groupname:"group1",admin:"admin1"}, {groupname:"group2",admin:"admin2"}]
+   // console.log("first groups",groups)
+    
 
     const activeChatUserName = activeChatUser && activeChatUser.username
 
-    console.log("user", user)
 
+    // useEffect(() => {
+    //     axios.get('http://localhost:4000/Getgroup')
+    //     .then(response => {
+    //       setGroups(response.data)
+    //       console.log("API groups",groups)
+    //      })
+    // },[])
+    
 
-
-    // const appendMessages = (username, data) => {
-    //     setMessages(prevMessages => {
-
-    //         const activeUserChat = prevMessages[username] || []
-
-    //         const updatedChat = activeUserChat.concat(data)
-
-    //         const updatedMessages = {
-    //             ...prevMessages,
-    //             [username]: updatedChat
-    //         }
-
-    //         return updatedMessages
-    //     })
-    // }
-    ////////////////////////////////
 
     let appendMessages = (data) => {
        if (data.author == activeChatUserGlobal.username || data.author == user.username) {
@@ -143,7 +136,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-       //socket = io('http://localhost:6547')
+      // socket = io('http://localhost:6547')
        socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
@@ -156,14 +149,14 @@ const Chat = () => {
 
        
         socket.on('receivedMessage', appendMessages)
-        console.log(socket)
+       // console.log(socket)
 
         return () => {
             console.log(`socket.removeListener('receivedMessage', appendMessages)`)
             socket.removeListener('receivedMessage', appendMessages)
         }
    
-     }, [activeChatUser.username])
+     }, [activeChatUser && activeChatUser.username])
   
 
 
@@ -178,12 +171,12 @@ const Chat = () => {
            })
          
         }
-    }, [activeChatUser.username])
+    }, [activeChatUser && activeChatUser.username])
 
    
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
-    const filteredGroup = groups.filter(exisitingGroup => groups.groupname)
-    console.log(filteredGroup)
+    //const filteredGroup = groups.filter(exisitingGroup => groups.groupname)
+    //console.log(filteredGroup)
     //console.log("filtered user ==>",filteredUser)
     const activeUserName = activeChatUser && activeChatUser.username || ''
     //const activeChatMessages = messages[activeUserName] || []
@@ -198,29 +191,8 @@ const Chat = () => {
             
                 <aside className="users-list col-3">
                  
+            
                 
-
-                 <ul className="list-group">
-                        {
-                            groups.map(
-                                (group, index) =>
-                               
-                                    <li
-                                        key={index}
-                                        
-                                        className={`list-group-item user ${group.groupname ? 'selected' : ''}`}
-                                    >
-                                        <i class="fas fa-user-circle user-profile-photo"></i>
-                                        <span className="username">{group.groupName}</span>
-                                        
-                                    </li>
-                                    
-                            )
-                        }
-                    </ul>
-
-
-                 
                     <ul className="list-group">
                         {
                             filteredUser.map(

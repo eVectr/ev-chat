@@ -3,7 +3,7 @@ const redis = require('redis');
 
 const express = require('express') ////////////// REMOVE AFTER API TESTING
 const router = express.Router()
-
+//var app = express()
 let client = redis.createClient();
 client.on('connect', ()=>{})
 
@@ -18,22 +18,22 @@ client.on('connect', ()=>{})
 // //////////========== CREATE GROUP /////////////////////////
 // app.get('/Creategroup', (req, res, next) =>{
 
-//   let groupname = 'group1'
-//   let admin = "admin1"
+//   let groupname = 'group2'
+//   let admin = "admin2"
 
 //   const payload ={
 //     groupname:groupname,
 //     user:admin
 //   }
-//   client.lrange("grouplist1", 0, -1,
+//   client.lrange("grouplist", 0, -1,
 //     (err,data) =>{
 
 //       if(err){res.send(err)}
 //       else{
 //         //  console.log("Admin ==> ", data[0])
             
-//             client.rpush("grouplist1",JSON.stringify(payload))
-//             //res.send(data)
+//             client.rpush("grouplist",JSON.stringify(payload))
+//             res.send("group created")
 //             console.log(data)
           
 //          //res.send(data)
@@ -44,7 +44,7 @@ client.on('connect', ()=>{})
 
 // app.get('/Getgroup', (req, res, next) =>{
 
-//   client.lrange("grouplist1", 0, -1,
+//   client.lrange("grouplist", 0, -1,
 //     (err,data) =>{
 
 //       if(err){res.send(err)}
@@ -56,14 +56,30 @@ client.on('connect', ()=>{})
 //               groups.push(JSON.parse(data[i]))
 //             }
 //             res.send(groups)
-            
+//             console.log(groups)
           
 //          //res.send(data)
 //       }
 //     })
 // })
 
-// ///////////////////////////////
+
+// /////////////////////////////
+
+// app.get('/Deletegroup', (req, res, next) =>{
+
+//   client.del("grouplist",(err, data)=>{
+//     if(err){
+//       console.log(err)
+//     }else{
+//       console.log("group deleted")
+//       res.send("deleted")
+
+//     }
+//   })
+// })
+
+///////////////////////////////
 
 module.exports = class Conversation {
 
@@ -296,3 +312,4 @@ delete_conversation_id(participates){
 
 } //////////////////// CLASS END /////////////////////////////////////
 
+//app.listen(4000)
