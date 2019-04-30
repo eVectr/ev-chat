@@ -137,17 +137,20 @@ const Chat = ({ history }) => {
 
 
     useEffect(() => {
-        
        if (user && user.username) return
        history.push('/')
     },[])
        
+    // useEffect(() => {
+    //    localStorage.removeItem
+    //  },[])
+        
 
 
     useEffect(() => {
-   // socket = io('http://localhost:6547')
-     socket = io('http://209.97.142.219:6547')
-         socket.emit('newConnection', user)
+    //socket = io('http://localhost:6547')
+      socket = io('http://209.97.142.219:6547')
+        // socket.emit('newConnection', user)
     })
    
     useEffect(() => {
