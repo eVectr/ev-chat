@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment, useRef } from 'react'
 import io from 'socket.io-client'
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users';
+import WithLoader from '../components/WithLoader/WithLoader'
 
 //import groups from '../constants/groups';
 import axios from "axios"
@@ -104,6 +105,7 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
 
 const Chat = ({ history }) => {
 
+    //const [ spinner, setSpinner ] = useState(true)
     const [groups, setGroups] = useState([])
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
@@ -111,6 +113,10 @@ const Chat = ({ history }) => {
     let user = getUser()
     //let groups = [{groupname:"group1",admin:"admin1"}, {groupname:"group2",admin:"admin2"}]
    // console.log("first groups",groups)
+
+    // useEffect(() => {
+    // setTimeout(() => setSpinner(false), 1000)
+    // }, []);
     
 
     const activeChatUserName = activeChatUser && activeChatUser.username
@@ -148,8 +154,8 @@ const Chat = ({ history }) => {
 
 
     useEffect(() => {
-    //socket = io('http://localhost:6547')
-      socket = io('http://209.97.142.219:6547')
+    socket = io('http://localhost:6547')
+     // socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
    
@@ -175,8 +181,10 @@ const Chat = ({ history }) => {
     useEffect(() => {
         if (activeChatUser) {
             socket.emit('join', {author:user.username, to: activeChatUser.username })
+            // this.props.startLoading()
             socket.on('message', conversation =>{
                 const {  data =  {} } = conversation
+                // this.props.stopLoading()
                 console.log("data =>", data)
                 setMessages(data)
                 
@@ -242,5 +250,5 @@ const Chat = ({ history }) => {
     )
 
 }
-
+// WithLoader
 export default Chat
