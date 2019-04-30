@@ -56,48 +56,48 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
  
     useEffect(() => {
         scrollToBottom();
- 
-    }, [message.length])
+        //console.log("test ==>",messages)
+    }, [messages.length])
  
     const scrollToBottom = () => {
         document.getElementById('last-msg') && document.getElementById('last-msg').scrollIntoView();
     }
 
-
-
+    console.log(activeChatUser, 'activeChatUser')
+    
     return (
 
        <div className="col-9 chat-window">
+            {
+                activeChatUser.username ? 
+                <div>
+                     <div class="message-header">
+                        <h2>{activeChatUser.username}</h2>
+                    </div>
+                    <div className="message-list" ref={(el) => { msg = el; }} >
 
-           <div class="message-header">
-               <h2>{activeChatUser.username}</h2>
-           </div>
-
-           <div className="message-list" ref={(el) => { msg = el; }} >
-
-               {
-                   messages.map(
-                       (message, index) => (
-                           <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
-                               <div class="alert alert-light message-bubble" >
-                                   {message.content}
-                               </div>
-                           </div>
-                       )
-                   )
-               }
-           </div>
-
-
-           <div class="input-group message-box">
-               <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-               <div class="input-group-append" onClick={sendMessage}>
-                   <span class="input-group-text send-icon-container">
-                       <i class="fas fa-paper-plane"></i>
-                   </span>
-               </div>
-           </div>
-
+                        {
+                            messages.map(
+                                (message, index) => (
+                                    <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
+                                        <div class="alert alert-light message-bubble" >
+                                            {message.content}
+                                        </div>
+                                    </div>
+                                )
+                            )
+                        }
+                    </div>
+                    <div class="input-group message-box">
+                        <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+                        <div class="input-group-append" onClick={sendMessage}>
+                            <span class="input-group-text send-icon-container">
+                                <i class="fas fa-paper-plane"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div> : null
+            }
        </div>
    )
 }
@@ -107,7 +107,7 @@ const Chat = () => {
     const [groups, setGroups] = useState([])
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
-    const [activeChatUser, setActiveChatUser] = useState(null)
+    const [activeChatUser, setActiveChatUser] = useState({username : ''})
     let user = getUser()
     //let groups = [{groupname:"group1",admin:"admin1"}, {groupname:"group2",admin:"admin2"}]
    // console.log("first groups",groups)
@@ -136,7 +136,7 @@ const Chat = () => {
     }
 
     useEffect(() => {
-      // socket = io('http://localhost:6547')
+      //socket = io('http://localhost:6547')
        socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
@@ -156,7 +156,7 @@ const Chat = () => {
             socket.removeListener('receivedMessage', appendMessages)
         }
    
-     }, [activeChatUser && activeChatUser.username])
+     }, [activeChatUser.username])
   
 
 
@@ -171,7 +171,7 @@ const Chat = () => {
            })
          
         }
-    }, [activeChatUser && activeChatUser.username])
+    }, [activeChatUser.username])
 
    
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
@@ -214,7 +214,6 @@ const Chat = () => {
                     
                     
                 </aside>
-                { activeChatUser ?
                     <ChatWindow
                         groups ={groups}
                         messages={activeChatMessages}
@@ -224,7 +223,6 @@ const Chat = () => {
                            message => appendMessages( message)
                         }
                     />
-                : null }
             </div>
         </div>
     )

@@ -1,22 +1,22 @@
 const users = [
     {
         user_id: 1,
-        username: 'love',
+        username: 'Love',
         password: 'love@123'
     },
     {
         user_id: 2,
-        username: 'trivedi',
+        username: 'Trivedi',
         password: 'trivedi@123'
     },
     {
         user_id: 3,
-        username: 'ajay',
+        username: 'Ajay',
         password: 'ajay@123'
     },
     {
         user_id: 4,
-        username: 'kirpal',
+        username: 'Kirpal',
         password: 'kirpal@123'
     },
     {
