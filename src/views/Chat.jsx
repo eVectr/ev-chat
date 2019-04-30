@@ -11,6 +11,7 @@ import { GroupModal } from '../components/GroupModal';
 
 
 let socket = null
+let activeChatUserGlobal = {}
 
 const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
 
@@ -106,15 +107,12 @@ const Chat = () => {
     const [groups, setGroups] = useState([])
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
-    const [activeChatUser, setActiveChatUser] = useState(null)
+    const [activeChatUser, setActiveChatUser] = useState({ username: '' })
     let user = getUser()
 
-//     axios.get('http://localhost:4000/Getgroup')
-//     .then(response => { 
-        
-//         setGroups(response.data)
-//         console.log(response)
-//   })
+    const activeChatUserName = activeChatUser && activeChatUser.username
+
+    console.log("user", user)
 
 
 
@@ -135,27 +133,37 @@ const Chat = () => {
     // }
     ////////////////////////////////
 
-    const appendMessages = (data, user, activeChatUser) => {
-       console.log("messages =>",messages)
-       //if (data.author == activeChatUser.username || data.author == user.username) {
+    let appendMessages = (data) => {
+       if (data.author == activeChatUserGlobal.username || data.author == user.username) {
             setMessages(prevMessages => {
-               // const activeUserChat = prevMessages.to || []
-                
                 const updatedMessages = prevMessages.concat(data)
                 return updatedMessages
             })
-      // }
+       }
     }
 
-    
+    useEffect(() => {
+        socket = io('http://localhost:6547')
+        //socket = io('http://209.97.142.219:6547')
+         socket.emit('newConnection', user)
+    })
    
     useEffect(() => {
-       //socket = io('http://localhost:6547')
-       socket = io('http://209.97.142.219:6547')
-        socket.emit('newConnection', user)
+
+        activeChatUserGlobal = activeChatUser
+
+        console.log(activeChatUser, 'activeChatUser')
+
+       
         socket.on('receivedMessage', appendMessages)
-        
-    }, [])
+        console.log(socket)
+
+        return () => {
+            console.log(`socket.removeListener('receivedMessage', appendMessages)`)
+            socket.removeListener('receivedMessage', appendMessages)
+        }
+   
+     }, [activeChatUser.username])
   
 
 
@@ -170,7 +178,7 @@ const Chat = () => {
            })
          
         }
-    }, [activeChatUser && activeChatUser.username])
+    }, [activeChatUser.username])
 
    
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
