@@ -30,6 +30,11 @@ export const getUser = () => {
     return {}
 }
 
+
+export const removeUser = () => {
+    const user = localStorage.removeItem()
+}
+
 export const getGroup = () => {
     const group = localStorage.getItem('group')
 

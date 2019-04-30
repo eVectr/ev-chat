@@ -102,7 +102,7 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
    )
 }
 
-const Chat = () => {
+const Chat = ({ history }) => {
 
     const [groups, setGroups] = useState([])
     const [messages, setMessages] = useState([])
@@ -135,8 +135,17 @@ const Chat = () => {
        }
     }
 
+
     useEffect(() => {
-    //socket = io('http://localhost:6547')
+        
+       if (user && user.username) return
+       history.push('/')
+    },[])
+       
+
+
+    useEffect(() => {
+   // socket = io('http://localhost:6547')
      socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
@@ -181,7 +190,9 @@ const Chat = () => {
     const activeUserName = activeChatUser && activeChatUser.username || ''
     //const activeChatMessages = messages[activeUserName] || []
     const activeChatMessages = messages
-    
+
+   
+
     
     return (
         
@@ -212,7 +223,7 @@ const Chat = () => {
                         }
                     </ul>
                     
-                    
+                
                 </aside>
                     <ChatWindow
                         groups ={groups}
