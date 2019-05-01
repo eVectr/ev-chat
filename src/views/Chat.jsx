@@ -5,6 +5,7 @@ import users from '../constants/users';
 import axios from "axios"
 import { GroupModal } from '../components/GroupModal';
 import Loader from '../components/Loader'
+import CreateGroupModal from '../components/CreateGroupModal'
 
 
 
@@ -153,11 +154,13 @@ const ChatWindow = ({ groups, isLoading, activeChatUser, messages, updateMessage
 const Chat = ({ history }) => {
 
     const [groups, setGroups] = useState([])
+    const [isArray, setisArray] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
+    
     let user = getUser()
     
 
@@ -171,8 +174,26 @@ const Chat = ({ history }) => {
     //       console.log("API groups",response.data)
     //      })
     // },[])
+
+let saveGroupName= ()=>{
+    if(groups.length = 0){
+        setisArray(false)
+    }else{
+        setisArray(true)
+    }
+}
+
     
     
+    const setGroupName = (e) => {
+        setGroups([e.target.value])
+        
+    } 
+
+    
+    
+    console.log("iaArray", isArray)
+
 
 
     let appendMessages = (data) => {
@@ -195,8 +216,8 @@ const Chat = ({ history }) => {
 
 
     useEffect(() => {
-  // socket = io('http://localhost:6547')
-    socket = io('http://209.97.142.219:6547')
+     socket = io('http://localhost:6547')
+    //socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
    
@@ -248,10 +269,11 @@ const Chat = ({ history }) => {
         <div className="chat-container full-height container-fluid">
         <modal></modal>
             <div className="row full-height">
-            
+                
                 <aside className="users-list col-3">
-                 
+                <CreateGroupModal setGroupName={setGroupName} groups ={groups} saveGroupName={saveGroupName}/>
             
+            {isArray?
                 <ul className="list-group">
                         {
                             groups.map(
@@ -259,17 +281,19 @@ const Chat = ({ history }) => {
                                
                                     <li
                                         key={index}
-                                        onClick={() => setActiveChatGroup(group)}
-                                        className={`list-group-item user ${activeChatGroup && activeChatGroup.groupname == group.groupname ? 'selected' : ''}`}
+                                       // onClick={() => setActiveChatGroup(group)}
+                                        //className={`list-group-item user ${activeChatGroup && activeChatGroup.groupname == group ? 'selected' : ''}`}
                                     >
                                         <i class="fas fa-users" style ={groupicon} ></i>
-                                        <span className="username">{group.groupname}</span>
+                                        <span className="username">{group}</span>
                                         
                                     </li>
                                     
                             )
                         }
                     </ul>
+                :null}
+            
                 
                     <ul className="list-group">
                         {

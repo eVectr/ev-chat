@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Button,Modal} from 'react-bootstrap'
-import { userInfo } from 'os';
-import axios from 'axios'
+import groups from '../constants/groups';
+
 
 
 
@@ -33,8 +33,8 @@ class CreateGroupModal extends Component {
      
 
     render(){
-        const{setUser, text}=this.props 
-        console.log(text, 'text')       
+        const{setGroupName, groups, saveGroupName}=this.props 
+               console.log(groups, 'group452343')
         return(
             <>
             <Button variant="primary ml-3 mb-3" onClick={this.handleShow}>
@@ -46,13 +46,13 @@ class CreateGroupModal extends Component {
                 <Modal.Title> Enter Group Name</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <input type="text" name="groupname" onChange={setUser} value={text}/>
+                <input type="text" name="groupname" onChange={setGroupName} value={groups}/>
              </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={this.handleClose}>
                 Close
                 </Button>
-                <Button variant="primary" onClick={this.props.onSave} >
+                <Button variant="primary" onClick={saveGroupName} >
                 Save
                 </Button>
             </Modal.Footer>
