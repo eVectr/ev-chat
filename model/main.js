@@ -4,7 +4,7 @@ const redis = require('redis');
 // const express = require('express') ////////////// REMOVE AFTER API TESTING
 // const router = express.Router()
 // var app = express()
-let client = redis.createClient();
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
 client.on('connect', ()=>{})
 
 
@@ -159,15 +159,6 @@ create_group(groupname, admin){
 ////////////////// CHECK USER  /////////////////////////
 
 
- checkuser(array, user)
-{
-    let len = array.length;
-    for(let i = 0; i< len ; i++)
-    {
-      if(array[i]== user){return true}
-    }
-    return false
-}
 //////// END ////////////////////////
 
 ////////////////// ADD USER TO GROUP ///////////////\\\\\\\\\\\\\\\\\\\
