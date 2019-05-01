@@ -1,134 +1,134 @@
 
 const redis = require('redis');
 
-//const express = require('express') ////////////// REMOVE AFTER API TESTING
-//const router = express.Router()
-//var app = express()
+const express = require('express') ////////////// REMOVE AFTER API TESTING
+const router = express.Router()
+var app = express()
 let client = redis.createClient();
 client.on('connect', ()=>{})
 
 
-// app.use((req, res, next)=>{
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//     next();
-// })
+app.use((req, res, next)=>{
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    next();
+})
 
-// //////////========== CREATE GROUP /////////////////////////
-// app.get('/Creategroup', (req, res, next) =>{
+//////////========== CREATE GROUP /////////////////////////
+app.get('/Creategroup', (req, res, next) =>{
 
-//   let groupname = 'group2'
-//   let admin = "admin2"
+  let groupname = 'group1'
+  let admin = "admin1"
 
-//   const payload ={
-//     groupname:groupname,
-//     user:admin
-//   }
-//   client.lrange("grouplist", 0, -1,
-//     (err,data) =>{
+  const payload ={
+    groupname:groupname,
+    user:admin
+  }
+  client.lrange("grouplist", 0, -1,
+    (err,data) =>{
 
-//       if(err){res.send(err)}
-//       else{
-//         //  console.log("Admin ==> ", data[0])
+      if(err){res.send(err)}
+      else{
+        //  console.log("Admin ==> ", data[0])
             
-//             client.rpush("grouplist",JSON.stringify(payload))
-//             res.send("group created")
-//             console.log(data)
+            client.rpush("grouplist",JSON.stringify(payload))
+            res.send("group created")
+            console.log(data)
           
-//          //res.send(data)
-//       }
+         //res.send(data)
+      }
 
-//     })
-// })//////////////////////////////////////
+    })
+})//////////////////////////////////////
 
-// app.get('/Getgroup', (req, res, next) =>{
+app.get('/Getgroup', (req, res, next) =>{
 
-//   client.lrange("grouplist", 0, -1,
-//     (err,data) =>{
+  client.lrange("grouplist", 0, -1,
+    (err,data) =>{
 
-//       if(err){res.send(err)}
-//       else{
-//         //  console.log("Admin ==> ", data[0])
-//           let groups = []
+      if(err){res.send(err)}
+      else{
+        //  console.log("Admin ==> ", data[0])
+          let groups = []
             
-//             for(let i = 0 ; i<data.length; i++){
-//               groups.push(JSON.parse(data[i]))
-//             }
-//             res.send(groups)
-//             console.log(groups)
+            for(let i = 0 ; i<data.length; i++){
+              groups.push(JSON.parse(data[i]))
+            }
+            res.send(groups)
+            console.log(groups)
           
-//          //res.send(data)
-//       }
-//     })
-// })
-// ///////////////////////////// Add group to user //////////////
+         //res.send(data)
+      }
+    })
+})
+///////////////////////////// Add group to user //////////////
 
-// //==============  ADD USER TO GROUP ==================================///////
-// app.get('/adduser', (req, res, next) =>{
-//   let groupname = "group1"
-//   let user = ["user4", "user5", "user6"]
-//   let maxuser = 5
-//   let getuser = true
+//==============  ADD USER TO GROUP ==================================///////
+app.get('/adduser', (req, res, next) =>{
+  let groupname = "group1"
+  let user = ["user4", "user5", "user6"]
+  let maxuser = 5
+  let getuser = true
   
-//   const payload ={
-//     groupname:{groupname},
-//     user:{user}
-//   }
-//   client.lrange(groupname, 0, -1, (err, data) =>{
-//     if(err){res.send(err)}
-//     else{
+  const payload ={
+    groupname:{groupname},
+    user:{user}
+  }
+  client.lrange(groupname, 0, -1, (err, data) =>{
+    if(err){res.send(err)}
+    else{
   
   
-//        let array = [];
-//        for (i = 0; i< data.length; i++)
-//        {
-//           array.push(JSON.parse(data[i]))
-//        }
+       let array = [];
+       for (i = 0; i< data.length; i++)
+       {
+          array.push(JSON.parse(data[i]))
+       }
   
-//          // let getuser =  checkuser(array , user)
-//           if(getuser == true){
+         // let getuser =  checkuser(array , user)
+          if(getuser == true){
   
-//             if(array.length <= maxuser){
+            if(array.length <= maxuser){
   
-//               client.rpush(groupname, JSON.stringify(payload))
-//               res.send(data)
-//               console.log(data)
-//             }else{
-//               res.send("Max User limit reached")
-//               console.log("Max User limit reached")
-//               console.log(data)
-//              }
+              client.rpush(groupname, JSON.stringify(payload))
+              res.send(data)
+              console.log(data)
+            }else{
+              res.send("Max User limit reached")
+              console.log("Max User limit reached")
+              console.log(data)
+             }
   
-//           }else{
-//             console.log("user already exist")
-//             console.log(data)
-//             res.send(data)
-//           }
+          }else{
+            console.log("user already exist")
+            console.log(data)
+            res.send(data)
+          }
   
-//         }
-//       }
-//   )
-//   })
+        }
+      }
+  )
+  })
   
 
-
-// /////////////////////////////
-
-// app.get('/Deletegroup', (req, res, next) =>{
-
-//   client.del("group1",(err, data)=>{
-//     if(err){
-//       console.log(err)
-//     }else{
-//       console.log("group deleted")
-//       res.send("deleted")
-
-//     }
-//   })
-// })
 
 /////////////////////////////
+
+app.get('/Deletegroup', (req, res, next) =>{
+
+  client.del("grouplist",(err, data)=>{
+    if(err){
+      console.log(err)
+    }else{
+      console.log("group deleted")
+      res.send("deleted")
+
+    }
+  })
+})
+
+///////////////////////////
 
 module.exports = class Conversation {
 
@@ -361,4 +361,4 @@ delete_conversation_id(participates){
 
 } //////////////////// CLASS END /////////////////////////////////////
 
-//app.listen(4000)
+app.listen(4000)
