@@ -66,6 +66,9 @@ const ChatWindow = ({ groups, isLoading, activeChatUser, messages, updateMessage
     return (
 
        <div className="col-9 chat-window">
+
+            {isGroup? <Fragment>
+
             {
                 
                 activeChatUser.username ? 
@@ -74,7 +77,7 @@ const ChatWindow = ({ groups, isLoading, activeChatUser, messages, updateMessage
                         <h2>{activeChatUser.username}</h2>
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
-                        {isLoading ? <Loader/> : null }
+                        {isLoading ? <Loader /> : null }
                         
                          
                         {
@@ -82,6 +85,9 @@ const ChatWindow = ({ groups, isLoading, activeChatUser, messages, updateMessage
                                 (message, index) => (
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
+                                            <div style ={groupstyle}>
+                                            {message.author}
+                                            </div>
                                             {message.content}
                                         </div>
                                     </div>
@@ -99,6 +105,47 @@ const ChatWindow = ({ groups, isLoading, activeChatUser, messages, updateMessage
                     </div>
                 </div> : null
             }
+
+            </Fragment>:
+                <Fragment>
+
+            {
+                activeChatUser.username ? 
+                <div class="show-chat" >
+                     <div class="message-header">
+                        <h2>{activeChatUser.username}</h2>
+                    </div>
+                    <div className="message-list" ref={(el) => { msg = el; }} >
+                    {isLoading ? <Loader /> : null }
+
+                        {
+                            messages.map(
+                                (message, index) => (
+                                    <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
+                                        <div class="alert alert-light message-bubble" >
+                                        
+                                            {message.content}
+                                        </div>
+                                    </div>
+                                )
+                            )
+                        }
+                    </div>
+                    <div class="input-group message-box">
+                        <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+                        <div class="input-group-append" onClick={sendMessage}>
+                            <span class="input-group-text send-icon-container">
+                                <i class="fas fa-paper-plane"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div> : null
+            }
+                </Fragment>
+            }
+
+
+
        </div>
    )
 }
@@ -110,10 +157,21 @@ const Chat = ({ history }) => {
     const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
+    const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
     let user = getUser()
+    
 
     const activeChatUserName = activeChatUser && activeChatUser.username
 
+
+    // useEffect(() => {
+    //     axios.get('http://localhost:4000/Getgroup')
+    //     .then(response => {
+    //      setGroups(response.data)
+    //       console.log("API groups",response.data)
+    //      })
+    // },[])
+    
     
 
 
@@ -137,13 +195,14 @@ const Chat = ({ history }) => {
 
 
     useEffect(() => {
-    socket = io('http://localhost:6547')
+ //   socket = io('http://localhost:6547')
+    socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
    
     useEffect(() => {
-
         setLoading(true)
+
 
         activeChatUserGlobal = activeChatUser
 
@@ -153,12 +212,12 @@ const Chat = ({ history }) => {
             console.log(`socket.removeListener('receivedMessage', appendMessages)`)
             socket.removeListener('receivedMessage', appendMessages)
         }
-   
      }, [activeChatUser.username])
   
 
 
     useEffect(() => {
+
         if (activeChatUser) {
             socket.emit('join', {author:user.username, to: activeChatUser.username })
 
@@ -179,7 +238,10 @@ const Chat = ({ history }) => {
     const activeChatMessages = messages
 
    
-
+    let groupicon ={
+      fontSize:'22px',
+      marginRight:'10px'
+    }
     
     return (
         
@@ -190,6 +252,24 @@ const Chat = ({ history }) => {
                 <aside className="users-list col-3">
                  
             
+                <ul className="list-group">
+                        {
+                            groups.map(
+                                (group, index) =>
+                               
+                                    <li
+                                        key={index}
+                                        onClick={() => setActiveChatGroup(group)}
+                                        className={`list-group-item user ${activeChatGroup && activeChatGroup.groupname == group.groupname ? 'selected' : ''}`}
+                                    >
+                                        <i class="fas fa-users" style ={groupicon} ></i>
+                                        <span className="username">{group.groupname}</span>
+                                        
+                                    </li>
+                                    
+                            )
+                        }
+                    </ul>
                 
                     <ul className="list-group">
                         {
