@@ -1,8 +1,8 @@
 
 const redis = require('redis');
 
-const express = require('express') ////////////// REMOVE AFTER API TESTING
-const router = express.Router()
+//const express = require('express') ////////////// REMOVE AFTER API TESTING
+//const router = express.Router()
 //var app = express()
 let client = redis.createClient();
 client.on('connect', ()=>{})
@@ -62,13 +62,62 @@ client.on('connect', ()=>{})
 //       }
 //     })
 // })
+// ///////////////////////////// Add group to user //////////////
+
+// //==============  ADD USER TO GROUP ==================================///////
+// app.get('/adduser', (req, res, next) =>{
+//   let groupname = "group1"
+//   let user = ["user4", "user5", "user6"]
+//   let maxuser = 5
+//   let getuser = true
+  
+//   const payload ={
+//     groupname:{groupname},
+//     user:{user}
+//   }
+//   client.lrange(groupname, 0, -1, (err, data) =>{
+//     if(err){res.send(err)}
+//     else{
+  
+  
+//        let array = [];
+//        for (i = 0; i< data.length; i++)
+//        {
+//           array.push(JSON.parse(data[i]))
+//        }
+  
+//          // let getuser =  checkuser(array , user)
+//           if(getuser == true){
+  
+//             if(array.length <= maxuser){
+  
+//               client.rpush(groupname, JSON.stringify(payload))
+//               res.send(data)
+//               console.log(data)
+//             }else{
+//               res.send("Max User limit reached")
+//               console.log("Max User limit reached")
+//               console.log(data)
+//              }
+  
+//           }else{
+//             console.log("user already exist")
+//             console.log(data)
+//             res.send(data)
+//           }
+  
+//         }
+//       }
+//   )
+//   })
+  
 
 
 // /////////////////////////////
 
 // app.get('/Deletegroup', (req, res, next) =>{
 
-//   client.del("grouplist",(err, data)=>{
+//   client.del("group1",(err, data)=>{
 //     if(err){
 //       console.log(err)
 //     }else{
@@ -79,7 +128,7 @@ client.on('connect', ()=>{})
 //   })
 // })
 
-///////////////////////////////
+/////////////////////////////
 
 module.exports = class Conversation {
 
