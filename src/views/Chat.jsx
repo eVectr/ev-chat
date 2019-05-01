@@ -176,7 +176,7 @@ const Chat = ({ history }) => {
     // },[])
 
 let saveGroupName= ()=>{
-    if(groups.length = 0){
+    if(groups.length == 0){
         setisArray(false)
     }else{
         setisArray(true)
@@ -216,8 +216,8 @@ let saveGroupName= ()=>{
 
 
     useEffect(() => {
-    // socket = io('http://localhost:6547')
-    socket = io('http://209.97.142.219:6547')
+     socket = io('http://localhost:6547')
+    //socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
    
