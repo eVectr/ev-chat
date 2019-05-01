@@ -64,7 +64,8 @@ io.on('connection', socket => {
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> {conversation.get_message(conv).then(message=>{
-                socket.emit('message', message)
+                if(message == ""){console.log("no message")}else{
+                socket.emit('message', message)}
         })})
     })
 

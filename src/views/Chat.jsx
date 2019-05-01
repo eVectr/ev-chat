@@ -2,11 +2,9 @@ import React, { useState, useEffect, Fragment, useRef } from 'react'
 import io from 'socket.io-client'
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users';
-import WithLoader from '../components/WithLoader/WithLoader'
-
-//import groups from '../constants/groups';
 import axios from "axios"
 import { GroupModal } from '../components/GroupModal';
+import Loader from '../components/Loader'
 
 
 
@@ -14,7 +12,7 @@ import { GroupModal } from '../components/GroupModal';
 let socket = null
 let activeChatUserGlobal = {}
 
-const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
+const ChatWindow = ({ groups, isLoading, activeChatUser, messages, updateMessages }) => {
 
     const [message, setMessage] = useState('')
     
@@ -57,7 +55,6 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
  
     useEffect(() => {
         scrollToBottom();
-        //console.log("test ==>",messages)
     }, [messages.length])
  
     const scrollToBottom = () => {
@@ -70,13 +67,16 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
 
        <div className="col-9 chat-window">
             {
+                
                 activeChatUser.username ? 
-                <div>
+                <div class="show-chat" >
                      <div class="message-header">
                         <h2>{activeChatUser.username}</h2>
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
-
+                        {isLoading ? <Loader/> : null }
+                        
+                         
                         {
                             messages.map(
                                 (message, index) => (
@@ -105,30 +105,15 @@ const ChatWindow = ({ groups, activeChatUser, messages, updateMessages }) => {
 
 const Chat = ({ history }) => {
 
-    //const [ spinner, setSpinner ] = useState(true)
     const [groups, setGroups] = useState([])
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
+    const [isLoading, setLoading] = useState(true)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     let user = getUser()
-    //let groups = [{groupname:"group1",admin:"admin1"}, {groupname:"group2",admin:"admin2"}]
-   // console.log("first groups",groups)
-
-    // useEffect(() => {
-    // setTimeout(() => setSpinner(false), 1000)
-    // }, []);
-    
 
     const activeChatUserName = activeChatUser && activeChatUser.username
 
-
-    // useEffect(() => {
-    //     axios.get('http://localhost:4000/Getgroup')
-    //     .then(response => {
-    //       setGroups(response.data)
-    //       console.log("API groups",groups)
-    //      })
-    // },[])
     
 
 
@@ -147,27 +132,22 @@ const Chat = ({ history }) => {
        history.push('/')
     },[])
        
-    // useEffect(() => {
-    //    localStorage.removeItem
-    //  },[])
+    
         
 
 
     useEffect(() => {
     socket = io('http://localhost:6547')
-     // socket = io('http://209.97.142.219:6547')
          socket.emit('newConnection', user)
     })
    
     useEffect(() => {
 
+        setLoading(true)
+
         activeChatUserGlobal = activeChatUser
 
-        console.log(activeChatUser, 'activeChatUser')
-
-       
         socket.on('receivedMessage', appendMessages)
-       // console.log(socket)
 
         return () => {
             console.log(`socket.removeListener('receivedMessage', appendMessages)`)
@@ -181,10 +161,10 @@ const Chat = ({ history }) => {
     useEffect(() => {
         if (activeChatUser) {
             socket.emit('join', {author:user.username, to: activeChatUser.username })
-            // this.props.startLoading()
+
             socket.on('message', conversation =>{
                 const {  data =  {} } = conversation
-                // this.props.stopLoading()
+                setLoading(false)
                 console.log("data =>", data)
                 setMessages(data)
                 
@@ -195,11 +175,7 @@ const Chat = ({ history }) => {
 
    
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
-    //const filteredGroup = groups.filter(exisitingGroup => groups.groupname)
-    //console.log(filteredGroup)
-    //console.log("filtered user ==>",filteredUser)
     const activeUserName = activeChatUser && activeChatUser.username || ''
-    //const activeChatMessages = messages[activeUserName] || []
     const activeChatMessages = messages
 
    
@@ -237,18 +213,18 @@ const Chat = ({ history }) => {
                 
                 </aside>
                     <ChatWindow
+                        isLoading={isLoading}
                         groups ={groups}
                         messages={activeChatMessages}
                         activeChatUser={activeChatUser}
                         updateMessages={
-                          // message => appendMessages(activeChatUser.username, message)
                            message => appendMessages( message)
                         }
+                      
                     />
             </div>
         </div>
     )
 
 }
-// WithLoader
 export default Chat
