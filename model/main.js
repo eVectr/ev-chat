@@ -5,6 +5,7 @@ const redis = require('redis');
 // const router = express.Router()
 // var app = express()
 let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient()
 client.on('connect', ()=>{})
 
 
@@ -162,24 +163,24 @@ create_group(groupname, admin){
 //////// END ////////////////////////
 
 ////////////////// ADD USER TO GROUP ///////////////\\\\\\\\\\\\\\\\\\\
-add_user(user){
-  client.lrange("group1", 0, -1, (err, data) =>{
-    if(err){res.send(err)}
-    else{
-          let array =[];
-          array = data;
-          let getuser =  checkuser(array , user)
-          if(getuser == false){
-            client.rpush("group1", user)
-            res.send(data)
-          }else{
-            console.log("user already exist")
-            res.send(data)
-          }
+// add_user(user){
+//   client.lrange("group1", 0, -1, (err, data) =>{
+//     if(err){res.send(err)}
+//     else{
+//           let array =[];
+//           array = data;
+//           let getuser =  checkuser(array , user)
+//           if(getuser == false){
+//             client.rpush("group1", user)
+//             res.send(data)
+//           }else{
+//             console.log("user already exist")
+//             res.send(data)
+//           }
           
-        }
-      }
-  ) }
+//         }
+//       }
+//   ) }
 ////////// END ////////////////////////////////////////////////////////////////
 
 ///////////////// delete group ///////////////////////////////////////
