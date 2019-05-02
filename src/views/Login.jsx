@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { authenticateUser } from '../utils/auth'
 import loginValidation from '../utils/Validation'
 import users from '../constants/users';
-import is from 'is_js'
 
 
 
