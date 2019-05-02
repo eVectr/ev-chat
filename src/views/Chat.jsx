@@ -153,17 +153,18 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 const Chat = ({ history }) => {
 
     const [groups, setGroups] = useState([])
+    const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
-    const [hide, setHide] = useState(true)
+    const [hide, setHide] = useState(false)
 
     useEffect(() => {
-        socket = io('http://localhost:6547')
-       // socket = io('http://209.97.142.219:6547')
+        //socket = io('http://localhost:6547')
+        socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
@@ -198,11 +199,39 @@ const Chat = ({ history }) => {
         }
      }
 
+
+
+let saveGroupName= ()=>{
+    axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
+      .then(res => {
+        console.log(res);
+        console.log(res);
+        console.log("sucess")
+        axios.get('http://localhost:4000/Getgroup')
+        .then(response => {
+         setGroups(response.data)
+          console.log("API groups",response.data)
+         })
+      })
+      setHide(false)  
+  }
+
+
+
+
+    let handleClose = () => {
+       setHide(true)
+    }
     
-    // const setGroupName = (e) => {
-    //     setGroups([e.target.value])
+    let handleShow=() => {
+        setHide(false)
+    }
+    
+    const setGroupNames = (e) => {
+        setGroupName(e.target.value)
         
-    // }
+    }
+    
     
 
 
@@ -252,6 +281,10 @@ const Chat = ({ history }) => {
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages
 
+    let userLogOut = () => {
+        localStorage.clear()
+        history.push('/')
+    }
    
     
     return (
@@ -261,9 +294,11 @@ const Chat = ({ history }) => {
             <div className="row full-height">
                 
                 <aside className="users-list col-3">
-                <CreateGroupModal/>
-                
-              
+                    <div className="user-logout">
+                        <span>{user.username}</span>
+                        <button onClick={userLogOut}><i class="fas fa-sign-out-alt"></i></button>
+                    </div>
+                <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow}/>
             
                 <ul className="list-group">
                         {

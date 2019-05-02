@@ -10,3 +10,4 @@ export function actionCreatorUtil(type) {
         payload,
     })
 }
+

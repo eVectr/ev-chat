@@ -52,7 +52,7 @@ export class GroupModal extends Component {
                 <Button variant="secondary" onClick={this.handleClose}>
                 Close
                 </Button>
-                <Button variant="primary" >
+                <Button variant="primary" onClick={this.handleClose} >
                 Save
                 </Button>
             </Modal.Footer>
