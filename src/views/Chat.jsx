@@ -160,6 +160,7 @@ const Chat = ({ history }) => {
     const [isLoading, setLoading] = useState(true)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
+    const [hide, setHide] = useState(false)
     
     let user = getUser()
     
@@ -176,6 +177,7 @@ const Chat = ({ history }) => {
     // },[])
 
 let saveGroupName= ()=>{
+    setHide(false)
     if(groups.length == 0){
         setisArray(false)
     }else{
@@ -183,6 +185,13 @@ let saveGroupName= ()=>{
     }
 }
 
+    let handleClose = () => {
+       setHide(true)
+    }
+    
+    let handleShow=() => {
+        setHide(false)
+    }
     
     
     const setGroupName = (e) => {
@@ -258,6 +267,10 @@ let saveGroupName= ()=>{
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages
 
+    let userLogOut = () => {
+        localStorage.clear()
+        history.push('/')
+    }
    
     let groupicon ={
       fontSize:'22px',
@@ -271,7 +284,11 @@ let saveGroupName= ()=>{
             <div className="row full-height">
                 
                 <aside className="users-list col-3">
-                <CreateGroupModal setGroupName={setGroupName} groups ={groups} saveGroupName={saveGroupName}/>
+                    <div className="user-logout">
+                        <span>{user.username}</span>
+                        <button onClick={userLogOut}><i class="fas fa-sign-out-alt"></i></button>
+                    </div>
+                <CreateGroupModal setGroupName={setGroupName} groups ={groups} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow}/>
             
             {isArray?
                 <ul className="list-group">

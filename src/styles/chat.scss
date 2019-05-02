@@ -1,5 +1,5 @@
 .users-list {
-    padding-top: 25px;
+    // padding-top: 25px;
     background-color: #f0f4f8;
     padding-right: 0px;
     padding-left: 0px;
@@ -107,4 +107,26 @@
     align-items: flex-start;align-items: flex-start;
     padding: 20px 20px 0px 0px;
     padding: 20px 20px 0px 0px;
+}
+
+
+.user-logout{
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #999;
+
+    span{
+        font-size: 1rem;
+        color: #000;
+        text-transform: capitalize;
+        font-weight: 700;
+    }
+
+    button{
+        background: transparent;
+        border: none;
+        outline: 0;
+    }
 }
