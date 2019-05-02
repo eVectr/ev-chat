@@ -27,12 +27,15 @@ class CreateGroupModal extends Component {
         this.setState({ show: true });
       }
 
+      
+
     
 
    
      
 
     render(){
+    
         const{setGroupName, groups, saveGroupName}=this.props 
                console.log(groups, 'group452343')
         return(
