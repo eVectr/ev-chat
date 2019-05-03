@@ -184,7 +184,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
                                             </div>
-                                            <p className='status'>{message.author?sendStatus:null}</p>
+                                            <p className='status'>{user.username == message.author ?sendStatus:null}</p>
                                         </div>
                                         
                                     </div>

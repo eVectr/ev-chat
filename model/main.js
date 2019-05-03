@@ -202,7 +202,8 @@ delete_group(group){
   //--------- CREATE CONVERSATION ID -----------------------/////
  set_conv_id(author , to ) {
 
-    let conversation_id =  author.concat('@'+to);
+    if (author) {
+      let conversation_id =  author.concat('@'+to);
     let participates = author.concat(','+to);
 
     let participates1 = participates.split(',')
@@ -241,6 +242,7 @@ delete_group(group){
      }
    }
    })
+    }
 
  }////////////////// method end ///////////////
 
