@@ -7,8 +7,10 @@ export const authenticateUser = data => {
             existingUser.username == data.username
             && existingUser.password == data.password
     )
+   
+    let error = user ? null : 'invalid credentials'
 
-    return user
+    return [user, error]
 }
 
 export const authenticateGroup = data => {

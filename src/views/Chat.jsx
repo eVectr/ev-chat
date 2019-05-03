@@ -163,8 +163,8 @@ const Chat = ({ history }) => {
     const [hide, setHide] = useState(false)
 
     useEffect(() => {
-        //socket = io('http://localhost:6547')
-        socket = io('http://209.97.142.219:6547')
+        socket = io('http://localhost:6547')
+        //socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
