@@ -231,7 +231,8 @@ const Chat = ({ history }) => {
  
 
     useEffect(() => {
-        axios.get('http://localhost:4000/Getgroup')
+       // axios.get('http://localhost:4000/Getgroup')
+        axios.get('http://209.97.142.219/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -263,12 +264,12 @@ const Chat = ({ history }) => {
 
 
 let saveGroupName= ()=>{
-    axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
         console.log(res);
         console.log(res);
         console.log("sucess")
-        axios.get('http://localhost:4000/Getgroup')
+        axios.get('http://209.97.142.219:4000/Getgroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)
