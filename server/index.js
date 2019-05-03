@@ -10,8 +10,8 @@ var io = require('socket.io')(server)
 const Conversation = require('../model/main')
 
 
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient();
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
 })
@@ -48,13 +48,13 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', data => {
+        socket.emit('messageSent', 'sent')
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
-       .then(conv=> {conversation.save_message(data.author, data.to, conv, data.content)})
+       .then(conv=> {conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)})
 
         const user = findUser(data.to)
 
-        console.log(user)
 
         if (user) socket.broadcast.to(user.socketId).emit('receivedMessage', data)
 

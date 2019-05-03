@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
  app.use(bodyParser.json())
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient()
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient()
 client.on('connect', ()=>{})
 
 
@@ -287,12 +287,13 @@ delete_group(group){
 
 //===================  SAVE MESSAGE   ==================//////////////////////
 
-save_message(author, to, conversation_id, content){
+save_message(author, to, conversation_id, content, DateTime){
 
     const data ={
       author:author,
       to:to,
-      content:content
+      content:content,
+      DateTime: DateTime
     }
     client.rpush("message"+conversation_id, JSON.stringify(data));
     client.lrange("message"+conversation_id , 0, -1,

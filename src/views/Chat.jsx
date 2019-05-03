@@ -18,8 +18,10 @@ let activeChatUserGlobal = {}
 
 const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages }) => {
 
-    console.log("isGroup ==>",isGroup)
+   
     const [message, setMessage] = useState('')
+    const [sendStatus, setSendStatus] = useState('')
+    const [status, setStatus] = useState('')
 
     useEffect(() => {
         scrollToBottom();
@@ -38,33 +40,81 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     let groupstyle = {
         color:"red"
     }
+
+    let DateTimeStyle = {
+        color:"green",
+        fontSize:'.7rem',
+        marginLeft:'8px'
+    }
+
+
+   let  handleEnterShiftPress = (e) => {
+       console.log(e.key)
+       if (e.key === 'Enter' && e.shiftKey) {
+       // if (e.key === ' ') {
+            // console.log('handleEnterShiftPress')
+            // e.preventDefault();
+            // addNewLineToTextArea();
+        } else if (e.key === 'Enter') {
+            sendMessage()
+            e.preventDefault();
+         }
+          else {
+            
+         }
+       
+    }
+
+    // let handleEnterPress= (e)=> {
+    //     if (e.key === 'Enter') {
+    //         sendMessage()
+    //     }
+    //   }
    
     const scrollToBottom = () => {
         document.getElementById('last-msg') && document.getElementById('last-msg').scrollIntoView();
     }
 
     const sendMessage = () => {
-        console.log(activeChatUser.username)
+
+        if (!message.trim().length) return
+
+        var today = new Date()
+        var hour = today.getHours();         
+        var minute = today.getMinutes();
+        var month = today.getMonth() + 1;
+        var year = today.getFullYear()
+        
+
+        let time1 = hour.toString().concat(':',+minute.toString())
+        let date1 = month.toString().concat('/',+year.toString())
+        let DateTime = time1.toString().concat(" ",date1.toString())
+     
+        
         const messagePayload = {
+            DateTime:DateTime,
             author: user.username,
             content: message,
             to: activeChatUser.username
             
         }
 
+
+
         updateMessages(messagePayload)
         setMessage('')
 
         if (socket) {
             socket.emit('sendMessage', messagePayload)
+            socket.on('messageSent', data =>{
+                setSendStatus(data)
+            })
         }
     }
 
     const [show, setShow] = useState(false)
     
-    // addGroupMember = () => {
-    //     setShow(true)
-    // }
+    
 
     return (
 
@@ -96,6 +146,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                 )
                             )
                         }
+                        
                     </div>
                     <div class="input-group message-box">
                         <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
@@ -126,15 +177,25 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
                                         
-                                            {message.content}
+                                        <pre>{message.content}</pre>
+                                            
                                         </div>
+                                        <div className="date">
+                                            <div style = {DateTimeStyle}>
+                                                {message.DateTime}
+                                            </div>
+                                            <p className='status'>{message.author?sendStatus:null}</p>
+                                        </div>
+                                        
                                     </div>
+                                    
                                 )
                             )
                         }
+                       
                     </div>
                     <div class="input-group message-box">
-                        <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+                        <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
                         <div class="input-group-append" onClick={sendMessage}>
                             <span class="input-group-text send-icon-container">
                                 <i class="fas fa-paper-plane"></i>
@@ -163,8 +224,8 @@ const Chat = ({ history }) => {
     const [hide, setHide] = useState(false)
 
     useEffect(() => {
-        //socket = io('http://localhost:6547')
-        socket = io('http://209.97.142.219:6547')
+        socket = io('http://localhost:6547')
+        //socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
