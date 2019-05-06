@@ -231,15 +231,15 @@ const Chat = ({ history }) => {
     const [show, setShow] = useState(true)
 
     useEffect(() => {
-       // socket = io('http://localhost:6547')
-        socket = io('http://209.97.142.219:6547')
+       socket = io('http://localhost:6547')
+        //socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-       // axios.get('http://localhost:4000/Getgroup')
-        axios.get('http://209.97.142.219/Getgroup')
+        axios.get('http://localhost:4000/Getgroup')
+       // axios.get('http://209.97.142.219/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -271,16 +271,16 @@ const Chat = ({ history }) => {
     
 
 let saveGroupName= ()=>{
-    //axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
-    axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    //axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
         console.log(res);
         console.log(res);
         console.log("sucess")
-       // axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
-        axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
-        //axios.get('http://localhost:4000/Getgroup')
-        axios.get('http://209.97.142.219:4000/Getgroup')
+        axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
+        //axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.get('http://localhost:4000/Getgroup')
+        //axios.get('http://209.97.142.219:4000/Getgroup')
        // axios.get('http://209.97.142.219:4000/Deletegroup')
         .then(response => {
          setGroups(response.data)
@@ -356,14 +356,13 @@ let saveGroupName= ()=>{
         history.push('/')
     }
    
-    let sucess = () => {
-        setShow(false)
-    }
+   
     
     return (
         
-        <div className="chat-container full-height container-fluid" onLoad={sucess} >
+        <div className="chat-container full-height container-fluid"  >
         <Sucess/>
+       
         
         <modal></modal>
             <div className="row full-height">
