@@ -281,6 +281,7 @@ let saveGroupName= ()=>{
         axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
         //axios.get('http://localhost:4000/Getgroup')
         axios.get('http://209.97.142.219:4000/Getgroup')
+        axios.get('http://209.97.142.219:4000/Deletegroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)
