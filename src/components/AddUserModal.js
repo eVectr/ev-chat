@@ -1,10 +1,18 @@
-import React, { Component } from 'react'
+import React, { useState, Component } from 'react'
 
 import Select from 'react-select'
 import '../styles/groupbutton.css'
 
 
-///console.log(props.user)
+
+
+    const AddUserModal = (props) => {
+
+
+let admin = props.user
+let users = []
+
+
 const options = [
     { value: 'Love', label: 'Love' },
     { value: 'Ajay', label: 'Ajay' },
@@ -12,14 +20,23 @@ const options = [
     { value: 'Kripal', label: 'Kripal' },
     { value: 'Joshua', label: 'Joshua' },
   ]
+
+  for(let i = 0; i< options.length; i++){
+      if(options[i].value != admin){
+          users.push(options[i])
+      }else{
+        continue
+      }
+  }
   
-    const AddUserModal = (props) => (
-    
-    <div className = "adduser">
-     <Select  options={options} isMulti/>
-     </div>
+        return (
+            <div className = "adduser">
+                <Select  options={users} isMulti/>
+               
+            </div>
+        )
    
-  )
+    }
 
   export default AddUserModal
  

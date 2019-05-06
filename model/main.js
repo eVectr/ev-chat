@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
  app.use(bodyParser.json())
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient()
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient()
 client.on('connect', ()=>{})
 
 
@@ -20,14 +20,17 @@ app.use((req, res, next)=>{
 })
 
 //////////========== CREATE GROUP /////////////////////////
-app.post('/Creategroup', (req, res, next) =>{
 
+app.post('/Creategroup', (req, res, next) =>{
+  var today = new Date()
+  var second = today.getSeconds();
   let groupname = req.body.groupname
   let admin = req.body.admin 
 
   const payload ={
     groupname:groupname,
-    user:admin
+    groupId: second * Math.floor(Math.random() * 10),
+    admin:admin
   }
   client.lrange("grouplist", 0, -1,
     (err,data) =>{
@@ -66,51 +69,90 @@ app.get('/Getgroup', (req, res, next) =>{
       }
     })
 })
-///////////////////////////// Add group to user //////////////
+///////////////////////////// Check user //////////////
+
+
+let checkuser= (array, user) =>
+{
+    let len = array.length;
+    for(let i = 0; i< len ; i++)
+    {
+      if(array[i]== user){return true}
+    }
+    return false
+}
 
 //==============  ADD USER TO GROUP ==================================///////
-app.get('/adduser', (req, res, next) =>{
-  let groupname = "group1"
-  let user = ["user1", "user1", "user1"]
+app.post('/adduser', (req, res, next) =>{
+  let groupname = req.body.groupname
+  let users = req.body.users
   let maxuser = 5
 
-  const payload = {
-    groupname: groupname,
-    users:user
-}
-  client.lrange(groupname, 0, -1, (err, data) =>{
-    if(err){res.send(err)}
-    else{
-       client.rpush(groupname, JSON.stringify(payload))
-        res.send(data)
-        console.log("User added")
+client.lrange(groupname, 0, -1, (err, data) => {
+  if(err){res.send(err)}
+  else{
+
+        let userarray =[];
+        userarray = data;
+        console.log(users)
+        users.map((user)=>{
+          console.log(user)
+          let getuser =  checkuser(userarray , user)
+          if(getuser == false){
+            client.rpush(groupname, user)
+
+            res.send(data)
+          }else{
+            console.log("user already exist")
+            res.send(data)
           }
-  
+        })
+          
         }
-  )
+      }
+) 
+})
+//////// Get group user ////////////////////////////
+
+app.get('/getuser', (req, res, next) =>{
+ 
+client.lrange("Group1", 0, -1, (err, data) => {
+  if(err){res.send(err)}
+  else{
+            if(data.length == 0){
+              res.send("no users")
+              console.log("no users")
+            }else{
+              res.send(data)
+              console.log(data)
+            }
+    
+        }
+      }
+) 
 })
 
 ////////////////////// get group users ////////////////////
-app.get('/getuser', (req, res, next) =>{
+// app.get('/getuser', (req, res, next) =>{
  
- let groupname = "group1"
-  client.lrange(groupname, 0, -1, (err, data) =>{
-    if(err){res.send(err)}
-    else{
+//  let groupname = "group1"
+//   client.lrange(groupname, 0, -1, (err, data) =>{
+//     if(err){res.send(err)}
+//     else{
     
-      let groupusers = []
+//       let groupusers = []
             
-      for(let i = 0 ; i<data.length; i++){
-        groupusers.push(JSON.parse(data[i]))
-      }
-      res.send(groupusers)
-      console.log(groupusers)
+//       for(let i = 0 ; i<data.length; i++){
+//         groupusers.push(JSON.parse(data[i]))
+//       }
+//       res.send(groupusers)
+//       console.log(groupusers)
       
-      }
+//       }
   
-        }
-  )
-})
+//         }
+//   )
+// })
 
 
 
@@ -162,7 +204,7 @@ create_group(groupname, admin){
 
 //////// END ////////////////////////
 
-////////////////// ADD USER TO GROUP ///////////////\\\\\\\\\\\\\\\\\\\
+////////////// ADD USER TO GROUP ///////////////\\\\\\\\\\\\\\\\\\\
 // add_user(user){
 //   client.lrange("group1", 0, -1, (err, data) =>{
 //     if(err){res.send(err)}
@@ -180,14 +222,15 @@ create_group(groupname, admin){
           
 //         }
 //       }
-//   ) }
+//   ) 
+// }
 ////////// END ////////////////////////////////////////////////////////////////
 
 ///////////////// delete group ///////////////////////////////////////
 
 delete_group(group){
 
-  client.del("group",(err, data)=>{
+  client.del("Group1",(err, data)=>{
     if(err){
       console.log('err')
       res.send(err)

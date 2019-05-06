@@ -82,12 +82,14 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
         var today = new Date()
         var hour = today.getHours();         
         var minute = today.getMinutes();
+        var date = today.getDate();
+        console.log(date)
         var month = today.getMonth() + 1;
         var year = today.getFullYear()
         
 
         let time1 = hour.toString().concat(':',+minute.toString())
-        let date1 = month.toString().concat('/',+year.toString())
+        let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
         let DateTime = time1.toString().concat(" ",date1.toString())
      
         
@@ -114,7 +116,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
     const [show, setShow] = useState(false)
     
-    
+  
 
     return (
 
@@ -126,7 +128,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                 activeChatGroup.groupname ? 
                 <div class="show-chat" >
                      <div class="message-header">
-                        <h2>{activeChatGroup.groupname}</h2><span><GroupModal></GroupModal></span>
+                        <h2>{activeChatGroup.groupname}</h2><span><GroupModal user ={user.username}></GroupModal></span>
                         
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
@@ -224,15 +226,15 @@ const Chat = ({ history }) => {
     const [hide, setHide] = useState(false)
 
     useEffect(() => {
-      //  socket = io('http://localhost:6547')
-        socket = io('http://209.97.142.219:6547')
+        socket = io('http://localhost:6547')
+       // socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-       // axios.get('http://localhost:4000/Getgroup')
-        axios.get('http://209.97.142.219/Getgroup')
+        axios.get('http://localhost:4000/Getgroup')
+       // axios.get('http://209.97.142.219/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -264,14 +266,15 @@ const Chat = ({ history }) => {
 
 
 let saveGroupName= ()=>{
-    //axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
-    axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    //axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
         console.log(res);
         console.log(res);
         console.log("sucess")
-       // axios.get('http://localhost:4000/Getgroup')
-        axios.get('http://209.97.142.219:4000/Getgroup')
+        axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.get('http://localhost:4000/Getgroup')
+       // axios.get('http://209.97.142.219:4000/Getgroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)
@@ -310,10 +313,8 @@ let saveGroupName= ()=>{
    
     useEffect(() => {
         setLoading(true)
-
         activeChatUserGlobal = activeChatUser
         socket.on('receivedMessage', appendMessages)
-
         return () => {
             console.log(`socket.removeListener('receivedMessage', appendMessages)`)
             socket.removeListener('receivedMessage', appendMessages)
@@ -371,7 +372,7 @@ let saveGroupName= ()=>{
                                         key={index}
                                         onMouseUp={()=> setisGroup(true) }
                                         onClick={() => setActiveChatGroup(group)}
-                                        className={`list-group-item user ${activeChatGroup && activeChatGroup.groupname == group.groupname ? 'selected' : ''}`}
+                                        className={`list-group-item user ${activeChatGroup && activeChatGroup.groupId == group.groupId ? 'selected' : ''}`}
                                     >
                                         <i class="fas fa-users" style ={groupicon} ></i>
                                         <span className="username">{group.groupname}</span>

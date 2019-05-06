@@ -42,7 +42,7 @@ export class Example extends React.Component {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-             <GroupModal></GroupModal>
+             <GroupModal />
             </Modal.Body>
           </Modal>
         </>
