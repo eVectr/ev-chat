@@ -10,6 +10,8 @@ import AddUserModal from '../components/AddUserModal'
 
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users'
+import Sucess from '../components/FlashMessage'
+
 
 
 
@@ -121,6 +123,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     return (
 
        <div className="col-9 chat-window">
+       
             {
                 isGroup? <Fragment>
             {
@@ -210,6 +213,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
             }
 
        </div>
+       
    )
 }
 
@@ -224,6 +228,7 @@ const Chat = ({ history }) => {
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
     const [hide, setHide] = useState(false)
+    const [show, setShow] = useState(true)
 
     useEffect(() => {
         socket = io('http://localhost:6547')
@@ -263,7 +268,7 @@ const Chat = ({ history }) => {
         }
      }
 
-
+    
 
 let saveGroupName= ()=>{
     axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
@@ -349,10 +354,15 @@ let saveGroupName= ()=>{
         history.push('/')
     }
    
+    let sucess = () => {
+        setShow(false)
+    }
     
     return (
         
-        <div className="chat-container full-height container-fluid">
+        <div className="chat-container full-height container-fluid" onLoad={sucess} >
+        <Sucess/>
+        
         <modal></modal>
             <div className="row full-height">
                 

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { authenticateUser } from '../utils/auth'
 import loginValidation from '../utils/Validation'
+import is from 'is_js'
 import users from '../constants/users';
+import '../styles/login.css'
 
 
 
@@ -13,6 +15,9 @@ const Login = ({ history }) => {
     })
 
     const [errors, setErrors] = useState('')
+    
+    
+    
 
 
 
@@ -47,53 +52,61 @@ const Login = ({ history }) => {
     const onSubmit = () => {
 
         const [user, errorMsg] = authenticateUser(data)
+        const errors = loginValidation(data)
+        console.log(errors, 'Errors')
         console.log(errorMsg, 'errors')
         
-        if (errorMsg) {
-            
+        if (!is.empty(errors)) {
+            setErrors(errors)
+            return
+        } 
+        
+        if(errorMsg){
             setErrors({
                 credentialsError: [errorMsg]
             })
             return
-
         }
-
+        
+       
 
         if (user) {
             localStorage.setItem('user', JSON.stringify(user))
             history.push('/chat')
-        }
+        }  
 
         
- 
-
-        const errors =loginValidation(data)
-        {
-            setErrors(errors)
-           return
-       }
-
-
+       
         
        
     }
+
+    
+    
+
+  
     
     
     return (
+    
        
-        <div>
-            <h1>Login</h1>
-            <input name="username" type="text" placeholder="Username" value={data.username} onChange={handleChange} />
-            <p className='error-message-text'>{(errors.username && errors.username[0]) || ''}</p>
-            {/* <p className='error-message-text'>{(errors.credentialsError && errors.credentialsError[0]) || ''}</p> */}
-            <input name="password" type="password" placeholder='Password' value={data.password} onChange={handleChange} />
-            <p className='error-message-text'>{(errors.password && errors.password[0]) || ''}</p>
+        <div className="p2p-login">
+            <div className="login-form">
+                <div className="user-info">
+                <h4 className='form-title'>P2P Login Form</h4>
+                <input name="username" type="text" placeholder="Username" value={data.username} onChange={handleChange} />
+                <p className='error-message-text'>{(errors.username && errors.username[0]) || ''}</p> 
+                <input name="password" type="password" placeholder='Password' value={data.password} onChange={handleChange} />
+                <p className='error-message-text'>{(errors.password && errors.password[0]) || ''}</p>
 
-            <p className='error-message-text'>{(errors.credentialsError && errors.credentialsError[0]) || ''}</p>
-            
-            <button onClick={onSubmit} >Login</button>
-            
-
+                
+                
+                <button onClick={onSubmit} >Login</button>
+                <p className='error-message-text'>{(errors.credentialsError && errors.credentialsError[0]) || ''}</p>
+                
+                </div> 
+            </div>
+         
         </div>
     )
 }
