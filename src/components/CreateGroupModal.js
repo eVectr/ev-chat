@@ -4,12 +4,14 @@ import { Button, Modal } from 'react-bootstrap'
 class CreateGroupModal extends Component {
 
   render() {
+
+    
     
     const { setGroupNames, groupname, saveGroupName, hide, handleClose, handleShow } = this.props
     console.log(groupname, 'groupname')
     return (
       <Fragment>
-        <Button variant="primary ml-3 mb-3" onClick={handleClose} hide={hide}>
+        <Button className='create-btn' variant="primary ml-3 mb-3" onClick={handleClose} hide={hide}>
           Create Group
         </Button>
         <Modal show={hide} onHide={handleClose}>

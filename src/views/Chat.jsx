@@ -46,7 +46,6 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     let DateTimeStyle = {
         color:"green",
         fontSize:'.7rem',
-        marginLeft:'8px'
     }
 
 
@@ -92,7 +91,8 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
         let time1 = hour.toString().concat(':',+minute.toString())
         let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
-        let DateTime = time1.toString().concat(" ",date1.toString())
+       // let DateTime = time1.toString().concat(" ",date1.toString())
+        let DateTime = date1.toString().concat(' ', time1.toString())
      
         
         const messagePayload = {
@@ -182,9 +182,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
                                         
-                                        <pre>{message.content}</pre>
-                                            
-                                        </div>
+                                        <pre className="m-0">{message.content}
                                         <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
@@ -199,7 +197,9 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                                  :null }</p>
                                            
                                         </div>
-                                        
+                                        </pre>
+                                            
+                                        </div>                                        
                                     </div>
                                     
                                 )
@@ -430,6 +430,7 @@ let saveGroupName= ()=>{
                         isGroup ={isGroup}
                         isLoading={isLoading}
                         groups ={groups}
+                        
                         messages={activeChatMessages}
                         activeChatUser={activeChatUser}
                         activeChatGroup = {activeChatGroup}
