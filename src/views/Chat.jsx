@@ -188,8 +188,16 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                         <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
+                                                
                                             </div>
-                                            <p className='status'>{user.username == message.author ?sendStatus:null}</p>
+                                            <p className='status'>{ user.username == message.author ? 
+                                                
+                                                <Fragment>
+                                                     { sendStatus ? <i class="fa fa-check" aria-hidden="true"></i>: null }
+                                                </Fragment>
+                                                
+                                                 :null }</p>
+                                           
                                         </div>
                                         
                                     </div>
@@ -238,8 +246,8 @@ const Chat = ({ history }) => {
  
 
     useEffect(() => {
-        //axios.get('http://localhost:4000/Getgroup')
-       axios.get('http://209.97.142.219:4000/Getgroup')
+        axios.get('http://localhost:4000/Getgroup')
+     //  axios.get('http://209.97.142.219:4000/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -274,12 +282,10 @@ let saveGroupName= ()=>{
    // axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
     axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-        console.log(res);
-        console.log(res);
-        console.log("sucess")
+       
        // axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
-        //axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
-      //  axios.get('http://localhost:4000/Getgroup')
+        axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
+        //axios.get('http://localhost:4000/Getgroup')
         axios.get('http://209.97.142.219:4000/Getgroup')
        // axios.get('http://209.97.142.219:4000/Deletegroup')
         .then(response => {
