@@ -238,15 +238,15 @@ const Chat = ({ history }) => {
     const [groupSelected, setGroupSelected] = useState()
 
     useEffect(() => {
-       // socket = io('http://localhost:6547')
-       socket = io('http://209.97.142.219:6547')
+        socket = io('http://localhost:6547')
+      // socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-       // axios.get('http://localhost:5000/Getgroup')
-        axios.get('http://209.97.142.219:5000/Getgroup')
+        axios.get('http://localhost:5000/Getgroup')
+       // axios.get('http://209.97.142.219:5000/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -290,14 +290,14 @@ const Chat = ({ history }) => {
     
 
 let saveGroupName= ()=>{
-    // axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, admin:user.username })
-     axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
+    axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, admin:user.username })
+    // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-      //axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
-       // axios.get('http://localhost:5000/Getgroup')
-        axios.get('http://209.97.142.219:5000/Getgroup')
-        axios.get('http://209.97.142.219:5000/Deletegroup')
+      axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+      //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.get('http://localhost:5000/Getgroup')
+       // axios.get('http://209.97.142.219:5000/Getgroup')
+        //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)

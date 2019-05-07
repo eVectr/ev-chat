@@ -27,10 +27,13 @@ export class GroupModal extends Component {
       }
     
       handleShow() {
-        this.setState({ show: true });
+        this.setState({
+          show: true
+        });
+        
       }
 
-
+    
 
     render(){
     
@@ -38,11 +41,15 @@ export class GroupModal extends Component {
       const { admin, user } = this.props
         return(
             <>
+           
+
             <Button variant="primary ml-3 mb-3" onClick={this.handleShow}>
             <i class="fas fa-user-plus"></i>
             </Button>
 
-            <Modal show={this.state.show} onHide={this.handleClose}>
+
+         
+           <Modal show={this.state.show} onHide={this.handleClose}>
            <Modal.Header closeButton>
                 <Modal.Title>Add Users</Modal.Title>
             </Modal.Header>
@@ -57,7 +64,13 @@ export class GroupModal extends Component {
                 Save
                 </Button>
             </Modal.Footer>
-            </Modal>
+            </Modal> 
+      
+          
+           
+
+
+
       </>
         )
     }

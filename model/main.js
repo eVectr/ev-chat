@@ -7,7 +7,7 @@ const redis = require('redis');
  var app = express()
 
 // app.use(bodyParser.json())
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
 let client = redis.createClient()
 //client.on('connect', ()=>{})
 
@@ -106,8 +106,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
             console.log("user already exist")
             res.send(data)
           }
-        })
-          
+        })  
         }
       }
 ) 
