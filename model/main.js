@@ -29,19 +29,19 @@ app.post('/Creategroup', (req, res, next) =>{
 
   const payload ={
     groupname:groupname,
-    groupId: second * Math.floor(Math.random() * 10),
+    groupId: second * Math.floor(Math.random() * 100000000000000000),
     admin:admin
   }
-  client.lrange("grouplist", 0, -1,
+  client.lrange("grouplist1", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
       else{
         //  console.log("Admin ==> ", data[0])
             
-            client.rpush("grouplist",JSON.stringify(payload))
+            client.rpush("grouplist1",JSON.stringify(payload))
             res.send("group created")
-            console.log(data)
+           
           
          //res.send(data)
       }
@@ -51,7 +51,7 @@ app.post('/Creategroup', (req, res, next) =>{
 
 app.get('/Getgroup', (req, res, next) =>{
 
-  client.lrange("grouplist", 0, -1,
+  client.lrange("grouplist1", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
@@ -160,7 +160,7 @@ client.lrange("Group1", 0, -1, (err, data) => {
 
 app.get('/Deletegroup', (req, res, next) =>{
 
-  client.del("grouplist",(err, data)=>{
+  client.del("grouplist1",(err, data)=>{
     if(err){
       console.log(err)
     }else{
@@ -230,7 +230,7 @@ create_group(groupname, admin){
 
 delete_group(group){
 
-  client.del("Group1",(err, data)=>{
+  client.del("grouplist1",(err, data)=>{
     if(err){
       console.log('err')
       res.send(err)
@@ -245,8 +245,8 @@ delete_group(group){
   //--------- CREATE CONVERSATION ID -----------------------/////
  set_conv_id(author , to ) {
 
-    if (author) {
-      let conversation_id =  author.concat('@'+to);
+    if (author && to) {
+    let conversation_id =  author.concat('@'+to);
     let participates = author.concat(','+to);
 
     let participates1 = participates.split(',')
@@ -271,11 +271,13 @@ delete_group(group){
              console.log("second data[1]==>",data[1])
              if(data[1] == conversation_id2 ){
                console.log("conversation_id already exist")
+               console.log("conversation_ID ==>", data[1])
 
 
              }else{
                client.rpush("conversation"+participates,participates,conversation_id )
                console.log("conversation_id created")
+               console.log("conversation_ID ==>", data[1])
 
         }  }  })
 

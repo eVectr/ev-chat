@@ -91,7 +91,8 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
         let time1 = hour.toString().concat(':',+minute.toString())
         let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
-        let DateTime = time1.toString().concat(" ",date1.toString())
+       // let DateTime = time1.toString().concat(" ",date1.toString())
+        let DateTime = date1.toString().concat(' ', time1.toString())
      
         
         const messagePayload = {
@@ -185,16 +186,16 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                         <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
+                                                
                                             </div>
-                                            
-                                            <p className='status'>{ user.username == message.author ?
-
+                                            <p className='status'>{ user.username == message.author ? 
+                                                
                                                 <Fragment>
-                                                    { sendStatus ? <i class="fa fa-check" aria-hidden="true"></i>: null }
+                                                     { sendStatus ? <i class="fa fa-check" aria-hidden="true"></i>: null }
                                                 </Fragment>
-
-                                                :null }
-                                            </p>
+                                                
+                                                 :null }</p>
+                                           
                                         </div>
                                         </pre>
                                             
@@ -246,7 +247,7 @@ const Chat = ({ history }) => {
 
     useEffect(() => {
         axios.get('http://localhost:4000/Getgroup')
-       //axios.get('http://209.97.142.219:4000/Getgroup')
+     //  axios.get('http://209.97.142.219:4000/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -281,13 +282,11 @@ let saveGroupName= ()=>{
     axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
    // axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-        console.log(res);
-        console.log(res);
-        console.log("sucess")
+       
         axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
-        //axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
+       // axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
         axios.get('http://localhost:4000/Getgroup')
-       // axios.get('http://209.97.142.219:4000/Getgroup')
+        //axios.get('http://209.97.142.219:4000/Getgroup')
        // axios.get('http://209.97.142.219:4000/Deletegroup')
         .then(response => {
          setGroups(response.data)
