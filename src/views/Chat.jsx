@@ -1,4 +1,7 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react'
+import React, { useState, useEffect, Fragment, useRef,  } from 'react'
+
+import { connect } from 'react-redux'
+import { Alert } from 'reactstrap'
 
 import io from 'socket.io-client'
 import axios from "axios"
@@ -11,8 +14,6 @@ import AddUserModal from '../components/AddUserModal'
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users'
 import Sucess from '../components/FlashMessage'
-
-
 
 
 let socket = null
@@ -225,7 +226,8 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
    )
 }
 
-const Chat = ({ history }) => {
+const Chat = (props ) => {
+
 
     const [groups, setGroups] = useState([])
     const [groupname, setGroupName] = useState()
@@ -236,7 +238,8 @@ const Chat = ({ history }) => {
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
     const [hide, setHide] = useState(false)
-    const [show, setShow] = useState(true)
+    const [checklogin, setCheckLogin] = useState(true)
+
 
     useEffect(() => {
        socket = io('http://localhost:6547')
@@ -258,7 +261,7 @@ const Chat = ({ history }) => {
     
     let user = getUser()
 
-    let groupicon ={
+    let groupicon = {
         fontSize:'22px',
         marginRight:'10px'
       }
@@ -311,18 +314,11 @@ let saveGroupName= ()=>{
         setGroupName(e.target.value)
         
     }
-    
-    
-
 
     useEffect(() => {
        if (user && user.username) return
-       history.push('/')
+       props.history.push('/')
     },[])
-       
-    
-
-   
    
     useEffect(() => {
         setLoading(true)
@@ -334,8 +330,6 @@ let saveGroupName= ()=>{
         }
      }, [activeChatUser.username])
   
-
-
     useEffect(() => {
 
         if (activeChatUser) {
@@ -352,6 +346,12 @@ let saveGroupName= ()=>{
         }
     }, [activeChatUser.username])
 
+
+
+    useEffect(() => {
+            setTimeout(function(){ setCheckLogin(false) }, 1000);
+    }, [])
+
    
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
     const activeUserName = activeChatUser && activeChatUser.username || ''
@@ -359,18 +359,16 @@ let saveGroupName= ()=>{
 
     let userLogOut = () => {
         localStorage.clear()
-        history.push('/')
+        props.history.push('/')
     }
-   
-   
+
     
+
     return (
         
         <div className="chat-container full-height container-fluid"  >
-        <Sucess/>
-       
-        
-        <modal></modal>
+            { props.auth.loginSucess && checklogin ? <Alert color="primary login-msg">{props.auth.loginSucess}</Alert> : null }
+            <modal></modal>
             <div className="row full-height">
                 
                 <aside className="users-list col-3">
@@ -401,9 +399,6 @@ let saveGroupName= ()=>{
                         }
                     </ul>
                    
-            
-            
-                
                     <ul className="list-group">
                         {
                             filteredUser.map(
@@ -444,4 +439,5 @@ let saveGroupName= ()=>{
     )
 
 }
-export default Chat
+
+export default connect(state => state)(Chat)
