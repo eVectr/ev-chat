@@ -91,7 +91,6 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
         let time1 = hour.toString().concat(':',+minute.toString())
         let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
-       // let DateTime = time1.toString().concat(" ",date1.toString())
         let DateTime = date1.toString().concat(' ', time1.toString())
      
         
@@ -239,15 +238,15 @@ const Chat = ({ history }) => {
     const [show, setShow] = useState(true)
 
     useEffect(() => {
-        // socket = io('http://localhost:6547')
+       // socket = io('http://localhost:6547')
        socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-     //   axios.get('http://localhost:4000/Getgroup')
-        axios.get('http://209.97.142.219:4000/Getgroup')
+      //   axios.get('http://localhost:5000/Getgroup')
+        axios.get('http://209.97.142.219:5000/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -279,15 +278,15 @@ const Chat = ({ history }) => {
     
 
 let saveGroupName= ()=>{
-  // axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
-    axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    // axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, admin:user.username })
+     axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
        
-       // axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
-       // axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
-        //axios.get('http://localhost:4000/Getgroup')
-        axios.get('http://209.97.142.219:4000/Getgroup')
-        //axios.get('http://209.97.142.219:4000/Deletegroup')
+    //    axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+       // axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+       // axios.get('http://localhost:5000/Getgroup')
+        axios.get('http://209.97.142.219:5000/Getgroup')
+        //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)

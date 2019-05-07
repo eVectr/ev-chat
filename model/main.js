@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
  app.use(bodyParser.json())
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient()
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient()
 client.on('connect', ()=>{})
 
 
@@ -401,4 +401,4 @@ delete_conversation_id(participates){
 
 } //////////////////// CLASS END /////////////////////////////////////
 
-app.listen(4000)
+app.listen(5000)
