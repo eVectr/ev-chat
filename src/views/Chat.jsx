@@ -14,6 +14,7 @@ import AddUserModal from '../components/AddUserModal'
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users'
 import Sucess from '../components/FlashMessage'
+import GroupMemberModal from '../components/GroupMemberModal';
 
 
 let socket = null
@@ -119,6 +120,13 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     
   
 
+    let getMembers= ()=>{
+        console.log("check ==>", activeChatGroup.groupname)
+        axios.post(`http://localhost:5000/getuser`, activeChatGroup.groupname)
+        .then(response =>{console.log("active group==>",response)})
+   }
+   
+
     return (
 
        <div className="col-9 chat-window">
@@ -130,8 +138,13 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                 activeChatGroup.groupname ? 
                 <div class="show-chat" >
                      <div class="message-header">
-                        <h2>{activeChatGroup.groupname}</h2><span><GroupModal user ={user.username}></GroupModal></span>
-                        
+                        <div>
+                            <h2>{activeChatGroup.groupname}</h2>
+                            {/* <button className='group-member'>Group Member</button> */}
+                            <GroupMemberModal getMembers={getMembers}/>
+                        </div>  
+                        <span><GroupModal user ={user.username}></GroupModal></span>
+                      
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
                         {isLoading ? <Loader /> : null }
@@ -193,7 +206,8 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                                                      { sendStatus ? <i class="fa fa-check" aria-hidden="true"></i>: null }
                                                 </Fragment>
                                                 
-                                                 :null }</p>
+                                                :null }
+                                            </p>
                                            
                                         </div>
                                         </pre>
@@ -277,16 +291,16 @@ const Chat = (props ) => {
                  return updatedMessages
              })
         }
-     }
+    }
 
-     let handleChatMouseUp = () =>{
+    let handleChatMouseUp = () =>{
          setisGroup(false) 
          setUserSelected(true)
          setGroupSelected(false)
         
-     }
+    }
 
-     let handleGroupChatMouseUp = () =>{
+    let handleGroupChatMouseUp = () =>{
         setisGroup(true) 
         setUserSelected(false)
         setGroupSelected(true)
@@ -297,9 +311,9 @@ let saveGroupName= ()=>{
     axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, admin:user.username })
     // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-      axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+    axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
       //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
-        axios.get('http://localhost:5000/Getgroup')
+    axios.get('http://localhost:5000/Getgroup')
        // axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
@@ -402,10 +416,7 @@ let saveGroupName= ()=>{
                                     >
                                         <i class="fas fa-users" style ={groupicon} ></i>
                                         <span className="username">{group.groupname}</span>
-                                        
-                                        
                                     </li>
-                                    
                             )
                         }
                     </ul>

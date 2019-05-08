@@ -40,7 +40,7 @@ export class GroupModal extends Component {
       
       const { admin, user } = this.props
         return(
-            <>
+          <>
            
 
             <Button variant="primary ml-3 mb-3" onClick={this.handleShow}>
@@ -51,7 +51,9 @@ export class GroupModal extends Component {
          
            <Modal show={this.state.show} onHide={this.handleClose}>
            <Modal.Header closeButton>
+
                 <Modal.Title>Add Users</Modal.Title>
+                
             </Modal.Header>
             <Modal.Body>
                 <AddUserModal user ={user}></AddUserModal>
@@ -65,13 +67,7 @@ export class GroupModal extends Component {
                 </Button>
             </Modal.Footer>
             </Modal> 
-      
-          
-           
-
-
-
-      </>
+          </>
         )
     }
 }

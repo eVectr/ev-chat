@@ -6,7 +6,7 @@ const redis = require('redis');
  const router = express.Router()
  var app = express()
 
-// app.use(bodyParser.json())
+ app.use(bodyParser.json())
 //let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
 let client = redis.createClient()
 //client.on('connect', ()=>{})
@@ -113,9 +113,10 @@ client.lrange(groupname, 0, -1, (err, data) => {
 })
 //////// Get group user ////////////////////////////
 
-app.get('/getuser', (req, res, next) =>{
+app.post('/getuser', (req, res, next) =>{
  
-client.lrange("Group1", 0, -1, (err, data) => {
+let groupname = req.body.groupname
+client.lrange(groupname, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
             if(data.length == 0){

@@ -18,7 +18,6 @@ export const authenticateGroup = data => {
         existingGroup =>
             existingGroup.groupName == data.groupName
     )
-
     return group
 }
 
@@ -28,7 +27,6 @@ export const getUser = () => {
     if (user) {
         return JSON.parse(user)
     }
-
     return {}
 }
 
