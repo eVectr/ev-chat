@@ -85,14 +85,12 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
         var hour = today.getHours();         
         var minute = today.getMinutes();
         var date = today.getDate();
-        console.log(date)
         var month = today.getMonth() + 1;
         var year = today.getFullYear()
         
 
         let time1 = hour.toString().concat(':',+minute.toString())
         let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
-       // let DateTime = time1.toString().concat(" ",date1.toString())
         let DateTime = date1.toString().concat(' ', time1.toString())
      
         
@@ -240,17 +238,19 @@ const Chat = (props ) => {
     const [hide, setHide] = useState(false)
     const [checklogin, setCheckLogin] = useState(true)
 
+    const [userSelected, setUserSelected] = useState()
+    const [groupSelected, setGroupSelected] = useState()
 
     useEffect(() => {
-       socket = io('http://localhost:6547')
-       // socket = io('http://209.97.142.219:6547')
+        socket = io('http://localhost:6547')
+      // socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-        axios.get('http://localhost:4000/Getgroup')
-     //  axios.get('http://209.97.142.219:4000/Getgroup')
+        axios.get('http://localhost:5000/Getgroup')
+       // axios.get('http://209.97.142.219:5000/Getgroup')
         .then(response => {
          setGroups(response.data)
          console.log("API Dta",response)
@@ -279,18 +279,29 @@ const Chat = (props ) => {
         }
      }
 
+     let handleChatMouseUp = () =>{
+         setisGroup(false) 
+         setUserSelected(true)
+         setGroupSelected(false)
+        
+     }
+
+     let handleGroupChatMouseUp = () =>{
+        setisGroup(true) 
+        setUserSelected(false)
+        setGroupSelected(true)
+    }
     
 
 let saveGroupName= ()=>{
-    axios.post(`http://localhost:4000/Creategroup`, { groupname:groupname, admin:user.username })
-   // axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname:groupname, admin:user.username })
+    axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, admin:user.username })
+    // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-       
-        axios.post(`http://localhost:4000/adduser`, { groupname:groupname, users:[user.username] })
-       // axios.post(`http://209.97.142.219:4000/adduser`, { groupname:groupname, users:[user.username] })
-        axios.get('http://localhost:4000/Getgroup')
-        //axios.get('http://209.97.142.219:4000/Getgroup')
-       // axios.get('http://209.97.142.219:4000/Deletegroup')
+      axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+      //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.get('http://localhost:5000/Getgroup')
+       // axios.get('http://209.97.142.219:5000/Getgroup')
+        //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)
@@ -385,9 +396,9 @@ let saveGroupName= ()=>{
                                
                                     <li className= 'list-group-item user'
                                         key={index}
-                                        onMouseUp={()=> setisGroup(true) }
+                                       onMouseUp={handleGroupChatMouseUp}
                                         onClick={() => setActiveChatGroup(group)}
-                                        className={`list-group-item user ${activeChatGroup && activeChatGroup.groupId == group.groupId ? 'selected' : ''}`}
+                                        className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupId == group.groupId) && groupSelected ? 'selected' : ''}`}
                                     >
                                         <i class="fas fa-users" style ={groupicon} ></i>
                                         <span className="username">{group.groupname}</span>
@@ -398,7 +409,7 @@ let saveGroupName= ()=>{
                             )
                         }
                     </ul>
-                   
+                
                     <ul className="list-group">
                         {
                             filteredUser.map(
@@ -406,15 +417,17 @@ let saveGroupName= ()=>{
                                
                                     <li
                                         key={index}
-                                        onMouseUp={()=> setisGroup(false) }
-                                        onClick={() => setActiveChatUser(user)}
-                                        className={`list-group-item user ${activeChatUser && activeChatUser.username == user.username ? 'selected' : ''}`}
+                                        onMouseUp={handleChatMouseUp}
+                                        onClick={() => setActiveChatUser(user) }
+                                        className={`list-group-item user ${
+                                        (activeChatUser && activeChatUser.username == user.username) && userSelected ? 'selected' : ''
+
+                                        }`}
                                     >
                                         <i class="fas fa-user-circle user-profile-photo"></i>
                                         <span className="username">{user.username}</span>
                                         
-                                    </li>
-                                    
+                                    </li>       
                             )
                         }
                     </ul>
