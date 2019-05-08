@@ -26,6 +26,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     const [message, setMessage] = useState('')
     const [sendStatus, setSendStatus] = useState('')
     const [status, setStatus] = useState('')
+    const [members, setMembers] = useState([])
 
     useEffect(() => {
         scrollToBottom();
@@ -116,10 +117,18 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
         }
     }
 
-    const [show, setShow] = useState(false)
-    
+
+
+let saveMembers= ()=>{
+  
+    axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members })
+    .then(console.log("success"))
+     
+}
+
   
 
+<<<<<<< HEAD
     let getMembers= ()=>{
         console.log("check ==>", activeChatGroup.groupname)
         axios.post(`http://localhost:5000/getuser`, activeChatGroup.groupname)
@@ -127,6 +136,20 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
    }
    
 
+=======
+
+   
+
+    let handleChange = data => {
+        let array =[]
+        data.map((member)=>{
+            array.push(member.value)
+        })
+        setMembers(array)
+    }
+    console.log(members,'members')
+    
+>>>>>>> dev
     return (
 
        <div className="col-9 chat-window">
@@ -138,6 +161,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                 activeChatGroup.groupname ? 
                 <div class="show-chat" >
                      <div class="message-header">
+<<<<<<< HEAD
                         <div>
                             <h2>{activeChatGroup.groupname}</h2>
                             {/* <button className='group-member'>Group Member</button> */}
@@ -145,6 +169,10 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                         </div>  
                         <span><GroupModal user ={user.username}></GroupModal></span>
                       
+=======
+                        <h2>{activeChatGroup.groupname}</h2><span><GroupModal saveMembers={saveMembers} user ={user.username} handleChange={handleChange}></GroupModal></span>
+                        
+>>>>>>> dev
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
                         {isLoading ? <Loader /> : null }
@@ -244,32 +272,45 @@ const Chat = (props ) => {
     const [groups, setGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
+    const [groupInfo, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(true)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
     const [hide, setHide] = useState(false)
+<<<<<<< HEAD
     const [checklogin, setCheckLogin] = useState(true)
 
     const [userSelected, setUserSelected] = useState()
     const [groupSelected, setGroupSelected] = useState()
+=======
+    const [userSelected, setUserSelected] = useState()
+    const [groupSelected, setGroupSelected] = useState()
+    const [checklogin, setCheckLogin] = useState(true)
+
+>>>>>>> dev
 
     useEffect(() => {
-        socket = io('http://localhost:6547')
-      // socket = io('http://209.97.142.219:6547')
+            socket = io('http://localhost:6547')
+          //socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-        axios.get('http://localhost:5000/Getgroup')
-       // axios.get('http://209.97.142.219:5000/Getgroup')
-        .then(response => {
-         setGroups(response.data)
-         console.log("API Dta",response)
-          console.log("API groups",response.data)
+         axios.get('http://localhost:5000/Getgroup')
+            //axios.get('http://209.97.142.219:5000/Getgroup')
+            .then(response => {
+                setGroups(response.data)
+                console.log("API groups",response.data)
          })
+         axios.get('http://localhost:5000/getuser')
+            .then(response =>{
+                console.log("response members", response.data)
+                setGroupMember(response.data)
+         })
+    
     },[])
     
     
@@ -308,13 +349,20 @@ const Chat = (props ) => {
     
 
 let saveGroupName= ()=>{
-    axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, admin:user.username })
-    // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
+      axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
+     // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
+<<<<<<< HEAD
     axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
       //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
     axios.get('http://localhost:5000/Getgroup')
        // axios.get('http://209.97.142.219:5000/Getgroup')
+=======
+        axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+       //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.get('http://localhost:5000/Getgroup')
+        //axios.get('http://209.97.142.219:5000/Getgroup')
+>>>>>>> dev
         //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
@@ -389,6 +437,7 @@ let saveGroupName= ()=>{
 
     
 
+
     return (
         
         <div className="chat-container full-height container-fluid"  >
@@ -403,6 +452,8 @@ let saveGroupName= ()=>{
                     </div>
                 <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow}/>
             
+              
+
                 <ul className="list-group">
                         {
                             groups.map(
@@ -421,6 +472,10 @@ let saveGroupName= ()=>{
                         }
                     </ul>
                 
+<<<<<<< HEAD
+=======
+                   
+>>>>>>> dev
                     <ul className="list-group">
                         {
                             filteredUser.map(

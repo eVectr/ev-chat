@@ -21,6 +21,16 @@ const users = [
     },
     {
         user_id: 5,
+        username: 'Manoj',
+        password: 'manoj@123'
+    },
+    {
+        user_id: 5,
+        username: 'Rajat',
+        password: 'rajat@123'
+    },
+    {
+        user_id: 5,
         username: 'Joshua',
         password: 'joshua@123'
     }

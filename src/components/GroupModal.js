@@ -33,12 +33,10 @@ export class GroupModal extends Component {
         
       }
 
-    
-
     render(){
     
       
-      const { admin, user } = this.props
+      const { saveMembers, user, handleChange } = this.props
         return(
           <>
            
@@ -55,14 +53,17 @@ export class GroupModal extends Component {
                 <Modal.Title>Add Users</Modal.Title>
                 
             </Modal.Header>
-            <Modal.Body>
-                <AddUserModal user ={user}></AddUserModal>
+
+
+             <Modal.Body>
+                <AddUserModal user ={user} handleChange={handleChange}></AddUserModal>
              </Modal.Body>
+
             <Modal.Footer>
                 <Button variant="secondary" onClick={this.handleClose}>
                 Close
                 </Button>
-                <Button variant="primary" onClick={this.handleClose} >
+                <Button variant="primary" onClick={saveMembers} >
                 Save
                 </Button>
             </Modal.Footer>

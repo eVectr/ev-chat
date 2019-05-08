@@ -1,11 +1,21 @@
+<<<<<<< HEAD
 import React, { useState, useEffect} from 'react'
+=======
+import React, { useState } from 'react'
+>>>>>>> dev
 
 import Select from 'react-select'
+import { options } from '../constants'
 import '../styles/groupbutton.css'
 
 
 
+const AddUserModal = (props) => {
+    return (
+        <div className="adduser">
+            <Select options={options} isMulti onChange={data => props.handleChange(data)} />
 
+<<<<<<< HEAD
 const AddUserModal = (props) => {
 
 const [user, setUser] = useState([])   
@@ -42,3 +52,11 @@ const options = [
 
   export default AddUserModal
  
+=======
+        </div>
+    )
+
+}
+
+export default AddUserModal
+>>>>>>> dev
