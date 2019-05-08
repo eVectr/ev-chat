@@ -25,6 +25,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     const [message, setMessage] = useState('')
     const [sendStatus, setSendStatus] = useState('')
     const [status, setStatus] = useState('')
+    const [members, setMembers] = useState([])
 
     useEffect(() => {
         scrollToBottom();
@@ -115,10 +116,29 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
         }
     }
 
-    const [show, setShow] = useState(false)
-    
+
+
+let saveMembers= ()=>{
+  
+    axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members })
+    .then(console.log("success"))
+     
+}
+
   
 
+
+   
+
+    let handleChange = data => {
+        let array =[]
+        data.map((member)=>{
+            array.push(member.value)
+        })
+        setMembers(array)
+    }
+    console.log(members,'members')
+    
     return (
 
        <div className="col-9 chat-window">
@@ -130,7 +150,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
                 activeChatGroup.groupname ? 
                 <div class="show-chat" >
                      <div class="message-header">
-                        <h2>{activeChatGroup.groupname}</h2><span><GroupModal user ={user.username}></GroupModal></span>
+                        <h2>{activeChatGroup.groupname}</h2><span><GroupModal saveMembers={saveMembers} user ={user.username} handleChange={handleChange}></GroupModal></span>
                         
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
@@ -230,6 +250,7 @@ const Chat = (props ) => {
     const [groups, setGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
+    const [groupInfo, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(true)
@@ -242,19 +263,25 @@ const Chat = (props ) => {
 
 
     useEffect(() => {
-         //socket = io('http://localhost:6547')
-          socket = io('http://209.97.142.219:6547')
+            socket = io('http://localhost:6547')
+          //socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-        //axios.get('http://localhost:5000/Getgroup')
-         axios.get('http://209.97.142.219:5000/Getgroup')
-        .then(response => {
-         setGroups(response.data)
-         console.log("API groups",response.data)
+         axios.get('http://localhost:5000/Getgroup')
+            //axios.get('http://209.97.142.219:5000/Getgroup')
+            .then(response => {
+                setGroups(response.data)
+                console.log("API groups",response.data)
          })
+         axios.get('http://localhost:5000/getuser')
+            .then(response =>{
+                console.log("response members", response.data)
+                setGroupMember(response.data)
+         })
+    
     },[])
     
     
@@ -293,14 +320,14 @@ const Chat = (props ) => {
     
 
 let saveGroupName= ()=>{
-   // axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
-      axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
+      axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
+     // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-      //axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
-       axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
-        //axios.get('http://localhost:5000/Getgroup')
-        axios.get('http://209.97.142.219:5000/Getgroup')
-      //  axios.get('http://209.97.142.219:5000/Deletegroup')
+        axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+       //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.get('http://localhost:5000/Getgroup')
+        //axios.get('http://209.97.142.219:5000/Getgroup')
+        //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
           console.log("API groups",response.data)
@@ -374,6 +401,7 @@ let saveGroupName= ()=>{
 
     
 
+
     return (
         
         <div className="chat-container full-height container-fluid"  >
@@ -388,6 +416,8 @@ let saveGroupName= ()=>{
                     </div>
                 <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow}/>
             
+              
+
                 <ul className="list-group">
                         {
                             groups.map(

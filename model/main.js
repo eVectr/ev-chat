@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
 
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient()
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient()
 //client.on('connect', ()=>{})
 app.use(bodyParser.json());
 
@@ -91,28 +91,38 @@ app.post('/adduser', (req, res, next) =>{
 client.lrange(groupname, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
-        let userarray =[];
-        userarray = data;
       
-        users.map((user)=>{
-          let getuser =  checkuser(userarray , user)
-          if(getuser == false){
-              client.rpush(groupname, user)
-              res.send(data)
-          }else{
-              console.log("user already exist")
-              res.send(data)
-          }
-        })  
-       }
+        if(data.length > maxuser){
+          res.send("Max user limit reached")
+          console.log("max user limit reached")
+          
+        }
+        else{
+          let userarray =[];
+          userarray = data;
+        
+          users.map((user)=>{
+            let getuser =  checkuser(userarray , user)
+            if(getuser == false){
+                client.rpush(groupname, user)
+                console.log(data)
+              }else{
+                res.send("user already exist")
+                console.log("user already exist")
+            }
+          }) 
+          res.send(data)
+        }
       }
-    ) 
-  })
+    }
+  ) 
+})
 //////// Get group user ////////////////////////////
 
-app.get('/getuser', (req, res, next) =>{
+app.post('/getuser', (req, res, next) =>{
+let groupname = req.body.groupname
  
-client.lrange("Group1", 0, -1, (err, data) => {
+client.lrange(groupname, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
             if(data.length == 0){
@@ -168,6 +178,20 @@ let item = req.body.item
   })
 })
 
+
+// app.post('/removeuser', (req, res, next) =>{
+
+//   let item = req.body.item
+//     client.del(item,(err, data)=>{
+//       if(err){
+//         console.log(err)
+//       }else{
+//         console.log("group deleted")
+//         res.send("deleted")
+  
+//       }
+//     })
+//   })
 ///////////////////////////
 
 module.exports = class Conversation {
