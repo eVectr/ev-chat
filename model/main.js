@@ -6,11 +6,11 @@ const redis = require('redis');
  const router = express.Router()
  var app = express()
 
-// app.use(bodyParser.json())
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient()
-//client.on('connect', ()=>{})
 
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient()
+//client.on('connect', ()=>{})
+app.use(bodyParser.json());
 
 app.use((req, res, next)=>{
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,12 +25,12 @@ app.post('/Creategroup', (req, res, next) =>{
   var today = new Date()
   var second = today.getSeconds();
   let groupname = req.body.groupname
-  let admin = req.body.admin 
+  let user = req.body.user 
 
   const payload ={
     groupname:groupname,
     groupId: second * Math.floor(Math.random() * 100000000000000000),
-    admin:admin
+    user:user
   }
   client.lrange("grouplist1", 0, -1,
     (err,data) =>{
@@ -91,26 +91,23 @@ app.post('/adduser', (req, res, next) =>{
 client.lrange(groupname, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
-
         let userarray =[];
         userarray = data;
-        console.log(users)
+      
         users.map((user)=>{
-          console.log(user)
           let getuser =  checkuser(userarray , user)
           if(getuser == false){
-            client.rpush(groupname, user)
-
-            res.send(data)
+              client.rpush(groupname, user)
+              res.send(data)
           }else{
-            console.log("user already exist")
-            res.send(data)
+              console.log("user already exist")
+              res.send(data)
           }
         })  
-        }
+       }
       }
-) 
-})
+    ) 
+  })
 //////// Get group user ////////////////////////////
 
 app.get('/getuser', (req, res, next) =>{
@@ -157,9 +154,10 @@ client.lrange("Group1", 0, -1, (err, data) => {
 
 // /////////////////////////////
 
-app.get('/Deletegroup', (req, res, next) =>{
+app.post('/Deletegroup', (req, res, next) =>{
 
-  client.del("grouplist1",(err, data)=>{
+let item = req.body.item
+  client.del(item,(err, data)=>{
     if(err){
       console.log(err)
     }else{

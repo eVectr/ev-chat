@@ -19,6 +19,8 @@ const options = [
     { value: 'Trivedi', label: 'Trivedi' },
     { value: 'Kripal', label: 'Kripal' },
     { value: 'Joshua', label: 'Joshua' },
+    { value: 'Manoj', label: 'Manoj' },
+    { value: 'Rajat', label: 'Rajat' },
   ]
 
   for(let i = 0; i< options.length; i++){
