@@ -18,6 +18,7 @@ import Sucess from '../components/FlashMessage'
 
 let socket = null
 let activeChatUserGlobal = {}
+let activeChatGroupGlobal = {}
 
 const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages }) => {
 
@@ -52,27 +53,25 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
 
    let  handleEnterShiftPress = (e) => {
-       console.log(e.key)
        if (e.key === 'Enter' && e.shiftKey) {
-       // if (e.key === ' ') {
-            // console.log('handleEnterShiftPress')
-            // e.preventDefault();
-            // addNewLineToTextArea();
         } else if (e.key === 'Enter') {
             sendMessage()
             e.preventDefault();
          }
-          else {
-            
-         }
-       
+          else { 
+         } 
     }
 
-    // let handleEnterPress= (e)=> {
-    //     if (e.key === 'Enter') {
-    //         sendMessage()
-    //     }
-    //   }
+    let  handleGroupEnterShiftPress = (e) => {
+        if (e.key === 'Enter' && e.shiftKey) {
+         } else if (e.key === 'Enter') {
+             sendGroupMessage()
+             e.preventDefault();
+          }
+           else { 
+          } 
+     }
+
    
     const scrollToBottom = () => {
         document.getElementById('last-msg') && document.getElementById('last-msg').scrollIntoView();
@@ -89,7 +88,6 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
         var month = today.getMonth() + 1;
         var year = today.getFullYear()
         
-
         let time1 = hour.toString().concat(':',+minute.toString())
         let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
         let DateTime = date1.toString().concat(' ', time1.toString())
@@ -103,13 +101,43 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
             
         }
 
-
-
         updateMessages(messagePayload)
         setMessage('')
 
         if (socket) {
             socket.emit('sendMessage', messagePayload)
+            socket.on('messageSent', data =>{
+                setSendStatus(data)
+            })
+        }
+    }
+
+    const sendGroupMessage = () => {
+      
+        if (!message.trim().length) return
+        var today = new Date()
+        var hour = today.getHours();         
+        var minute = today.getMinutes();
+        var date = today.getDate();
+        var month = today.getMonth() + 1;
+        var year = today.getFullYear()
+        
+        let time1 = hour.toString().concat(':',+minute.toString())
+        let date1 = date.toString().concat('/',month.toString().concat('/',+year.toString()))
+        let DateTime = date1.toString().concat(' ', time1.toString())
+     
+        const messagePayload = {
+            DateTime:DateTime,
+            author: user.username,
+            content: message,
+            to: activeChatGroup.groupname    
+        }
+
+        updateMessages(messagePayload)
+        setMessage('')
+
+        if (socket) {
+            socket.emit('sendGroupMessage', messagePayload)
             socket.on('messageSent', data =>{
                 setSendStatus(data)
             })
@@ -124,11 +152,6 @@ let saveMembers= ()=>{
     .then(console.log("success"))
      
 }
-
-  
-
-
-   
 
     let handleChange = data => {
         let array =[]
@@ -173,13 +196,14 @@ let saveMembers= ()=>{
                         
                     </div>
                     <div class="input-group message-box">
-                        <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-                      
+                        <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleGroupEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+                        <div class="input-group-append" onClick={sendGroupMessage}>
                             <span class="input-group-text send-icon-container">
                                 <i class="fas fa-paper-plane"></i>
                             </span>
                         </div>
                     </div>
+                </div>
                : null
             }
 
@@ -260,6 +284,7 @@ const Chat = (props ) => {
     const [userSelected, setUserSelected] = useState()
     const [groupSelected, setGroupSelected] = useState()
     const [checklogin, setCheckLogin] = useState(true)
+    let groupArray = []
 
 
     useEffect(() => {
@@ -303,6 +328,15 @@ const Chat = (props ) => {
         }
      }
 
+     let appendGroupMessages = (data) => {
+        if (data.author == activeChatGroupGlobal.groupname || data.author == user.username) {
+             setMessages(prevMessages => {
+                 const updatedMessages = prevMessages.concat(data)
+                 return updatedMessages
+             })
+        }
+     }
+
      let handleChatMouseUp = () =>{
          setisGroup(false) 
          setUserSelected(true)
@@ -325,7 +359,7 @@ let saveGroupName= ()=>{
      // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
         axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+      //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
         axios.get('http://localhost:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
@@ -358,6 +392,7 @@ let saveGroupName= ()=>{
        props.history.push('/')
     },[])
    
+
     useEffect(() => {
         setLoading(true)
         activeChatUserGlobal = activeChatUser
@@ -367,22 +402,40 @@ let saveGroupName= ()=>{
             socket.removeListener('receivedMessage', appendMessages)
         }
      }, [activeChatUser.username])
+
+
+     useEffect(() => {
+        setLoading(true)
+        activeChatGroupGlobal = activeChatGroup
+        socket.on('receivedGroupMessage', appendGroupMessages)
+        return () => {
+            socket.removeListener('receivedGroupMessage', appendGroupMessages)
+        }
+     }, [activeChatGroup.groupname])
+
   
     useEffect(() => {
-
-        if (activeChatUser) {
+        if (activeChatUser && activeChatUser.username) {
             socket.emit('join', {author:user.username, to: activeChatUser.username })
-
             socket.on('message', conversation =>{
                 const {  data =  {} } = conversation
                 setLoading(false)
-                console.log("data =>", data)
-                setMessages(data)
-                
+                setMessages(data)  
            })
-         
         }
     }, [activeChatUser.username])
+
+
+    useEffect(() => {
+        if (activeChatGroup && activeChatGroup.groupname) {
+            socket.emit('groupjoin', {author:user.username, to: activeChatGroup.groupname })
+            socket.on('groupmessage', conversation =>{
+                setMessages(conversation) 
+                setLoading(false) 
+                console.log("activeChatGroup messages =>", messages)
+           })
+        }
+    }, [activeChatGroup.groupname])
 
 
 
@@ -402,30 +455,30 @@ let saveGroupName= ()=>{
         props.history.push('/')
     }
 
- 
-    let test = ['Lov', 'Aja']
-    let check;
 
-let checkmember = () => {
+
 
     groups.map((group)=>{
+        
+       let groupname = group.groupname
        
-        axios.post('http://localhost:5000/getuser', {group})
+        axios.post('http://localhost:5000/getuser', groupname)
         .then(response =>{
-            
             response.data.map((member)=>{
             if(member == user.username){
-               return true
+              groupArray.push(group)
+              console.log("member ==>",member)
+              console.log("user.username ==>",user.username)
+              console.log("groupArray ==>",groupArray)
             }else{
-                return false
+            
+                console.log("groupArray ==>",groupArray)
             }
         })
     })
         
 })
-}
-    
-    console.log("group members ==>",groupMembers)
+
 
     return (
         
@@ -445,14 +498,17 @@ let checkmember = () => {
 
                 <ul className="list-group">
                         {
-                            groups.map(
+                           groups.map(
                                 (group, index) =>
-                                
+                                    
                                     
                                     <li className= 'list-group-item user'
                                         key={index}
                                        onMouseUp={handleGroupChatMouseUp}
-                                        onClick={() => setActiveChatGroup(group)}
+                                        onClick={() => {
+                                            setActiveChatGroup(group)
+                                            setActiveChatUser({})
+                                        }}
                                         className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupId == group.groupId) && groupSelected ? 'selected' : ''}`}
                                     >
                                       <i class="fas fa-users" style ={groupicon} ></i>
@@ -476,7 +532,10 @@ let checkmember = () => {
                                     <li
                                         key={index}
                                         onMouseUp={handleChatMouseUp}
-                                        onClick={() => setActiveChatUser(user) }
+                                        onClick={() => {
+                                            setActiveChatUser(user)
+                                            setActiveChatGroup({})
+                                        }}
                                         className={`list-group-item user ${
                                         (activeChatUser && activeChatUser.username == user.username) && userSelected ? 'selected' : ''
 
@@ -497,10 +556,9 @@ let checkmember = () => {
                         isGroup ={isGroup}
                         isLoading={isLoading}
                         groups ={groups}
-                        
                         messages={activeChatMessages}
                         activeChatUser={activeChatUser}
-                        activeChatGroup = {activeChatGroup}
+                        activeChatGroup={activeChatGroup}
                         updateMessages={
                            message => appendMessages( message)
                         }

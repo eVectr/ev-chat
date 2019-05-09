@@ -52,11 +52,16 @@ io.on('connection', socket => {
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
        .then(conv=> {conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)})
-
         const user = findUser(data.to)
-
-
         if (user) socket.broadcast.to(user.socketId).emit('receivedMessage', data)
+
+    })
+
+    socket.on('sendGroupMessage', data => {
+        console.log(data)
+        socket.emit('messageSent', 'sent')
+        conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
+        socket.to(data.to).emit('receivedGroupMessage', data)
 
     })
 
@@ -67,6 +72,16 @@ io.on('connection', socket => {
                 if(message == ""){console.log("no message")}else{
                 socket.emit('message', message)}
         })})
+    })
+
+    socket.on('groupjoin', data => {
+       console.log("data.to =>",data.to)
+        conversation.get_group_message(data.to).then(groupmessage=>{
+                //console.log("groupmessage=>",groupmessage)
+                if(groupmessage == ""){console.log("no message")}else{
+                socket.emit('groupmessage', groupmessage)}
+       
+        })
     })
 
     socket.on('disconnect', () => {

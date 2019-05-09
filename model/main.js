@@ -111,7 +111,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
                 console.log("user already exist")
             }
           }) 
-          res.send(data)
+         res.send(data)
         }
       }
     }
@@ -375,6 +375,27 @@ save_message(author, to, conversation_id, content, DateTime){
   })
 } //////////// method end /////////////////////
 
+
+
+save_group_message(author, to, content, DateTime){
+
+  const data ={
+    author:author,
+    to:to,
+    content:content,
+    DateTime: DateTime
+  }
+  client.rpush("message"+to, JSON.stringify(data));
+  client.lrange(to , 0, -1,
+  (err,data) =>  {
+    if(err){
+        console.log(err)
+    }else{
+      console.log("message saved")
+  }
+})
+} 
+
 //>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 get_message(conversation_id){
 
@@ -390,12 +411,32 @@ get_message(conversation_id){
          for (i = 0; i< data.length; i++){
              messagedata.push(JSON.parse(data[i]))
          }
-         console.log(messagedata)
+  
          resolve({data:messagedata})
  }  
   })
 })
-  } ////////// method end ////////////////////////////
+} ////////// method end ////////////////////////////
+
+get_group_message(group){
+
+  return new Promise((resolve, reject)=>{
+  client.lrange("message"+group, 0, -1,
+  (err,data) =>{
+    if(err){
+        reject(err)
+    }else{ 
+        console.log("get group data =>",data)
+         let i =0;
+         let groupmessagedata = [];
+         for (i = 0; i< data.length; i++){
+             groupmessagedata.push(JSON.parse(data[i]))
+         }
+         resolve(groupmessagedata)
+ }  
+  })
+})
+}
 
   ///-----------------------DELETE -----------------////////////
 
