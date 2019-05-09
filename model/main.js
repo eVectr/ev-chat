@@ -6,11 +6,6 @@ const redis = require('redis');
  const router = express.Router()
  var app = express()
 
-<<<<<<< HEAD
- app.use(bodyParser.json())
-=======
-
->>>>>>> dev
 //let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
 let client = redis.createClient()
 //client.on('connect', ()=>{})
@@ -88,11 +83,11 @@ let checkuser= (array, user) =>
 
 //==============  ADD USER TO GROUP ==================================///////
 app.post('/adduser', (req, res, next) =>{
-  let groupname = req.body.groupname
+  let groupId = req.body.groupId
   let users = req.body.users
   let maxuser = 5
 
-client.lrange(groupname, 0, -1, (err, data) => {
+client.lrange(groupId, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
       
@@ -108,7 +103,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
           users.map((user)=>{
             let getuser =  checkuser(userarray , user)
             if(getuser == false){
-                client.rpush(groupname, user)
+                client.rpush(groupId, user)
                 console.log(data)
               }else{
                 res.send("user already exist")
@@ -124,13 +119,8 @@ client.lrange(groupname, 0, -1, (err, data) => {
 //////// Get group user ////////////////////////////
 
 app.post('/getuser', (req, res, next) =>{
-<<<<<<< HEAD
  
 let groupname = req.body.groupname
-=======
-let groupname = req.body.groupname
- 
->>>>>>> dev
 client.lrange(groupname, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
