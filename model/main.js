@@ -84,7 +84,7 @@ let checkuser= (array, user) =>
 
 //==============  ADD USER TO GROUP ==================================///////
 app.post('/adduser', (req, res, next) =>{
-  let groupname = req.body.groupname
+  let groupname = req.body.groupId
   let users = req.body.users
   let maxuser = 5
 
@@ -127,6 +127,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
   else{
             if(data.length == 0){
               res.send("no users")
+              console.log(groupname)
               console.log("no users")
             }else{
               res.send(data)
