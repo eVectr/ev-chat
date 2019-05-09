@@ -267,7 +267,7 @@ const Chat = (props ) => {
     const [groups, setGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
-    const [groupInfo, setGroupMember] = useState()
+    const [groupMembers, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(true)
@@ -304,6 +304,8 @@ const Chat = (props ) => {
     },[])
     
     
+
+    
     let user = getUser()
 
     let groupicon = {
@@ -335,7 +337,10 @@ const Chat = (props ) => {
         setisGroup(true) 
         setUserSelected(false)
         setGroupSelected(true)
+    
     }
+
+  
     
 
 let saveGroupName= ()=>{
@@ -347,7 +352,7 @@ let saveGroupName= ()=>{
     axios.get('http://localhost:5000/Getgroup')
        // axios.get('http://209.97.142.219:5000/Getgroup')
         axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
-       //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
         axios.get('http://localhost:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
@@ -413,6 +418,8 @@ let saveGroupName= ()=>{
     }, [])
 
    
+
+   
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages
@@ -422,8 +429,30 @@ let saveGroupName= ()=>{
         props.history.push('/')
     }
 
-    
+ 
+    let test = ['Lov', 'Aja']
+    let check;
 
+let checkmember = () => {
+
+    groups.map((group)=>{
+       
+        axios.post('http://localhost:5000/getuser', {group})
+        .then(response =>{
+            
+            response.data.map((member)=>{
+            if(member == user.username){
+               return true
+            }else{
+                return false
+            }
+        })
+    })
+        
+})
+}
+    
+    console.log("group members ==>",groupMembers)
 
     return (
         
@@ -445,16 +474,22 @@ let saveGroupName= ()=>{
                         {
                             groups.map(
                                 (group, index) =>
-                               
+                                
+                                    
                                     <li className= 'list-group-item user'
                                         key={index}
                                        onMouseUp={handleGroupChatMouseUp}
                                         onClick={() => setActiveChatGroup(group)}
                                         className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupId == group.groupId) && groupSelected ? 'selected' : ''}`}
                                     >
-                                        <i class="fas fa-users" style ={groupicon} ></i>
-                                        <span className="username">{group.groupname}</span>
+                                      <i class="fas fa-users" style ={groupicon} ></i>
+                                        <span className="username">{group.groupname}</span> 
+                                    
                                     </li>
+                                   
+                                  
+                                
+                                
                             )
                         }
                     </ul>
@@ -477,7 +512,8 @@ let saveGroupName= ()=>{
                                         <i class="fas fa-user-circle user-profile-photo"></i>
                                         <span className="username">{user.username}</span>
                                         
-                                    </li>       
+                                    </li>  
+                                   
                             )
                         }
                     </ul>

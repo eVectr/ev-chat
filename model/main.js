@@ -83,11 +83,11 @@ let checkuser= (array, user) =>
 
 //==============  ADD USER TO GROUP ==================================///////
 app.post('/adduser', (req, res, next) =>{
-  let groupId = req.body.groupId
+  let groupname = req.body.groupname
   let users = req.body.users
   let maxuser = 5
 
-client.lrange(groupId, 0, -1, (err, data) => {
+client.lrange(groupname, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
       
@@ -103,7 +103,7 @@ client.lrange(groupId, 0, -1, (err, data) => {
           users.map((user)=>{
             let getuser =  checkuser(userarray , user)
             if(getuser == false){
-                client.rpush(groupId, user)
+                client.rpush(groupname, user)
                 console.log(data)
               }else{
                 res.send("user already exist")
@@ -126,6 +126,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
   else{
             if(data.length == 0){
               res.send("no users")
+              console.log(groupname)
               console.log("no users")
             }else{
               res.send(data)
