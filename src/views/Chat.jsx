@@ -27,6 +27,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     const [sendStatus, setSendStatus] = useState('')
     const [status, setStatus] = useState('')
     const [members, setMembers] = useState([])
+    const [list, setList] = useState([])
 
     useEffect(() => {
         scrollToBottom();
@@ -128,13 +129,24 @@ let saveMembers= ()=>{
 
   
 
-    let getMembers= ()=>{
-        let group =  activeChatGroup.groupname
-        axios.post(`http://localhost:5000/getuser`, {group})
-        .then(response =>{console.log("active group member==>",response)})
+    let getMembers = ()=>{
+        let groupname =  activeChatGroup.groupname
+        axios.post(`http://localhost:5000/getuser`, {groupname})
+        .then(response =>{console.log("active group member==>",response)
+            let data = response.data
+            console.log(data, 'data')
+            setList(data)
+          
+    })
    }
+
    
 
+   let deleteMember = (user) => {
+    let groupname =  activeChatGroup.groupname
+    axios.post(`http://localhost:5000/removeuser`, {groupname, user})
+    .then(response => console.log(response))
+   }
 
    
 
@@ -145,7 +157,7 @@ let saveMembers= ()=>{
         })
         setMembers(array)
     }
-    console.log(members,'members')
+   
     
     return (
 
@@ -159,12 +171,8 @@ let saveMembers= ()=>{
                 <div class="show-chat" >
                      <div class="message-header">
                         <div>
-                        
-                        <h2>{activeChatGroup.groupname}</h2>
-                        
-                     
-                           
-                            <GroupMemberModal getMembers = {getMembers} />
+                             <h2>{activeChatGroup.groupname}</h2>
+                            <GroupMemberModal getMembers = {getMembers} list = {list} deleteMember={deleteMember} />
                         </div>  
                         <span><GroupModal saveMembers={saveMembers} user ={user.username} handleChange={handleChange}></GroupModal></span>
                            
@@ -190,7 +198,7 @@ let saveMembers= ()=>{
                     </div>
                     <div class="input-group message-box">
                         <textarea onChange={e => setMessage(e.target.value)} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-                      
+                        <div class="input-group-append" onClick={sendMessage}></div>
                             <span class="input-group-text send-icon-container">
                                 <i class="fas fa-paper-plane"></i>
                             </span>
@@ -347,12 +355,11 @@ let saveGroupName= ()=>{
       axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
      // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-    //axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
+        axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
       //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
-    axios.get('http://localhost:5000/Getgroup')
        // axios.get('http://209.97.142.219:5000/Getgroup')
         axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[user.username] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+        //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
         axios.get('http://localhost:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
@@ -430,7 +437,7 @@ let saveGroupName= ()=>{
     }
 
  
-    let test = ['Lov', 'Aja']
+    let test = ['Love', 'Ajay']
     let check;
 
 let checkmember = () => {

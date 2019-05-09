@@ -5,38 +5,13 @@ import axios from 'axios'
 import '../styles/groupmembermodal.css'
 
 
-const users = [
-        
-        {
-            name:'Nitin'        
-        },
-
-        {
-            name:'Prashant'        
-        },
-
-        {
-            name:'Shubham'        
-        },
-
-        {
-            name:'kripal'        
-        },
-
-        {
-            name:'shivam'        
-        }
-
-
-]
 
 class GroupMemberModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: false
+      modal: false,
     };
-
     this.toggle = this.toggle.bind(this);
   }
 
@@ -46,11 +21,19 @@ class GroupMemberModal extends React.Component {
     }));
   }
 
+  
+
+  // deleteItems = (user)=> {    
+  //  const removedItemUser = this.state.users.filter(item => item.name !== user.name)
+  //   this.setState({
+  //     users:removedItemUser
+  //   })
+
+  // }
 
 
   render() {  
-      
-    const{getMembers} = this.props
+    const{getMembers, list, deleteMember} = this.props
 
     return (
       <div>
@@ -61,19 +44,18 @@ class GroupMemberModal extends React.Component {
           <ModalBody>
                 <ul >
                     {
-                        users.map((user, index) => {
+                      list.map((user, index) => {
                             
 
                             return(
                                <div className="group-list">
-                                    <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{user.name}</li>
-                                    <span className='far fa-trash-alt'></span>
+                                    <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{user}</li>
+                                    <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>
                                </div> 
                             )
                             
                         })
                     }
-                    
                 </ul>  
           </ModalBody>
           <ModalFooter>
@@ -86,3 +68,5 @@ class GroupMemberModal extends React.Component {
 }
 
 export default GroupMemberModal;
+
+//onClick={ () => this.deleteItems(user)}

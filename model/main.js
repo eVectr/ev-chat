@@ -23,7 +23,7 @@ app.use((req, res, next)=>{
 app.post('/Creategroup', (req, res, next) =>{
   var today = new Date()
   var second = today.getSeconds();
-  let groupname = req.body.groupname
+  let groupname = req.body.groupId
   let user = req.body.user 
 
   const payload ={
@@ -179,20 +179,21 @@ let item = req.body.item
 })
 
 
-// app.post('/removeuser', (req, res, next) =>{
+app.post('/removeuser', (req, res, next) =>{
 
-//   let item = req.body.item
-//     client.del(item,(err, data)=>{
-//       if(err){
-//         console.log(err)
-//       }else{
-//         console.log("group deleted")
-//         res.send("deleted")
+  let user = req.body.user
+  let groupname = req.body.groupname
+    client.lrem(groupname, 0, user, (err, data)=>{
+      if(err){
+        console.log(err)
+      }else{
+        console.log("user deleted")
+        res.send("user deleted")
   
-//       }
-//     })
-//   })
-///////////////////////////
+      }
+    })
+  })
+/////////////////////////
 
 module.exports = class Conversation {
 
