@@ -119,7 +119,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
 })
 //////// Get group user ////////////////////////////
 
-app.get('/getuser', (req, res, next) =>{
+app.post('/getuser', (req, res, next) =>{
 let groupname = req.body.groupname
  
 client.lrange(groupname, 0, -1, (err, data) => {
@@ -131,7 +131,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
               console.log("no users")
             }else{
               res.send(data)
-              console.log(data)
+              //console.log(data)
             }
     
         }
@@ -180,19 +180,20 @@ let item = req.body.item
 })
 
 
-// app.post('/removeuser', (req, res, next) =>{
+app.post('/removeuser', (req, res, next) =>{
 
-//   let item = req.body.item
-//     client.del(item,(err, data)=>{
-//       if(err){
-//         console.log(err)
-//       }else{
-//         console.log("group deleted")
-//         res.send("deleted")
+
+  let item = req.body.item
+    client.del(item,(err, data)=>{
+      if(err){
+        console.log(err)
+      }else{
+        console.log("group deleted")
+        res.send("deleted")
   
-//       }
-//     })
-//   })
+      }
+    })
+  })
 ///////////////////////////
 
 module.exports = class Conversation {
@@ -426,7 +427,7 @@ get_group_message(group){
     if(err){
         reject(err)
     }else{ 
-        console.log("get group data =>",data)
+     
          let i =0;
          let groupmessagedata = [];
          for (i = 0; i< data.length; i++){
@@ -461,6 +462,27 @@ delete_conversation_id(participates){
     }
   })
 }
+
+
+getusers(groupname){
+  return new Promise((resolve, reject)=>{
+  client.lrange(groupname, 0, -1, (err, data) => {
+    if(err){return(err)}
+    else{
+              if(data.length == 0){
+                console.log(groupname)
+                console.log("no users")
+                resolve("no users")
+              }else{
+                console.log(data)
+                resolve(data)
+              }
+      
+          }
+        }
+  )}
+  ) 
+  }
 
 } //////////////////// CLASS END /////////////////////////////////////
 
