@@ -305,6 +305,7 @@ const Chat = (props ) => {
 
 
     const [groups, setGroups] = useState([])
+    const [filteredgroups, setFilteredGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
     const [groupMembers, setGroupMember] = useState()
@@ -317,7 +318,7 @@ const Chat = (props ) => {
     const [userSelected, setUserSelected] = useState()
     const [groupSelected, setGroupSelected] = useState()
     const [checklogin, setCheckLogin] = useState(true)
-    let groupArray = []
+   
 
 
     useEffect(() => {
@@ -362,6 +363,7 @@ const Chat = (props ) => {
      }
 
      let appendGroupMessages = (data) => {
+         console.log("Append data =>",data)
         if (data.author == activeChatGroupGlobal.groupname || data.author == user.username) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
@@ -443,8 +445,7 @@ let saveGroupName = () => {
 
 
      useEffect(() => {
-         
-          setLoading(true)
+        setLoading(false)
         activeChatGroupGlobal = activeChatGroup
         socket.on('receivedGroupMessage', appendGroupMessages)
         return () => {
@@ -481,10 +482,29 @@ let saveGroupName = () => {
     }, [activeChatGroup.groupname])
 
 
-
     useEffect(() => {
-            setTimeout(function(){ setCheckLogin(false) }, 1000);
+        setTimeout(function(){ setCheckLogin(false) }, 1000);
     }, [])
+
+    useEffect(() => { 
+            groups.map((group)=>{
+                let groupname = group.groupname
+                 axios.post('http://localhost:5000/getuser', {groupname:groupname}).then(res => {
+                     if(res.data.length){
+                         let check = res.data.includes(user.username)
+                         if(check){
+                             console.log(check)
+                             console.log("groupname =>",groupname)
+                             setFilteredGroups(prev => {
+                                 let updatedGroups = prev.concat(group)
+                                 return updatedGroups
+                            })
+                         }    
+                     }
+                 })
+            
+         })
+    },[groups.length])
 
    
 
@@ -498,32 +518,7 @@ let saveGroupName = () => {
         props.history.push('/')
     }
 
-
-
-
-    groups.map((group)=>{
-        
-       let groupname = group.groupname
-       
-        axios.post('http://localhost:5000/getuser', groupname)
-        .then(response =>{
-            response.data.map((member)=>{
-            if(member == user.username){
-              groupArray.push(group)
-              console.log("member ==>",member)
-              console.log("user.username ==>",user.username)
-              console.log("groupArray ==>",groupArray)
-            }else{
-            
-                console.log("groupArray ==>",groupArray)
-            }
-        })
-        
-    })
-        
-})
-
-
+   
     return (
         
         <div className="chat-container full-height container-fluid"  >
@@ -540,9 +535,9 @@ let saveGroupName = () => {
             
               
 
-                <ul className="list-group">
+                { <ul className="list-group">
                         {
-                           groups.map(
+                         filteredgroups.map(
                                 (group, index) =>
                                     
                                     
@@ -553,19 +548,15 @@ let saveGroupName = () => {
                                             setActiveChatGroup(group)
                                             setActiveChatUser({})
                                         }}
-                                        className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupId == group.groupId) && groupSelected ? 'selected' : ''}`}
+                                        className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupname == group.groupname) && groupSelected ? 'selected' : ''}`}
                                     >
                                       <i class="fas fa-users" style ={groupicon} ></i>
                                         <span className="username">{group.groupname}</span> 
                                     
-                                    </li>
-                                   
-                                  
-                                
-                                
+                                    </li>    
                             )
                         }
-                    </ul>
+                    </ul> }
                 
                    
                     <ul className="list-group">
