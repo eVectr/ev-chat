@@ -430,9 +430,10 @@ let saveGroupName= ()=>{
         if (activeChatGroup && activeChatGroup.groupname) {
             socket.emit('groupjoin', {author:user.username, to: activeChatGroup.groupname })
             socket.on('groupmessage', conversation =>{
-                setMessages(conversation) 
+                console.log("conversation ===>", conversation)
                 setLoading(false) 
-                console.log("activeChatGroup messages =>", messages)
+                setMessages(conversation) 
+                
            })
         }
     }, [activeChatGroup.groupname])

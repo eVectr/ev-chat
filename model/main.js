@@ -84,7 +84,7 @@ let checkuser= (array, user) =>
 
 //==============  ADD USER TO GROUP ==================================///////
 app.post('/adduser', (req, res, next) =>{
-  let groupname = req.body.groupId
+  let groupname = req.body.groupname
   let users = req.body.users
   let maxuser = 5
 
@@ -119,7 +119,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
 })
 //////// Get group user ////////////////////////////
 
-app.post('/getuser', (req, res, next) =>{
+app.get('/getuser', (req, res, next) =>{
 let groupname = req.body.groupname
  
 client.lrange(groupname, 0, -1, (err, data) => {
