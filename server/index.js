@@ -58,10 +58,10 @@ io.on('connection', socket => {
     })
 
     socket.on('sendGroupMessage', data => {
-        console.log(data)
         socket.emit('messageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
-        socket.to(data.to).emit('receivedGroupMessage', data)
+        const user = findUser(data.to)
+        if (user) socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
 
     })
 
