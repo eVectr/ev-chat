@@ -119,7 +119,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
 })
 //////// Get group user ////////////////////////////
 
-app.get('/getuser', (req, res, next) =>{
+app.post('/getuser', (req, res, next) =>{
 let groupname = req.body.groupname
  
 client.lrange(groupname, 0, -1, (err, data) => {
@@ -180,20 +180,20 @@ let item = req.body.item
 })
 
 
-// app.post('/removeuser', (req, res, next) =>{
-
-//   let item = req.body.item
-//     client.del(item,(err, data)=>{
-//       if(err){
-//         console.log(err)
-//       }else{
-//         console.log("group deleted")
-//         res.send("deleted")
+app.post('/removeuser', (req, res, next) =>{
+  let groupname = req.body.groupname
+  let user = req.body.user
+    client.lrem(groupname, 0, user, (err, data)=>{
+      if(err){
+        console.log(err)
+      }else{
+        console.log("group deleted")
+        res.send("deleted")
   
-//       }
-//     })
-//   })
-///////////////////////////
+      }
+    })
+  })
+/////////////////////////
 
 module.exports = class Conversation {
 
