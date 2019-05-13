@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient()
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient()
 //client.on('connect', ()=>{})
 app.use(bodyParser.json());
 
@@ -32,14 +32,14 @@ app.post('/Creategroup', (req, res, next) =>{
     groupId: second * Math.floor(Math.random() * 100000000000000000),
     user:user
   }
-  client.lrange("grouplist1", 0, -1,
+  client.lrange("grouplist", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
       else{
         //  console.log("Admin ==> ", data[0])
             
-            client.rpush("grouplist1",JSON.stringify(payload))
+            client.rpush("grouplist",JSON.stringify(payload))
             res.send("group created")
            
           
@@ -51,7 +51,7 @@ app.post('/Creategroup', (req, res, next) =>{
 
 app.get('/Getgroup', (req, res, next) =>{
 
-  client.lrange("grouplist1", 0, -1,
+  client.lrange("grouplist", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
@@ -86,24 +86,23 @@ let checkuser= (array, user) =>
 app.post('/adduser', (req, res, next) =>{
   let groupname = req.body.groupname
   let users = req.body.users
-  let maxuser = 5
-
-client.lrange(groupname, 0, -1, (err, data) => {
-  if(err){res.send(err)}
-  else{
-      
-        if(data.length > maxuser){
-          res.send("Max user limit reached")
+  let maxuser = req.body.maxuser
+  console.log("max user", maxuser)
+  client.lrange(groupname, 0, -1, (err, data) => {
+    if(err){res.send(err)}
+    else{
+        console.log(data.length)
+        if((data.length + users.length) > maxuser){
+          //res.send("Max user limit reached")
           console.log("max user limit reached")
-          
         }
         else{
           let userarray =[];
           userarray = data;
         
-          users.map((user)=>{
+           users.map((user)=>{
             let getuser =  checkuser(userarray , user)
-            if(getuser == false){
+             if(getuser == false){
                 client.rpush(groupname, user)
                 console.log(data)
               }else{
@@ -167,8 +166,8 @@ client.lrange(groupname, 0, -1, (err, data) => {
 
 app.get('/Deletegroup', (req, res, next) =>{
 
-
-  client.del("grouplist1",(err, data)=>{
+//let groupname = req.body.item
+  client.del("grouplist",(err, data)=>{
     if(err){
       console.log(err)
     }else{
@@ -181,10 +180,9 @@ app.get('/Deletegroup', (req, res, next) =>{
 
 
 app.post('/removeuser', (req, res, next) =>{
-
-
-  let item = req.body.item
-    client.del(item,(err, data)=>{
+  let groupname = req.body.groupname
+  let user = req.body.user
+    client.lrem(groupname, 0, user, (err, data)=>{
       if(err){
         console.log(err)
       }else{
@@ -194,7 +192,7 @@ app.post('/removeuser', (req, res, next) =>{
       }
     })
   })
-///////////////////////////
+/////////////////////////
 
 module.exports = class Conversation {
 
@@ -439,6 +437,8 @@ get_group_message(group){
 })
 }
 
+
+
   ///-----------------------DELETE -----------------////////////
 
 delete_message(conversation_id){
@@ -462,7 +462,6 @@ delete_conversation_id(participates){
     }
   })
 }
-
 
 getusers(groupname){
   return new Promise((resolve, reject)=>{
