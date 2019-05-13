@@ -307,6 +307,7 @@ const Chat = (props ) => {
     const [groups, setGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
+    const [filteredgroups, setFilteredGroups] = useState([])
     const [groupMembers, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
@@ -486,6 +487,33 @@ let saveGroupName = () => {
             setTimeout(function(){ setCheckLogin(false) }, 1000);
     }, [])
 
+
+    useEffect(() => {
+        groups.map((group)=>{
+            
+            let groupname = group.groupname
+            console.log("groupname ========>", groupname)
+             axios.post('http://localhost:5000/getuser', {groupname:groupname}).then(res => {
+                 console.log("res  ==",res.data[0])
+            
+                 if(res.data.length){
+                     let admin = user.username.concat(' ~ ', 'Admin')
+                     let member = user.username
+                     console.log("member ->", member)
+                    let check = res.data.includes(member) || res.data.includes(admin)
+                    console.log("check =>",check)
+                     if(check){
+                         setFilteredGroups(prev => {
+                             let updatedGroups = prev.concat(group)
+                             return updatedGroups
+                        })
+                     }
+                 }
+             })
+
+     })
+},[groups.length])
+
    
 
    
@@ -500,28 +528,8 @@ let saveGroupName = () => {
 
 
 
-
-//     groups.map((group)=>{
-        
-//        let groupname = group.groupname
-       
-//         axios.post('http://localhost:5000/getuser', groupname)
-//         .then(response =>{
-//             response.data.map((member)=>{
-//             if(member == user.username){
-//               groupArray.push(group)
-//               console.log("member ==>",member)
-//               console.log("user.username ==>",user.username)
-//               console.log("groupArray ==>",groupArray)
-//             }else{
-            
-//                 console.log("groupArray ==>",groupArray)
-//             }
-//         })
-        
-//     })
-        
-// })
+    console.log(" groups ==>",groups)
+    console.log("filtered groups ==>",filteredgroups)
 
 
     return (
@@ -542,7 +550,7 @@ let saveGroupName = () => {
 
                 <ul className="list-group">
                         {
-                           groups.map(
+                            filteredgroups.map(
                                 (group, index) =>
                                     
                                     
