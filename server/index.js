@@ -60,9 +60,19 @@ io.on('connection', socket => {
     socket.on('sendGroupMessage', data => {
         socket.emit('messageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
-        const user = findUser(data.to)
-        if (user) socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
-
+        let groupname = data.to
+        conversation.getusers(groupname)
+        .then(members => {
+            members.map((member)=>{
+                const user = findUser(member)
+                console.log("user ==>", user)
+                if (user) 
+                {
+                    socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
+                    console.log("sent")
+                }
+            })
+        })           
     })
 
     socket.on('join', data => {
