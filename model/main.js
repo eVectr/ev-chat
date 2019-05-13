@@ -32,14 +32,14 @@ app.post('/Creategroup', (req, res, next) =>{
     groupId: second * Math.floor(Math.random() * 100000000000000000),
     user:user
   }
-  client.lrange("grouplist1", 0, -1,
+  client.lrange("grouplist", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
       else{
         //  console.log("Admin ==> ", data[0])
             
-            client.rpush("grouplist1",JSON.stringify(payload))
+            client.rpush("grouplist",JSON.stringify(payload))
             res.send("group created")
            
           
@@ -51,7 +51,7 @@ app.post('/Creategroup', (req, res, next) =>{
 
 app.get('/Getgroup', (req, res, next) =>{
 
-  client.lrange("grouplist1", 0, -1,
+  client.lrange("grouplist", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
@@ -107,7 +107,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
                 client.rpush(groupname, user)
                 console.log(data)
               }else{
-                res.send("user already exist")
+                //res.send("user already exist")
                 console.log("user already exist")
             }
           }) 
@@ -165,10 +165,10 @@ client.lrange(groupname, 0, -1, (err, data) => {
 
 // /////////////////////////////
 
-app.post('/Deletegroup', (req, res, next) =>{
+app.get('/Deletegroup', (req, res, next) =>{
 
-let item = req.body.item
-  client.del(item,(err, data)=>{
+//let groupname = req.body.item
+  client.del("grouplist",(err, data)=>{
     if(err){
       console.log(err)
     }else{

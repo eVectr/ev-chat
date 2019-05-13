@@ -501,27 +501,27 @@ let saveGroupName = () => {
 
 
 
-    groups.map((group)=>{
+//     groups.map((group)=>{
         
-       let groupname = group.groupname
+//        let groupname = group.groupname
        
-        axios.post('http://localhost:5000/getuser', groupname)
-        .then(response =>{
-            response.data.map((member)=>{
-            if(member == user.username){
-              groupArray.push(group)
-              console.log("member ==>",member)
-              console.log("user.username ==>",user.username)
-              console.log("groupArray ==>",groupArray)
-            }else{
+//         axios.post('http://localhost:5000/getuser', groupname)
+//         .then(response =>{
+//             response.data.map((member)=>{
+//             if(member == user.username){
+//               groupArray.push(group)
+//               console.log("member ==>",member)
+//               console.log("user.username ==>",user.username)
+//               console.log("groupArray ==>",groupArray)
+//             }else{
             
-                console.log("groupArray ==>",groupArray)
-            }
-        })
+//                 console.log("groupArray ==>",groupArray)
+//             }
+//         })
         
-    })
+//     })
         
-})
+// })
 
 
     return (
