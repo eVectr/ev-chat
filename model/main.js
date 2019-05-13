@@ -464,6 +464,27 @@ delete_conversation_id(participates){
   })
 }
 
+getusers(groupname){
+  return new Promise((resolve, reject)=>{
+  client.lrange(groupname, 0, -1, (err, data) => {
+    if(err){return(err)}
+    else{
+              if(data.length == 0){
+                console.log(groupname)
+                console.log("no users")
+                resolve("no users")
+              }else{
+                console.log(data)
+                resolve(data)
+              }
+      
+          }
+        }
+  )}
+  ) 
+  }
+
+
 } //////////////////// CLASS END /////////////////////////////////////
 
 app.listen(5000)
