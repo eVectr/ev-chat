@@ -107,7 +107,7 @@ client.lrange(groupname, 0, -1, (err, data) => {
                 client.rpush(groupname, user)
                 console.log(data)
               }else{
-                res.send("user already exist")
+                //res.send("user already exist")
                 console.log("user already exist")
             }
           }) 
@@ -165,10 +165,10 @@ client.lrange(groupname, 0, -1, (err, data) => {
 
 // /////////////////////////////
 
-app.post('/Deletegroup', (req, res, next) =>{
+app.get('/Deletegroup', (req, res, next) =>{
 
-let item = req.body.item
-  client.del(item,(err, data)=>{
+
+  client.del("grouplist1",(err, data)=>{
     if(err){
       console.log(err)
     }else{
