@@ -86,24 +86,23 @@ let checkuser= (array, user) =>
 app.post('/adduser', (req, res, next) =>{
   let groupname = req.body.groupname
   let users = req.body.users
-  let maxuser = 5
-
-client.lrange(groupname, 0, -1, (err, data) => {
-  if(err){res.send(err)}
-  else{
-      
-        if(data.length > maxuser){
-          res.send("Max user limit reached")
+  let maxuser = req.body.maxuser
+  console.log("max user", maxuser)
+  client.lrange(groupname, 0, -1, (err, data) => {
+    if(err){res.send(err)}
+    else{
+        console.log(data.length)
+        if((data.length + users.length) > maxuser){
+          //res.send("Max user limit reached")
           console.log("max user limit reached")
-          
         }
         else{
           let userarray =[];
           userarray = data;
         
-          users.map((user)=>{
+           users.map((user)=>{
             let getuser =  checkuser(userarray , user)
-            if(getuser == false){
+             if(getuser == false){
                 client.rpush(groupname, user)
                 console.log(data)
               }else{

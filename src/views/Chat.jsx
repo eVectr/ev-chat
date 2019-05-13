@@ -30,7 +30,8 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     const [status, setStatus] = useState('')
     const [members, setMembers] = useState([])
     const [list, setList] = useState([])
-    // const [selectUser, setSelectUser] = useState('')
+    const [maxUser, setMaxUserLimit] = useState(5)
+
     useEffect(() => {
         scrollToBottom();
     }, [])
@@ -148,10 +149,14 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     }
 
 
+let setMaxUser = (e) => {
+        setMaxUserLimit(e.target.value)
+        
+}
 
 let saveMembers= ()=>{
   
-    axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members })
+    axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     .then(console.log("success"))
      
 }
@@ -189,6 +194,7 @@ let getMembers = ()=>{
         })
         setMembers(array)
     }
+
     
     return (
 
@@ -206,7 +212,7 @@ let getMembers = ()=>{
                             <h2>{activeChatGroup.groupname}</h2>
                             <GroupMemberModal getMembers = {getMembers} list = {list} deleteMember={deleteMember} />
                         </div>
-                        <span><GroupModal saveMembers={saveMembers} user ={user.username} handleChange={handleChange}></GroupModal></span>
+                        <span><GroupModal saveMembers={saveMembers} user ={user.username} handleChange={handleChange} setMaxUser = {setMaxUser}></GroupModal></span>
                         
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
@@ -318,7 +324,8 @@ const Chat = (props ) => {
     const [userSelected, setUserSelected] = useState()
     const [groupSelected, setGroupSelected] = useState()
     const [checklogin, setCheckLogin] = useState(true)
-    let groupArray = []
+    
+  
 
 
     useEffect(() => {
@@ -423,6 +430,7 @@ let saveGroupName = () => {
         setGroupName(e.target.value)
         
     }
+   
 
     useEffect(() => {
        if (user && user.username) return

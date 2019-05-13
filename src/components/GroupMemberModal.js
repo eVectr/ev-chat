@@ -40,7 +40,7 @@ class GroupMemberModal extends React.Component {
         <Button className= 'group-member' onClick={getMembers} onMouseUp={this.toggle}>View Group Members</Button>
         <Modal isOpen={this.state.modal} modalTransition={{ timeout: 700 }} backdropTransition={{ timeout: 1300 }}
           toggle={this.toggle} className={this.props.className}>
-           <ModalHeader toggle={this.toggle}>Group Name here</ModalHeader> 
+           <ModalHeader toggle={this.toggle}>Group Members</ModalHeader> 
           <ModalBody>
                 <ul >
                     {
@@ -59,7 +59,7 @@ class GroupMemberModal extends React.Component {
                 </ul>  
           </ModalBody>
           <ModalFooter>
-            <Button className='close-modal' color="secondary" onClick={this.toggle}>Cancel</Button>
+            <Button className='close-modal' color="secondary" onClick={this.toggle}>close</Button>
           </ModalFooter>
         </Modal>
       </div>

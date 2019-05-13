@@ -36,7 +36,7 @@ export class GroupModal extends Component {
     render(){
     
       
-      const { saveMembers, user, handleChange } = this.props
+      const { saveMembers, user, handleChange, setMaxUser} = this.props
         return(
             <>
            
@@ -52,6 +52,10 @@ export class GroupModal extends Component {
                 <Modal.Title>Add Users</Modal.Title>
             </Modal.Header>
 
+            <Modal.Body>
+               <label for="MaxMember">Enter Max Members: </label>
+                <input type ="Number"  name = "MaxMember"   onChange={setMaxUser} ></input>
+             </Modal.Body>
 
              <Modal.Body>
                 <AddUserModal user ={user} handleChange={handleChange}></AddUserModal>
@@ -66,11 +70,6 @@ export class GroupModal extends Component {
                 </Button>
             </Modal.Footer>
             </Modal> 
-      
-          
-           
-
-
 
       </>
         )
