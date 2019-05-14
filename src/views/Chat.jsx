@@ -161,6 +161,10 @@ let saveMembers= () => {
     let allMembers = options
     console.log(groupMembers, 'groupMembers')
     console.log(allMembers, 'AllMembers')
+    let checkExistingMember = allMembers.filter(member => {
+        groupMembers.map(item => member.value == item)
+    })
+    console.log(checkExistingMember,'checkExistingMember')
     axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     .then(console.log("success"))
@@ -512,8 +516,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupname = group.groupname
-           // return axios.post('http://localhost:5000/getuser', {groupname:groupname})
-            return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
+            return axios.post('http://localhost:5000/getuser', {groupname:groupname})
+          //  return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
            
         })
 
@@ -522,9 +526,9 @@ let saveGroupName = () => {
                 const validGroups = groups.filter(
                     (_, index) => {
                         if(values[index].data.length){
-                            let admin = user.username.concat(' ~ ', 'Admin')
+                            
                             let member = user.username
-                            return values[index].data.includes(member) || values[index].data.includes(admin)
+                            return values[index].data.includes(member)
                         }
                     }
                 )
@@ -565,9 +569,10 @@ let saveGroupName = () => {
                     </div>
                 <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow} />
             
-              
+                <div className="aside-item">
 
                 { <ul className="list-group">
+
                         {
                             filteredgroups.map(
                                 (group, index) =>
@@ -617,7 +622,7 @@ let saveGroupName = () => {
                         }
                     </ul>
                     
-                
+                    </div>
                 </aside>
                     <ChatWindow
                         isGroup ={isGroup}

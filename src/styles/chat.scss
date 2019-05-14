@@ -8,7 +8,11 @@
     background-color: #f0f4f8;
     padding-right: 0px;
     padding-left: 0px;
-   
+    height: 100%;
+    .aside-item{
+        height: calc(100% - 125px);
+        overflow-y: scroll;
+    }
 }
 
 .user-profile-photo {
@@ -159,3 +163,4 @@
     left:25%;
     width:75%;
 }
+
