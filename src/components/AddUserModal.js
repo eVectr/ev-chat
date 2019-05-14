@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Select from 'react-select'
 import { options } from '../constants'
 import '../styles/groupbutton.css'
+import '../styles/addusermodal.css'
 
 
 
@@ -11,6 +12,8 @@ const AddUserModal = (props) => {
 
     let admin = props.user
     let users = []
+
+    
 
     const options = [
         { value: 'Love', label: 'Love' },
@@ -23,11 +26,13 @@ const AddUserModal = (props) => {
       ]
     
       for(let i = 0; i< options.length; i++){
-          if(options[i].value != admin){
+        if(options[i].value != admin){
               users.push(options[i])
-          }else{
+        }
+        else{
             continue
           }
+        
       }
 
     return (

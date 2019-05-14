@@ -1,0 +1,64 @@
+.user-icon{
+    background-color: #00827c;
+    border: 1px solid #00827c;
+}
+
+.user-icon:hover{
+    outline:0;
+    border: 1px solid #00827c;
+    background-color: #00827c;
+}
+
+.members{
+    display: flex;
+    flex-direction: column;
+}
+
+.members label{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+}
+
+.members input {
+    border:1px solid #00827c;
+    border-radius:4px;
+    padding: 5px 15px;
+}
+
+
+
+.members input:focus {
+    border:1px solid #00827c;
+    outline:0;
+}
+
+
+
+.save-btn{
+    padding: 5px 15px;
+    background-color: #00B5AD;
+    border: 1px solid #00b5ad;
+    color:#fff;
+}
+
+.save-btn:hover{
+    background-color: #00827c;
+    outline: 0;
+}
+
+
+.close-btn{
+    padding: 5px 15px;
+
+    background-color:transparent;
+    border: 1px solid rgba(0, 0, 0, 0.27);
+    color:#545b62;
+}
+
+.close-btn:focus{
+    background-color: #545b62;
+    color:#fff;
+}

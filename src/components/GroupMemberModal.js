@@ -21,20 +21,14 @@ class GroupMemberModal extends React.Component {
     }));
   }
 
+
   
-
-  // deleteItems = (user)=> {    
-  //  const removedItemUser = this.state.users.filter(item => item.name !== user.name)
-  //   this.setState({
-  //     users:removedItemUser
-  //   })
-
-  // }
 
 
   render() {  
-    const{getMembers, list, deleteMember} = this.props
 
+    const{getMembers, list, user, deleteMember} = this.props
+   
     return (
       <div>
         <Button className= 'group-member' onClick={getMembers} onMouseUp={this.toggle}>View Group Members</Button>
@@ -45,12 +39,19 @@ class GroupMemberModal extends React.Component {
                 <ul >
                     {
                       list.map((user, index) => {
-                            
-
+                        
+                          let showAdmin = user
+                          if (!index) {
+                            showAdmin = `${showAdmin} ~admin`
+                          }
+                          let check =true
+                          if (!index) {
+                            check = false
+                          }
                             return(
                                <div className="group-list">
-                                    <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{user}</li>
-                                    <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>
+                                    <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
+                            {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>: '' }
                                </div> 
                             )
                             
