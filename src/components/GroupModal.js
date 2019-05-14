@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import {Button,Modal} from 'react-bootstrap'
 import groups from '../constants/groups';
 
@@ -38,14 +38,16 @@ export class GroupModal extends Component {
     render(){
     
       
-      const { saveMembers, user, handleChange, setMaxUser} = this.props
+      const { saveMembers, user, list,  handleChange, setMaxUser} = this.props
         return(
             <>
            
-
+          {  (user == list[0])? <Fragment>
             <Button className="user-icon" variant="primary ml-3 mb-3" onClick={this.handleShow}>
             <i class="fas fa-user-plus"></i>
             </Button>
+
+        </Fragment> : "" }
 
 
          

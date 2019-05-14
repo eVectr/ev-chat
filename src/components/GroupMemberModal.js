@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {  Fragment  } from 'react'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import axios from 'axios'
 
@@ -27,7 +27,7 @@ class GroupMemberModal extends React.Component {
 
   render() {  
 
-    const{getMembers, list, user, deleteMember} = this.props
+    const{getMembers, list, admin, deleteMember} = this.props
    
     return (
       <div>
@@ -44,16 +44,34 @@ class GroupMemberModal extends React.Component {
                           if (!index) {
                             showAdmin = `${showAdmin} ~admin`
                           }
-                         // let check =true
-                          // if (!index) {
-                          //   check = false
-                          // }
+                         let check =true
+                          if (!index) {
+                            check = false
+                          }
+                          let isAdmin
+                  
+                          console.log(("check ===;;",admin == list[0]))
+                          if((admin == list[0])){
+                            isAdmin = true
+                          }else{
+                            isAdmin = false
+                          }
                             return(
                                <div className="group-list">
+
+                                {isAdmin?<Fragment>
                                     <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
-                            <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>
-                               </div> 
+                                     {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>: ''}
+                                 </Fragment>:
+                                 <Fragment>
+                                 <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
+                                  
+                              </Fragment>
+                                }
+
+                           </div> 
                             )
+                        
                             
                         })
                     }
