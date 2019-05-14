@@ -15,6 +15,7 @@ import GroupMemberModal from '../components/GroupMemberModal'
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users'
 import Sucess from '../components/FlashMessage'
+import { options } from '../constants';
 
 
 
@@ -154,8 +155,12 @@ let setMaxUser = (e) => {
         
 }
 
-let saveMembers= ()=>{
-  
+let saveMembers= () => {
+
+    let groupMembers = list
+    let allMembers = options
+    console.log(groupMembers, 'groupMembers')
+    console.log(allMembers, 'AllMembers')
     axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     .then(console.log("success"))
      
@@ -400,7 +405,7 @@ let saveGroupName = () => {
       axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
      // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
-          let users = user.username.concat(' ~ ', 'Admin')
+          let users = user.username
           console.log("Admin ==>", users )
         axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
       //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })

@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import { Button, Modal } from 'react-bootstrap'
+import '../styles/creategroupmodal.css'
 
 class CreateGroupModal extends Component {
   
@@ -12,21 +13,21 @@ class CreateGroupModal extends Component {
     console.log(hide, 'hide')
     return (
       <Fragment>
-        <Button className='create-btn' variant="primary ml-3 mb-3" onClick={handleShow} hide={hide}>
+        <Button className='create-btn button' variant="primary ml-3 mb-3" onClick={handleShow} hide={hide}>
           Create Group
         </Button>
-        <Modal show={hide} onHide={handleClose}>
-          <Modal.Header closeButton show={hide} onClick={handleShow}>
-            <Modal.Title> Enter Group Name</Modal.Title>
+        <Modal show={hide} onHide={handleClose} centered>
+          <Modal.Header className="group-header" closeButton show={hide} onClick={handleShow}>
+            <Modal.Title className='group-title'>Enter Group Name</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-          <Modal.Title> <input type="text" name="groupname" onChange={setGroupNames} value={groupname} /></Modal.Title>
+          <Modal.Body className="groupname">
+          <Modal.Title> <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} /></Modal.Title>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" show={hide} onClick={handleClose} >
+            <Button className="close-btn" variant="secondary" show={hide} onClick={handleClose} >
               Close
             </Button>
-            <Button variant="primary" onClick={saveGroupName} show={hide} >
+            <Button className="save-btn" variant="primary" onClick={saveGroupName} show={hide} >
               Save
             </Button>
           </Modal.Footer>
