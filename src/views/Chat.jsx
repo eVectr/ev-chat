@@ -458,10 +458,6 @@ let saveGroupName = () => {
 
 
      useEffect(() => {
-<<<<<<< HEAD
-
-=======
->>>>>>> p2p-ui
         setLoading(false)
         activeChatGroupGlobal = activeChatGroup
         socket.on('receivedGroupMessage', appendGroupMessages)
@@ -539,16 +535,12 @@ let saveGroupName = () => {
         props.history.push('/')
     }
 
-<<<<<<< HEAD
 
 
     console.log(" groups ==>",groups)
     console.log("filtered groups ==>",filteredgroups)
 
 
-=======
-   
->>>>>>> p2p-ui
     return (
         
         <div className="chat-container full-height container-fluid"  >
