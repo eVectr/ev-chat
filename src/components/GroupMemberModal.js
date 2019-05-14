@@ -44,14 +44,14 @@ class GroupMemberModal extends React.Component {
                           if (!index) {
                             showAdmin = `${showAdmin} ~admin`
                           }
-                          let check =true
-                          if (!index) {
-                            check = false
-                          }
+                          // let check =true
+                          // if (!index) {
+                          //   check = false
+                          // }
                             return(
                                <div className="group-list">
                                     <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
-                            {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>: '' }
+                            <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>
                                </div> 
                             )
                             

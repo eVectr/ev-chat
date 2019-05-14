@@ -513,8 +513,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupname = group.groupname
-           // return axios.post('http://localhost:5000/getuser', {groupname:groupname})
-            return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
+            return axios.post('http://localhost:5000/getuser', {groupname:groupname})
+           // return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
            
         })
 
@@ -523,9 +523,9 @@ let saveGroupName = () => {
                 const validGroups = groups.filter(
                     (_, index) => {
                         if(values[index].data.length){
-                            let admin = user.username.concat(' ~ ', 'Admin')
+                           
                             let member = user.username
-                            return values[index].data.includes(member) || values[index].data.includes(admin)
+                            return values[index].data.includes(member)
                         }
                     }
                 )
