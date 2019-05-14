@@ -14,6 +14,7 @@ const Conversation = require('../model/main')
 let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
+    console.log("")
 })
 
 const conversation = new Conversation()
@@ -70,6 +71,7 @@ io.on('connection', socket => {
                 console.log("user ==>", user)
                 if (user) 
                 {
+                    console.log("socketId =>",user.socketId)
                     socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
                 }
             })

@@ -21,20 +21,14 @@ class GroupMemberModal extends React.Component {
     }));
   }
 
+
   
-
-  // deleteItems = (user)=> {    
-  //  const removedItemUser = this.state.users.filter(item => item.name !== user.name)
-  //   this.setState({
-  //     users:removedItemUser
-  //   })
-
-  // }
 
 
   render() {  
-    const{getMembers, list, deleteMember} = this.props
 
+    const{getMembers, list, user, deleteMember} = this.props
+   
     return (
       <div>
         <Button className= 'group-member' onClick={getMembers} onMouseUp={this.toggle}>View Group Members</Button>
