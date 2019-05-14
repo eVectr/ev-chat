@@ -73,6 +73,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
              e.preventDefault();
           }
            else { 
+               console.log("")
           } 
      }
 
