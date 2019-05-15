@@ -28,7 +28,6 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
    
     const [message, setMessage] = useState('')
     const [sendStatus, setSendStatus] = useState('')
-    const [status, setStatus] = useState('')
     const [members, setMembers] = useState([])
     const [list, setList] = useState([])
     const [maxUser, setMaxUserLimit] = useState(5)
@@ -115,6 +114,9 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
             socket.on('messageSent', data =>{
                 setSendStatus(data)
             })
+            socket.on('seen', data =>{
+                setSendStatus(data)
+            })
         }
     }
 
@@ -148,6 +150,9 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
             socket.on('groupmessageSent', data =>{
                 setSendStatus(data)
             })  
+            socket.on('seen', data =>{
+                setSendStatus(data)
+            })
         }
     }
 
@@ -165,8 +170,8 @@ let saveMembers= () => {
     let allMembers = options
     console.log(groupMembers, 'groupMembers')
     console.log(allMembers, 'AllMembers')
-    //axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
-   axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
+    axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
+   //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     .then(console.log("success"))
      
 }
@@ -174,8 +179,8 @@ let saveMembers= () => {
 
 let getMembers = ()=>{
     let groupname =  activeChatGroup.groupname
-    //axios.post(`http://localhost:5000/getuser`, {groupname:groupname})
-    axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
+    axios.post(`http://localhost:5000/getuser`, {groupname:groupname})
+    //axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
     .then(response =>{console.log("active group member==>",response)
         let data = response.data
         console.log(data, 'data')
@@ -187,11 +192,11 @@ let getMembers = ()=>{
     let deleteMember = (user) => {
     
     let groupname =  activeChatGroup.groupname
-    //axios.post(`http://localhost:5000/removeuser`, {groupname, user})
-    axios.post(`http://209.97.142.219:5000/removeuser`, {groupname, user})
+    axios.post(`http://localhost:5000/removeuser`, {groupname, user})
+    //axios.post(`http://209.97.142.219:5000/removeuser`, {groupname, user})
     .then(response =>{
-       // axios.post(`http://localhost:5000/getuser`, {groupname:groupname})
-        axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
+        axios.post(`http://localhost:5000/getuser`, {groupname:groupname})
+        //axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
         .then(res =>{
             setList(res.data)
         
@@ -210,7 +215,7 @@ let getMembers = ()=>{
 
 
     
-console.log("isGROUP", isGroup)
+console.log("sendStatus", sendStatus)
 
     return (
 
@@ -250,7 +255,8 @@ console.log("isGROUP", isGroup)
                                                 <p className='status'>{ user.username == message.author ? 
                                                 
                                                 <Fragment>
-                                                    { sendStatus ? <i class="fa fa-check" aria-hidden="true"></i>: null }
+                                                    
+                                                    { (sendStatus == 'sent')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
                                                 </Fragment>
                                                 
                                                  :null }</p>
@@ -303,7 +309,7 @@ console.log("isGROUP", isGroup)
                                             <p className='status'>{ user.username == message.author ? 
                                                 
                                                 <Fragment>
-                                                    { sendStatus ? <i class="fa fa-check" aria-hidden="true"></i>: null }
+                                                    { (sendStatus == 'sent' || sendStatus == '')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
                                                 </Fragment>
                                                 
                                                  :null }</p>
@@ -357,15 +363,15 @@ const Chat = (props ) => {
    
 
     useEffect(() => {
-        // socket = io('http://localhost:6547')
-           socket = io('http://209.97.142.219:6547')
+         socket = io('http://localhost:6547')
+          // socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
         })
  
 
     useEffect(() => {
-           // axios.get('http://localhost:5000/Getgroup')
-            axios.get('http://209.97.142.219:5000/Getgroup')
+            axios.get('http://localhost:5000/Getgroup')
+           // axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
                 console.log("API groups",response.data)
@@ -430,15 +436,15 @@ const Chat = (props ) => {
 
 let saveGroupName = () => {
     
-     // axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
-       axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
+      axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
+      // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
           let users = user.username
           console.log("Admin ==>", users )
-          // axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
-      // axios.get('http://localhost:5000/Getgroup')
-        axios.get('http://209.97.142.219:5000/Getgroup')
+           axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
+        //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
+       axios.get('http://localhost:5000/Getgroup')
+      //  axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
@@ -531,8 +537,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupname = group.groupname
-           // return axios.post('http://localhost:5000/getuser', {groupname:groupname})
-            return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
+            return axios.post('http://localhost:5000/getuser', {groupname:groupname})
+           // return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
            
         })
 
