@@ -170,7 +170,7 @@ let saveMembers= () => {
     let allMembers = options
     console.log(groupMembers, 'groupMembers')
     console.log(allMembers, 'AllMembers')
-    //axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
+   // axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
    axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     .then(console.log("success"))
      
@@ -192,11 +192,11 @@ let getMembers = ()=>{
     let deleteMember = (user) => {
     
     let groupname =  activeChatGroup.groupname
-    //axios.post(`http://localhost:5000/removeuser`, {groupname, user})
+   // axios.post(`http://localhost:5000/removeuser`, {groupname, user})
     axios.post(`http://209.97.142.219:5000/removeuser`, {groupname, user})
     .then(response =>{
-     //   axios.post(`http://localhost:5000/getuser`, {groupname:groupname})
-        axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
+       // axios.post(`http://localhost:5000/getuser`, {groupname:groupname})
+       axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
         .then(res =>{
             setList(res.data)
         
@@ -370,7 +370,7 @@ const Chat = (props ) => {
  
 
     useEffect(() => {
-            //axios.get('http://localhost:5000/Getgroup')
+           // axios.get('http://localhost:5000/Getgroup')
             axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
@@ -379,6 +379,29 @@ const Chat = (props ) => {
         
     
     },[])
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chromium.'); 
+          return;
+        }
+      
+        if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+      });
+      
+      function notifyMe() {
+        if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+        else {
+          var notification = new Notification('p2p', {
+            icon: 'http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png',
+            body: 'New Message'
+          });
+      
+        }
+      }
     
     
 
@@ -394,7 +417,7 @@ const Chat = (props ) => {
     const activeChatUserName = activeChatUser && activeChatUser.username
 
     let appendMessages = (data) => {
-        console.log("user hitted")
+        notifyMe()
         if (data.author == activeChatUserGlobal.username || data.author == user.username) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
@@ -404,7 +427,7 @@ const Chat = (props ) => {
      }
 
      let appendGroupMessages = (data) => {
-         console.log("group hitted")
+        notifyMe()
         if (data.to == activeChatGroupGlobal.groupname || data.author == user.username) {
         
              setMessages(prevGroupMessages => {
@@ -436,12 +459,12 @@ const Chat = (props ) => {
 
 let saveGroupName = () => {
     
-      //axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
+     // axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
        axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
           let users = user.username
           console.log("Admin ==>", users )
-           //axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
+         //  axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
         axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
        //axios.get('http://localhost:5000/Getgroup')
         axios.get('http://209.97.142.219:5000/Getgroup')
@@ -537,8 +560,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupname = group.groupname
-          //  return axios.post('http://localhost:5000/getuser', {groupname:groupname})
-            return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
+           // return axios.post('http://localhost:5000/getuser', {groupname:groupname})
+             return axios.post(' http://209.97.142.219:5000/getuser', {groupname:groupname})
            
         })
 
@@ -572,8 +595,7 @@ let saveGroupName = () => {
 
 
 
-    console.log(" groups ==>",groups)
-    console.log("filtered groups ==>",filteredgroups)
+  
 
 
     return (
@@ -588,6 +610,7 @@ let saveGroupName = () => {
                         <span>{user.username}</span>
                         <button onClick={userLogOut}><i class="fas fa-sign-out-alt"></i></button>
                     </div>
+                 
                 <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow} />
             
                 <div className="aside-item">
