@@ -14,7 +14,6 @@ import GroupMemberModal from '../components/GroupMemberModal'
 
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users'
-import Sucess from '../components/FlashMessage'
 import { options } from '../constants';
 
 
@@ -381,26 +380,26 @@ const Chat = (props ) => {
     },[])
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        if (!Notification) {
-          alert('Desktop notifications not available in your browser. Try Chromium.'); 
-          return;
-        }
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     if (!Notification) {
+    //       alert('Desktop notifications not available in your browser. Try Chromium.'); 
+    //       return;
+    //     }
       
-        if (Notification.permission !== 'granted')
-          Notification.requestPermission();
-      });
+    //     if (Notification.permission !== 'granted')
+    //       Notification.requestPermission();
+    //   });
       
-      function notifyMe() {
-        if (Notification.permission !== 'granted')
-          Notification.requestPermission();
-        else {
-          var notification = new Notification('p2p', {
-            body: 'New Message'
-          });
+    //   function notifyMe() {
+    //     if (Notification.permission !== 'granted')
+    //       Notification.requestPermission();
+    //     else {
+    //       var notification = new Notification('p2p', {
+    //         body: 'New Message'
+    //       });
       
-        }
-      }
+    //     }
+    //   }
     
     
 
@@ -416,7 +415,7 @@ const Chat = (props ) => {
     const activeChatUserName = activeChatUser && activeChatUser.username
 
     let appendMessages = (data) => {
-        notifyMe()
+       // notifyMe()
         if (data.author == activeChatUserGlobal.username || data.author == user.username) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
@@ -426,7 +425,7 @@ const Chat = (props ) => {
      }
 
      let appendGroupMessages = (data) => {
-        notifyMe()
+      //  notifyMe()
         if (data.to == activeChatGroupGlobal.groupname || data.author == user.username) {
         
              setMessages(prevGroupMessages => {
