@@ -10,8 +10,8 @@ var io = require('socket.io')(server)
 const Conversation = require('../model/main')
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient();
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
     console.log("")
@@ -60,7 +60,7 @@ io.on('connection', socket => {
 
    
     socket.on('sendGroupMessage', data => {
-        socket.emit('messageSent', 'sent')
+        socket.emit('groupmessageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
         let groupname = data.to
         conversation.getusers(groupname)

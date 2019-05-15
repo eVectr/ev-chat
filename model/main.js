@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient()
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient()
 //client.on('connect', ()=>{})
 app.use(bodyParser.json());
 
@@ -397,8 +397,7 @@ save_group_message(author, to, content, DateTime){
 
 //>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 get_message(conversation_id){
-
-  return new Promise((resolve, reject)=>{
+ return new Promise((resolve, reject)=>{
   client.lrange("message"+conversation_id, 0, -1,
   (err,data) =>{
     if(err){
@@ -416,9 +415,7 @@ get_message(conversation_id){
   })
 })
 } ////////// method end ////////////////////////////
-
 get_group_message(group){
-
   return new Promise((resolve, reject)=>{
   client.lrange("message"+group, 0, -1,
   (err,data) =>{
@@ -431,7 +428,7 @@ get_group_message(group){
          for (i = 0; i< data.length; i++){
              groupmessagedata.push(JSON.parse(data[i]))
          }
-         resolve(groupmessagedata)
+         resolve({data:groupmessagedata})
  }  
   })
 })
