@@ -255,7 +255,7 @@ console.log("sendStatus", sendStatus)
                                                 
                                                 <Fragment>
                                                     
-                                                    { (sendStatus == 'sent')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
+                                                    { (sendStatus == 'sent' || sendStatus == '')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
                                                 </Fragment>
                                                 
                                                  :null }</p>
