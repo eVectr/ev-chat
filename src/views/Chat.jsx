@@ -291,7 +291,7 @@ console.log("sendStatus", sendStatus)
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
                                                 </div>
-                                                <p className='status'>{ user.username == message.author ? 
+                                                {/* <p className='status'>{ user.username == message.author ? 
 
                                                 <Fragment>{(index == messages.length || index == messages.length -1)?
                                                     <Fragment>
@@ -301,7 +301,7 @@ console.log("sendStatus", sendStatus)
                                                 </Fragment>
                                               
                                                 
-                                                 :null }</p>
+                                                 :null }</p> */}
                                                 
                                            
                                             </div></pre>
