@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
 
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient()
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient()
 //client.on('connect', ()=>{})
 app.use(bodyParser.json());
 
@@ -374,6 +374,55 @@ save_message(author, to, conversation_id, content, DateTime){
   })
 } //////////// method end /////////////////////
 
+//////////////// Save Read Status //////////////////////////////////
+
+save_status(conversation_id, status){
+  
+  client.rpush("status"+conversation_id, status)
+  client.lrange("status"+conversation_id , 0, -1,
+  (err,data) =>  {
+    if(err){
+        console.log(err)
+    }else{
+      console.log("status  saved")
+  }
+})
+} ////////////////////////////////////////////////////
+
+//////////////// Get Read Status //////////////////////////////////
+
+get_status(conversation_id){
+  return new Promise((resolve, reject)=>{
+  client.lrange("status"+conversation_id , -1,
+  (err,data) =>  {
+    if(err){
+      console.log(err)
+        reject(err)
+    }else{
+      console.log("get status =>",data)
+      resolve(data)   
+  }
+})
+})
+} ////////////////////////////////////////////////////
+
+//////////////// Update Read Status //////////////////////////////////
+
+update_status(conversation_id, status){
+  return new Promise((resolve, reject)=>{
+  client.lset("status"+conversation_id , -1, status, 
+  (err,data) =>  {
+    if(err){
+      console.log(err)
+        reject(err)
+    
+    }else{
+      console.log("status updated")
+      resolve(data)    
+  }
+})
+})
+} ////////////////////////////////////////////////////
 
 
 save_group_message(author, to, content, DateTime){
