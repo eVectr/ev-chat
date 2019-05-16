@@ -14,7 +14,7 @@ const Conversation = require('../model/main')
 let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
-    console.log("")
+
 })
 
 const conversation = new Conversation()
@@ -54,13 +54,17 @@ io.on('connection', socket => {
         conversation.get_conv_id(data.author, data.to)
        .then(conv=> {conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)})
         const user = findUser(data.to)
-        if (user) socket.broadcast.to(user.socketId).emit('receivedMessage', data)
+        if (user) 
+             {
+                socket.emit('seen', 'seen')
+                 socket.broadcast.to(user.socketId).emit('receivedMessage', data)
+            }
 
     })
 
    
     socket.on('sendGroupMessage', data => {
-        socket.emit('messageSent', 'sent')
+        socket.emit('groupmessageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
         let groupname = data.to
         conversation.getusers(groupname)
@@ -71,9 +75,14 @@ io.on('connection', socket => {
                 console.log("user ==>", user)
                 if (user) 
                 {
-                    console.log("socketId =>",user.socketId)
                     socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
                 }
+                if (user && (member != data.author))  
+                {
+                    socket.emit('seen', 'seen')
+                
+                }
+                
             })
         })           
     })

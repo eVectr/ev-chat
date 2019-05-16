@@ -376,6 +376,55 @@ save_message(author, to, conversation_id, content, DateTime){
   })
 } //////////// method end /////////////////////
 
+//////////////// Save Read Status //////////////////////////////////
+
+save_status(conversation_id, status){
+  
+  client.rpush("status"+conversation_id, status)
+  client.lrange("status"+conversation_id , 0, -1,
+  (err,data) =>  {
+    if(err){
+        console.log(err)
+    }else{
+      console.log("status  saved")
+  }
+})
+} ////////////////////////////////////////////////////
+
+//////////////// Get Read Status //////////////////////////////////
+
+get_status(conversation_id){
+  return new Promise((resolve, reject)=>{
+  client.lrange("status"+conversation_id , -1,
+  (err,data) =>  {
+    if(err){
+      console.log(err)
+        reject(err)
+    }else{
+      console.log("get status =>",data)
+      resolve(data)   
+  }
+})
+})
+} ////////////////////////////////////////////////////
+
+//////////////// Update Read Status //////////////////////////////////
+
+update_status(conversation_id, status){
+  return new Promise((resolve, reject)=>{
+  client.lset("status"+conversation_id , -1, status, 
+  (err,data) =>  {
+    if(err){
+      console.log(err)
+        reject(err)
+    
+    }else{
+      console.log("status updated")
+      resolve(data)    
+  }
+})
+})
+} ////////////////////////////////////////////////////
 
 
 save_group_message(author, to, content, DateTime){
@@ -399,8 +448,7 @@ save_group_message(author, to, content, DateTime){
 
 //>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 get_message(conversation_id){
-
-  return new Promise((resolve, reject)=>{
+ return new Promise((resolve, reject)=>{
   client.lrange("message"+conversation_id, 0, -1,
   (err,data) =>{
     if(err){
@@ -418,9 +466,7 @@ get_message(conversation_id){
   })
 })
 } ////////// method end ////////////////////////////
-
 get_group_message(group){
-
   return new Promise((resolve, reject)=>{
   client.lrange("message"+group, 0, -1,
   (err,data) =>{
@@ -433,7 +479,7 @@ get_group_message(group){
          for (i = 0; i< data.length; i++){
              groupmessagedata.push(JSON.parse(data[i]))
          }
-         resolve(groupmessagedata)
+         resolve({data:groupmessagedata})
  }  
   })
 })
