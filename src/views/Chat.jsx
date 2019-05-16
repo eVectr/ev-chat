@@ -191,7 +191,7 @@ let saveMembers= () => {
 })
 
         
-    .then(console.log("succes"))
+    .then(console.log("success"))
      
 }
 
@@ -313,7 +313,7 @@ console.log("sendStatus", sendStatus)
                                 )
                             )
                         }
-                         {login ? <SucessfullMessage/> : null} 
+                        {login ? <SucessfullMessage/> : null} 
                     </div>
                     <div class="input-group message-box">
                         <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleGroupEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
@@ -487,7 +487,7 @@ const Chat = (props ) => {
         }else{
             console.log("error")
         }
-      //  notifyMe()
+      
      }
 
      let handleChatMouseUp = () =>{
