@@ -1,81 +1,45 @@
-import React, {Component, Fragment} from 'react'
-import {Button,Modal} from 'react-bootstrap'
-import groups from '../constants/groups';
-
-import Select from 'react-select'
-import '../styles/groupbutton.css'
+import React, { Component, Fragment } from 'react'
+import { Button, Modal } from 'react-bootstrap'
 
 import AddUserModal from '../components/AddUserModal'
 
 import '../styles/groupmodal.css'
-
-
-
+import '../styles/groupbutton.css'
 
 export class GroupModal extends Component {
-    constructor(props, context) {
-        super(props, context);
 
-        this.state={
-            show:false
-        }
-    
-        this.handleShow = this.handleShow.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-      }
-    
-      handleClose() {
-        this.setState({ show:false });
-      }
-    
-      handleShow() {
-        this.setState({
-          show: true
-        });
-        
-      }
+  render() {
+    const { showModal, saveMembers, user, list, handleChange, setMaxUser, getMembers, error, show, showGroupModal } = this.props
+    return (
+      <Fragment>
+        <Button className="user-icon" variant="primary ml-3 mb-3" onClick={getMembers} onMouseUp={() => showGroupModal(true)}>
+          <i class="fas fa-user-plus"></i>
+        </Button>
 
-    render(){
-    
-      
-      const { saveMembers, user, list,  handleChange, setMaxUser} = this.props
-        return(
-            <>
-           
-          {  (user == list[0])? <Fragment>
-            <Button className="user-icon" variant="primary ml-3 mb-3" onClick={this.handleShow}>
-            <i class="fas fa-user-plus"></i>
-            </Button>
+        <Modal show={showModal} onHide={() => showGroupModal(false)} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Users</Modal.Title>
+          </Modal.Header>
 
-        </Fragment> : "" }
+          <Modal.Body className="members">
+            <label for="MaxMember">Enter Max Members: </label>
+            <input type="Number" name="MaxMember" onChange={setMaxUser} ></input>
+          </Modal.Body>
 
+          <Modal.Body >
+            <AddUserModal user={user} handleChange={handleChange} list={list} error={error} show={show} ></AddUserModal>
+          </Modal.Body>
 
-         
-           <Modal show={this.state.show} onHide={this.handleClose} centered>
-           <Modal.Header closeButton>
-                <Modal.Title>Add Users</Modal.Title>
-            </Modal.Header>
-
-            <Modal.Body className="members">
-               <label for="MaxMember">Enter Max Members: </label>
-                <input type ="Number"  name = "MaxMember"   onChange={setMaxUser} ></input>
-             </Modal.Body>
-
-             <Modal.Body >
-                <AddUserModal user ={user} handleChange={handleChange}></AddUserModal>
-             </Modal.Body>
-
-            <Modal.Footer>
-                <Button className='close-btn' variant="secondary" onClick={this.handleClose}>
-                Close
+          <Modal.Footer>
+            <Button className='close-btn' variant="secondary" onClick={() => showGroupModal(false)}>
+              Close
                 </Button>
-                <Button className='save-btn' variant="primary" onClick={saveMembers} onMouseUp={this.handleClose} >
-                Save
+            <Button className='save-btn' variant="primary" onClick={saveMembers}  >
+              Save
                 </Button>
-            </Modal.Footer>
-            </Modal> 
-
-      </>
-        )
-    }
+          </Modal.Footer>
+        </Modal>
+      </Fragment>
+    )
+  }
 }

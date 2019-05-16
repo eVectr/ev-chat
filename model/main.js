@@ -84,6 +84,7 @@ let checkuser= (array, user) =>
 
 //==============  ADD USER TO GROUP ==================================///////
 app.post('/adduser', (req, res, next) =>{
+  
   let groupname = req.body.groupname
   let users = req.body.users
   let maxuser = req.body.maxuser
@@ -93,8 +94,9 @@ app.post('/adduser', (req, res, next) =>{
     else{
         console.log(data.length)
         if((data.length + users.length) > maxuser){
-          //res.send("Max user limit reached")
-          console.log("max user limit reached")
+          res.send(false)
+          console.log("")
+          return
         }
         else{
           let userarray =[];

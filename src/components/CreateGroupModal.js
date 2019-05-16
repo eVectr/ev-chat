@@ -1,14 +1,16 @@
 import React, { Component, Fragment } from 'react'
 import { Button, Modal } from 'react-bootstrap'
+import Loader from '../components/Loader'
 import '../styles/creategroupmodal.css'
 
 class CreateGroupModal extends Component {
+  
   
 
   render() {
     
     
-    const { setGroupNames, groupname, saveGroupName, hide, handleClose, handleShow} = this.props
+    const { setGroupNames, groupname, saveGroupName, hide, handleClose, handleShow, load} = this.props
     console.log(groupname, 'groupname')
     console.log(hide, 'hide')
     return (
@@ -17,11 +19,13 @@ class CreateGroupModal extends Component {
           Create Group
         </Button>
         <Modal show={hide} onHide={handleClose} centered>
-          <Modal.Header className="group-header" closeButton show={hide} onClick={handleShow}>
+          <Modal.Header className="group-header" closeButton show={hide} onClick={handleClose}>
             <Modal.Title className='group-title'>Enter Group Name</Modal.Title>
           </Modal.Header>
           <Modal.Body className="groupname">
-          <Modal.Title> <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} /></Modal.Title>
+          <Modal.Title> 
+            <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} />
+          </Modal.Title>
           </Modal.Body>
           <Modal.Footer>
             <Button className="close-btn" variant="secondary" show={hide} onClick={handleClose} >
