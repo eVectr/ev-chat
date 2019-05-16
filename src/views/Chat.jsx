@@ -170,7 +170,7 @@ let setMaxUser = (e) => {
 let saveMembers= () => {
 
    
-    //axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
+  //  axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
      axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res mesg')
 
@@ -187,7 +187,7 @@ let saveMembers= () => {
 })
 
         
-    .then(console.log("succes"))
+    .then(console.log("success"))
      
 }
 
@@ -518,7 +518,7 @@ let saveGroupName = () => {
       .then(res => {
           let users = user.username
           console.log("Admin ==>", users )
-           axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
+         //  axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
            
         axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
       // axios.get('http://localhost:5000/Getgroup')
