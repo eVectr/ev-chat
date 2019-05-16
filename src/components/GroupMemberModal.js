@@ -35,6 +35,7 @@ class GroupMemberModal extends React.Component {
         <Modal isOpen={this.state.modal} modalTransition={{ timeout: 700 }} backdropTransition={{ timeout: 1300 }}
           toggle={this.toggle} className={this.props.className}>
            <ModalHeader toggle={this.toggle}>Group Members</ModalHeader> 
+            
           <ModalBody>
                 <ul >
                     {
@@ -88,4 +89,3 @@ class GroupMemberModal extends React.Component {
 
 export default GroupMemberModal;
 
-//onClick={ () => this.deleteItems(user)}

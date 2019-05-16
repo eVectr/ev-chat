@@ -14,8 +14,9 @@ import GroupMemberModal from '../components/GroupMemberModal'
 
 import { getUser, getGroup } from '../utils/auth'
 import users from '../constants/users'
-import Sucess from '../components/FlashMessage'
-import { options } from '../constants';
+
+
+import SucessfullMessage from '../components/SucessfullMessage'
 
 
 
@@ -32,6 +33,12 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
     const [members, setMembers] = useState([])
     const [list, setList] = useState([])
     const [maxUser, setMaxUserLimit] = useState(5)
+    const [login, setLogin] = useState(false)
+    const [error, setError] = useState('')
+    const [show, setShow] = useState(false)
+    const [showModal, setshowModal] = useState(false)
+    
+
 
     useEffect(() => {
         scrollToBottom();
@@ -153,20 +160,43 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
 let setMaxUser = (e) => {
         setMaxUserLimit(e.target.value)
-        
 }
 
 let saveMembers= () => {
 
-    let groupMembers = list
-    let allMembers = options
-    console.log(groupMembers, 'groupMembers')
-    console.log(allMembers, 'AllMembers')
+   
     axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
    // axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
-    .then(console.log("success"))
-     
+    .then(res => { console.log(res,' = res mesg')
+
+        let msg = res.data
+        console.log(msg, 'msg')
+        if(!msg) {
+        setError(true)
+        }
+        if (msg) {
+            setLogin(true)
+            setshowModal(false)
+          
+        }
+})
+
+        
 }
+
+
+
+
+
+useEffect(()=>{
+    setTimeout(()=>setShow(false), 5000)
+ }, [show])
+
+useEffect(()=>{
+   setTimeout(()=>setLogin(false), 2000)
+}, [login])
+
+
 
 
 let getMembers = ()=>{
@@ -179,6 +209,9 @@ let getMembers = ()=>{
         setList(data)
 })
 }
+
+
+
 
 
     let deleteMember = (user) => {
@@ -205,7 +238,13 @@ let getMembers = ()=>{
         setMembers(array)
     }
 
-    
+
+    let showGroupModal = (isModal) =>{
+        setshowModal(isModal)
+        setError(false)
+    }
+
+  
     return (
 
        <div className="col-9 chat-window">
@@ -222,8 +261,8 @@ let getMembers = ()=>{
                             <h2>{activeChatGroup.groupname}</h2>
                             <GroupMemberModal getMembers = {getMembers} admin ={user.username} list = {list} deleteMember={deleteMember} />
                         </div>
-                        <span><GroupModal saveMembers={saveMembers} user ={user.username} list = {list}  handleChange={handleChange} setMaxUser = {setMaxUser}></GroupModal></span>
-                        
+                        <span><GroupModal showModal={showModal}  showGroupModal={showGroupModal} saveMembers={saveMembers} user={user.username} list={list}  handleChange={handleChange} setMaxUser = {setMaxUser} getMembers = {getMembers} error ={error} show={show} msg={msg} ></GroupModal></span>
+                       
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
                         {isLoading ? <Loader /> : null }
@@ -242,7 +281,7 @@ let getMembers = ()=>{
                                 )
                             )
                         }
-                        
+                         {login ? <SucessfullMessage/> : null} 
                     </div>
                     <div class="input-group message-box">
                         <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleGroupEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
@@ -327,13 +366,14 @@ const Chat = (props ) => {
     const [groupMembers, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
     const [groupMessages, setgroupMessages] = useState([])
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(false)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
     const [hide, setHide] = useState(false)
     const [userSelected, setUserSelected] = useState()
     const [groupSelected, setGroupSelected] = useState()
     const [checklogin, setCheckLogin] = useState(true)
+    const [load, setLoad] = useState(false)
    
 
 
@@ -406,30 +446,37 @@ const Chat = (props ) => {
     
 
 let saveGroupName = () => {
+
+    setLoad(true)
     
-      axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
+    axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, user:user.username })
       // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
           let users = user.username
           console.log("Admin ==>", users )
            axios.post(`http://localhost:5000/adduser`, { groupname:groupname, users:[users] })
+           
       //  axios.post(`http://209.97.142.219:5000/adduser`, { groupname:groupname, users:[user.username] })
        axios.get('http://localhost:5000/Getgroup')
       //  axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
          setGroups(response.data)
-          console.log("API groups",response.data)
-         })
+           console.log("API groups",response.data)
+          setLoad(false)
+           
+        })
       })
-      setHide(false) 
+     
+        setHide(false) 
+     
     }
 
 
 
 
     let handleClose = () => {
-       setHide(false)
+            setHide(false)
     }
     
     let handleShow=() => {
@@ -557,16 +604,16 @@ let saveGroupName = () => {
             { props.auth.loginSucess && checklogin ? <Alert color="primary login-msg">{props.auth.loginSucess}</Alert> : null }
             <modal></modal>
             <div className="row full-height">
-                
+           
                 <aside className="users-list col-3">
                     <div className="user-logout">
                         <span>{user.username}</span>
                         <button onClick={userLogOut}><i class="fas fa-sign-out-alt"></i></button>
                     </div>
-                <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow} />
+                <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow} load={load} />
             
                 <div className="aside-item">
-
+                {load ? <Loader/> : null}
                 { <ul className="list-group">
 
                         {

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 
 import Select from 'react-select'
-import { options } from '../constants'
 import '../styles/groupbutton.css'
 
 
@@ -12,8 +11,8 @@ const AddUserModal = (props) => {
 
     let admin = props.user
     let users = []
-
     
+    let { list, error} = props
 
     const options = [
         { value: 'Love', label: 'Love' },
@@ -33,12 +32,18 @@ const AddUserModal = (props) => {
             continue
           }
         
-      }
+        }
 
+
+
+      let filteredSameMembers = users.filter(
+          user => !list.find(member => member == user.value)
+      )
+       
     return (
         <div className="adduser">
-            <Select options={users} isMulti onChange={data => props.handleChange(data)} />
-
+            <Select options={filteredSameMembers} isMulti onChange={data => props.handleChange(data)} />
+            {error ? <p>Max limit</p> : null}
         </div>
     )
 
