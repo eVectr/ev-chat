@@ -22,11 +22,10 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
+const ChatWindow = ({ sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
 
    
     const [message, setMessage] = useState('')
-    const [sendStatus, setSendStatus] = useState('')
     const [members, setMembers] = useState([])
     const [list, setList] = useState([])
     const [maxUser, setMaxUserLimit] = useState(5)
@@ -109,13 +108,7 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
         setMessage('')
 
         if (socket) {
-            socket.emit('sendMessage', messagePayload)
-            socket.on('messageSent', data =>{
-                setSendStatus(data)
-            })
-            socket.on('seen', data =>{
-                setSendStatus(data)
-            })
+            socket.emit('sendMessage', messagePayload)   
         }
     }
 
@@ -146,15 +139,18 @@ const ChatWindow = ({ groups,activeChatGroup, isGroup, isLoading, activeChatUser
 
         if (socket) {
             socket.emit('sendGroupMessage', messagePayload)
-            socket.on('groupmessageSent', data =>{
-                setSendStatus(data)
-            })  
-            socket.on('seen', data =>{
-                setSendStatus(data)
-            })
+        
         }
     }
 
+    useEffect(() => {
+        if (socket) { 
+            // socket.on('seen', data =>{
+            //     console.log("seeeeeeeeeeeen  =>",data)
+            //     setSendStatus(data)
+            // })
+        }
+    }, [messages.length || activeChatUser.username ])
  
 
 
@@ -255,7 +251,7 @@ console.log("sendStatus", sendStatus)
 
                                                 <Fragment>{(index == messages.length || index == messages.length -1)?
                                                     <Fragment>
-                                                        { (sendStatus == 'sent' || sendStatus == '')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
+                                                        { (sendStatus == 'sent' )? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
                                                   </Fragment>
                                                         :''}
                                                 </Fragment>
@@ -365,12 +361,17 @@ const Chat = (props ) => {
     const [userSelected, setUserSelected] = useState()
     const [groupSelected, setGroupSelected] = useState()
     const [checklogin, setCheckLogin] = useState(true)
+    const [sendStatus, setSendStatus] = useState('')
    
 
     useEffect(() => {
           socket = io('http://localhost:6547')
      //      socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
+             socket.on('seen', data =>{
+                 console.log("seeeen =>",data)
+                setSendStatus(data)
+            })
         })
  
 
@@ -386,26 +387,26 @@ const Chat = (props ) => {
     },[])
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        if (!Notification) {
-          alert('Desktop notifications not available in your browser. Try Chrome.'); 
-          return;
-        }
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     if (!Notification) {
+    //       alert('Desktop notifications not available in your browser. Try Chrome.'); 
+    //       return;
+    //     }
       
-        if (Notification.permission !== 'granted')
-          Notification.requestPermission();
-      });
+    //     if (Notification.permission !== 'granted')
+    //       Notification.requestPermission();
+    //   })
       
-      function notifyMe() {
-        if (Notification.permission !== 'granted')
-          Notification.requestPermission();
-        else {
-          var notification = new Notification('p2p', {
-            body: 'New Message'
-          });
+    //   function notifyMe() {
+    //     if (Notification.permission !== 'granted')
+    //       Notification.requestPermission();
+    //     else {
+    //       var notification = new Notification('p2p', {
+    //         body: 'New Message'
+    //       });
       
-        }
-      }
+    //     }
+    //   }
     
     
 
@@ -678,6 +679,7 @@ let saveGroupName = () => {
                         messages={activeChatMessages}
                         activeChatUser={activeChatUser}
                         activeChatGroup={activeChatGroup}
+                        sendStatus = {sendStatus}
                         updateMessages={
                            message => appendMessages( message)
                         }

@@ -49,20 +49,35 @@ io.on('connection', socket => {
     })
 
     socket.on('sendMessage', data => {
-        socket.emit('messageSent', 'sent')
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
-       .then(conv=> {conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)})
+       .then(conv=> {
+           conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)
+           conversation.save_status(conv, 'sent')
+           
+        })
+       // socket.emit('seen', 'sent')
         const user = findUser(data.to)
         if (user) 
              {
-                socket.emit('seen', 'seen')
+                conversation.get_conv_id(data.author, data.to)
+                .then(conv=> {
+                    conversation.save_status(conv, 'seen')
+                    .then(status => { })
+                 })
+                
                  socket.broadcast.to(user.socketId).emit('receivedMessage', data)
             }
+            conversation.get_conv_id(data.author, data.to)
+            .then(conv => {
+            conversation.get_status(conv).then(status=>{
+                console.log("status ======|||",status)
+                socket.emit('seen', status )
+            })
+        })
 
     })
 
-   
     socket.on('sendGroupMessage', data => {
         socket.emit('groupmessageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
@@ -79,7 +94,7 @@ io.on('connection', socket => {
                 }
                 if (user && (member != data.author))  
                 {
-                    socket.emit('seen', 'seen')
+                  //  socket.emit('seen', 'seen')
                 
                 }
                 
@@ -88,13 +103,24 @@ io.on('connection', socket => {
     })
 
 
+
     socket.on('join', data => {
         conversation.set_conv_id(data.author, data.to)
         conversation.get_conv_id(data.author, data.to)
-        .then(conv=> {conversation.get_message(conv).then(message=>{
+        .then(conv=> {
+            conversation.get_message(conv).then(message=>{
                 if(message == ""){console.log("no message")}else{
                 socket.emit('message', message)}
-        })})
+        })
+        
+    })
+    conversation.get_conv_id(data.author, data.to)
+    .then(conv=> {
+       conversation.get_status(conv).then(status =>{
+           socket.emit('seen', status)
+           console.log("emmited----",status )
+       })
+    })
     })
 
     socket.on('groupjoin', data => {

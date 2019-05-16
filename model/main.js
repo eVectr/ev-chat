@@ -377,15 +377,18 @@ save_message(author, to, conversation_id, content, DateTime){
 //////////////// Save Read Status //////////////////////////////////
 
 save_status(conversation_id, status){
-  
+  return new Promise((resolve, reject)=>{
+  client.del("status"+conversation_id)
   client.rpush("status"+conversation_id, status)
   client.lrange("status"+conversation_id , 0, -1,
   (err,data) =>  {
     if(err){
-        console.log(err)
+        resolve(console.log(err))
     }else{
-      console.log("status  saved")
+      resolve(data[0])
+     
   }
+})
 })
 } ////////////////////////////////////////////////////
 
@@ -393,14 +396,13 @@ save_status(conversation_id, status){
 
 get_status(conversation_id){
   return new Promise((resolve, reject)=>{
-  client.lrange("status"+conversation_id , -1,
+  client.lrange("status"+conversation_id , 0, -1,
   (err,data) =>  {
     if(err){
-      console.log(err)
         reject(err)
     }else{
-      console.log("get status =>",data)
-      resolve(data)   
+      console.log("get status =>",data[0])
+      resolve(data[0])   
   }
 })
 })
