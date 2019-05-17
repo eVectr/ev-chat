@@ -258,7 +258,7 @@ console.log("membersmembersmembersmembers", members)
                             <h2>{activeChatGroup.groupname}</h2>
                             <GroupMemberModal getMembers = {getMembers} admin ={user.username} list = {list} deleteMember={deleteMember} members={members}/>
                         </div>
-                        <span><GroupModal showModal={showModal}  showGroupModal={showGroupModal} saveMembers={saveMembers} user={user.username} list={list}  handleChange={handleChange} setMaxUser = {setMaxUser} getMembers = {getMembers} error ={error} show={show} msg={msg} members={members} ></GroupModal></span>
+                        <span><GroupModal  maxUser = {maxUser} showModal={showModal}  showGroupModal={showGroupModal} saveMembers={saveMembers} user={user.username} list={list}  handleChange={handleChange} setMaxUser = {setMaxUser} getMembers = {getMembers} error ={error} show={show} msg={msg} members={members} ></GroupModal></span>
                        
                     </div>
                     {login ? <SucessfullMessage/> : null} 
