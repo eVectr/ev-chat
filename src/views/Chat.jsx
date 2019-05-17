@@ -270,10 +270,11 @@ console.log("membersmembersmembersmembers", members)
                                 (message, index) => (
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
-                                            {/* <div style ={groupstyle}>
+                                             <div style ={groupstyle}>
                                             {message.author}
-                                            </div> */}
-                                            <pre className="m-0"> {message.content}
+                                            </div> 
+                                           
+                                            <pre className="m-0 messages"> {message.content}
                                             <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
@@ -292,6 +293,7 @@ console.log("membersmembersmembersmembers", members)
                                                 
                                            
                                             </div></pre>
+                                           
                                         </div>
                                     </div>
                                 )

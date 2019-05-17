@@ -93,6 +93,7 @@
     word-wrap: break-word;
 }
 
+
 .message-list {
     padding: 20px;
     overflow-y: scroll;
@@ -161,5 +162,10 @@
     top:0%;
     left:25%;
     width:75%;
+}
+
+.messages{
+    white-space: pre-wrap;           
+    word-wrap: break-word;
 }
 
