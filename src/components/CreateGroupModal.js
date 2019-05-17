@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react'
 import { Button, Modal } from 'react-bootstrap'
-import Loader from '../components/Loader'
 import '../styles/creategroupmodal.css'
 
 class CreateGroupModal extends Component {
@@ -10,9 +9,18 @@ class CreateGroupModal extends Component {
   render() {
     
     
-    const { setGroupNames, groupname, saveGroupName, hide, handleClose, handleShow, load} = this.props
+    
+
+    const { setGroupNames, groupname, saveGroupName, hide, handleClose, handleShow, load, } = this.props
     console.log(groupname, 'groupname')
     console.log(hide, 'hide')
+
+    let isdisableSave = true 
+    if (groupname) {
+      isdisableSave = false
+    }
+    
+
     return (
       <Fragment>
         <Button className='create-btn button' variant="primary ml-3 mb-3" onClick={handleShow} hide={hide}>
@@ -24,14 +32,15 @@ class CreateGroupModal extends Component {
           </Modal.Header>
           <Modal.Body className="groupname">
           <Modal.Title> 
-            <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} />
+            
+              <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} />
           </Modal.Title>
           </Modal.Body>
           <Modal.Footer>
             <Button className="close-btn" variant="secondary" show={hide} onClick={handleClose} >
               Close
             </Button>
-            <Button className="save-btn" variant="primary" onClick={saveGroupName} show={hide} >
+            <Button className="save-btn" variant="primary" onClick={saveGroupName} show={hide} disabled={isdisableSave} >
               Save
             </Button>
           </Modal.Footer>
