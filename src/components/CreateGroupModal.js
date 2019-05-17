@@ -19,6 +19,7 @@ class CreateGroupModal extends Component {
     if (groupname) {
       isdisableSave = false
     }
+    
 
     return (
       <Fragment>
@@ -31,6 +32,7 @@ class CreateGroupModal extends Component {
           </Modal.Header>
           <Modal.Body className="groupname">
           <Modal.Title> 
+            
               <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} />
           </Modal.Title>
           </Modal.Body>

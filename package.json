@@ -73,8 +73,9 @@
     "workbox-webpack-plugin": "3.6.3"
   },
   "scripts": {
-    "start-server": "nodemon server/index.js",
-    "start": "node scripts/start.js",
+    "start-server": "export port=6547 && nodemon server/index.js",
+    "start": "export PORT=6565 && export API_PORT=4000 && node scripts/start.js",
+
     "build": "node scripts/build.js",
     "test": "mocha"
   },

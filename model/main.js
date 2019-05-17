@@ -22,25 +22,25 @@ app.use((req, res, next)=>{
 //////////========== CREATE GROUP /////////////////////////
 
 app.post('/Creategroup', (req, res, next) =>{
-  var today = new Date()
-  var second = today.getSeconds();
+ 
   let groupname = req.body.groupname
-  let user = req.body.user 
+  let groupId = req.body.groupId
+  let admin = req.body.admin
 
   const payload ={
     groupname:groupname,
-    groupId: second * Math.floor(Math.random() * 100000000000000000),
-    user:user
+    groupId: req.body.groupId,
+    admin:admin
   }
   client.lrange("grouplist", 0, -1,
     (err,data) =>{
 
       if(err){res.send(err)}
       else{
-        //  console.log("Admin ==> ", data[0])
+          console.log("Admin ==> ", data[0])
             
             client.rpush("grouplist",JSON.stringify(payload))
-           // res.send("group created")
+           console.log("group created")
            
           
          res.send(data[data.length -1])
@@ -56,7 +56,6 @@ app.get('/Getgroup', (req, res, next) =>{
 
       if(err){res.send(err)}
       else{
-        //  console.log("Admin ==> ", data[0])
           let groups = []
             
             for(let i = 0 ; i<data.length; i++){
@@ -72,45 +71,34 @@ app.get('/Getgroup', (req, res, next) =>{
 ///////////////////////////// Check user //////////////
 
 
-let checkuser= (array, user) =>
-{
-    let len = array.length;
-    for(let i = 0; i< len ; i++)
-    {
-      if(array[i]== user){return true}
-    }
-    return false
-}
+// let checkuser= (array, user) =>
+// {
+//     let len = array.length;
+//     for(let i = 0; i< len ; i++)
+//     {
+//       if(array[i]== user){return true}
+//     }
+//     return false
+// }
 
 //==============  ADD USER TO GROUP ==================================///////
 app.post('/adduser', (req, res, next) =>{
-  
-  let groupname = req.body.groupname
+  let groupId = req.body.groupId
   let users = req.body.users
   let maxuser = req.body.maxuser
   console.log("max user", maxuser)
-  client.lrange(groupname, 0, -1, (err, data) => {
+  client.lrange(groupId, 0, -1, (err, data) => {
     if(err){res.send(err)}
     else{
         console.log(data.length)
         if((data.length + users.length) > maxuser){
           res.send(false)
-          console.log("")
           return
         }
         else{
-          let userarray =[];
-          userarray = data;
-        
            users.map((user)=>{
-            let getuser =  checkuser(userarray , user)
-             if(getuser == false){
-                client.rpush(groupname, user)
+                client.rpush(groupId, user)
                 console.log(data)
-              }else{
-                //res.send("user already exist")
-                console.log("user already exist")
-            }
           }) 
          res.send(data)
         }
@@ -121,14 +109,14 @@ app.post('/adduser', (req, res, next) =>{
 //////// Get group user ////////////////////////////
 
 app.post('/getuser', (req, res, next) =>{
-let groupname = req.body.groupname
+let groupId = req.body.groupId
  
-client.lrange(groupname, 0, -1, (err, data) => {
+client.lrange(groupId, 0, -1, (err, data) => {
   if(err){res.send(err)}
   else{
             if(data.length == 0){
               res.send("no users")
-              console.log(groupname)
+              console.log(groupId)
               console.log("no users")
             }else{
               res.send(data)
@@ -140,31 +128,6 @@ client.lrange(groupname, 0, -1, (err, data) => {
 ) 
 })
 
-////////////////////// get group users ////////////////////
-// app.get('/getuser', (req, res, next) =>{
- 
-//  let groupname = "group1"
-//   client.lrange(groupname, 0, -1, (err, data) =>{
-//     if(err){res.send(err)}
-//     else{
-    
-//       let groupusers = []
-            
-//       for(let i = 0 ; i<data.length; i++){
-//         groupusers.push(JSON.parse(data[i]))
-//       }
-//       res.send(groupusers)
-//       console.log(groupusers)
-      
-//       }
-  
-//         }
-//   )
-// })
-
-
-
-// /////////////////////////////
 
 app.get('/Deletegroup', (req, res, next) =>{
 
@@ -182,9 +145,9 @@ app.get('/Deletegroup', (req, res, next) =>{
 
 
 app.post('/removeuser', (req, res, next) =>{
-  let groupname = req.body.groupname
+  let groupId = req.body.groupId
   let user = req.body.user
-    client.lrem(groupname, 0, user, (err, data)=>{
+    client.lrem(groupId, 0, user, (err, data)=>{
       if(err){
         console.log(err)
       }else{

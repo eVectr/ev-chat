@@ -6,6 +6,8 @@ var app = express()
 var server = require('http').Server(app)
 var io = require('socket.io')(server)
 
+console.log(process.env.port)
+
 
 const Conversation = require('../model/main')
 

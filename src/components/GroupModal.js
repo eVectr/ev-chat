@@ -9,7 +9,7 @@ import '../styles/groupbutton.css'
 export class GroupModal extends Component {
 
   render() {
-    const { showModal, saveMembers, user, list, handleChange, setMaxUser, getMembers, error, show, showGroupModal, members } = this.props
+    const { maxUser, showModal, saveMembers, user, list, handleChange, setMaxUser, getMembers, error, show, showGroupModal, members } = this.props
     let isdisableSave = true 
     if (members.length) {
       isdisableSave = false
@@ -22,7 +22,7 @@ export class GroupModal extends Component {
 
         <Modal show={showModal} onHide={() => showGroupModal(false)} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Add Users</Modal.Title>
+            <Modal.Title>Add Users | Max User limit: {maxUser}</Modal.Title>
           </Modal.Header>
 
           <Modal.Body className="members">
