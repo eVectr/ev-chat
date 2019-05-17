@@ -163,7 +163,7 @@ let setMaxUser = (e) => {
 let saveMembers= () => {
     axios.post(`http://localhost:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
      //axios.post(`http://209.97.142.219:5000/adduser`, { groupname:activeChatGroup.groupname, users:members, maxuser:maxUser })
-    .then(res => { console.log(res,' = res mesg')
+    .then(res => { console.log(res,' = res miakdjhg')
         let msg = res.data
         console.log(msg, 'msg')
         if(!msg) {
@@ -518,9 +518,9 @@ let saveGroupName = () => {
        //  axios.get('http://209.97.142.219:5000/Getgroup')
         //axios.get('http://209.97.142.219:5000/Deletegroup')
         .then(response => {
-            let allGroups = response.data
-            let newGroup = allGroups.filter()
-            console.log(groupname, 'groupname')
+            // let allGroups = response.data
+            // let newGroup = allGroups.filter()
+            // console.log(groupname, 'groupname')
          setGroups(response.data)
            console.log("API groups",response.data)
             setLoad(false)
