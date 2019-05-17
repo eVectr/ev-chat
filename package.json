@@ -74,7 +74,7 @@
   },
   "scripts": {
     "start-server": "export port=6547 && nodemon server/index.js",
-    "start": "export PORT=4000 && export API_PORT=4000 && node scripts/start.js",
+    "start": "export PORT=6565 && export API_PORT=4000 && node scripts/start.js",
 
     "build": "node scripts/build.js",
     "test": "mocha"
