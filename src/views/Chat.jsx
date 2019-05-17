@@ -401,7 +401,7 @@ const Chat = (props ) => {
            socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
-                 console.log("seeen =>",data)
+                 console.log("seen =>",data)
                 setSendStatus(data)
             })
             socket.on('groupseen', data =>{
@@ -606,7 +606,7 @@ let saveGroupName = () => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
              //return axios.post('http://localhost:5000/getuser', {groupId:groupId})
-             return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
+             //return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
            
         })
 
