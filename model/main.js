@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient()
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient()
 //client.on('connect', ()=>{})
 app.use(bodyParser.json());
 
@@ -372,6 +372,42 @@ get_status(conversation_id){
 })
 })
 } ////////////////////////////////////////////////////
+
+///////////////////////////// SAVE GROUP STATUS /////////////////////////////
+
+save_group_status(to, status){
+  return new Promise((resolve, reject)=>{
+  client.del("status"+to)
+  client.rpush("status"+to, status)
+  client.lrange("status"+to , 0, -1,
+  (err,data) =>  {
+    if(err){
+        resolve(console.log(err))
+    }else{
+      resolve(data[0])
+     
+  }
+})
+})
+} 
+
+//////////////// Get Read Status //////////////////////////////////
+
+get_group_status(to){
+  return new Promise((resolve, reject)=>{
+  client.lrange("status"+to , 0, -1,
+  (err,data) =>  {
+    if(err){
+        reject(err)
+    }else{
+      console.log("get group status =>",data[0])
+      resolve(data[0])   
+  }
+})
+})
+}
+
+/////////////////////////////////////////////////////////////////////////////
 
 //////////////// Update Read Status //////////////////////////////////
 

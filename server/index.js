@@ -58,7 +58,7 @@ io.on('connection', socket => {
            conversation.save_status(conv, 'sent')
            
         })
-       // socket.emit('seen', 'sent')
+    
         const user = findUser(data.to)
         if (user) 
              {
@@ -73,7 +73,7 @@ io.on('connection', socket => {
             conversation.get_conv_id(data.author, data.to)
             .then(conv => {
             conversation.get_status(conv).then(status=>{
-                console.log("status ======|||",status)
+                console.log("status ======>>>",status)
                 socket.emit('seen', status )
             })
         })
@@ -83,6 +83,7 @@ io.on('connection', socket => {
     socket.on('sendGroupMessage', data => {
         socket.emit('groupmessageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
+        conversation.save_group_status(data.to, 'sent')
         let groupname = data.to
         conversation.getusers(groupname)
         .then(members => {
@@ -96,13 +97,16 @@ io.on('connection', socket => {
                 }
                 if (user && (member != data.author))  
                 {
-                  //  socket.emit('seen', 'seen')
+                     conversation.get_group_status(data.to).then(status=>{
+                     console.log("groupstatus ======>>>",status)
+                    socket.emit('groupseen', status )
+            })      
+       
+        }
                 
-                }
-                
-            })
-        })           
     })
+})           
+})
 
 
 
@@ -125,6 +129,7 @@ io.on('connection', socket => {
     })
     })
 
+
     socket.on('groupjoin', data => {
        console.log("data.to =>",data.to)
         conversation.get_group_message(data.to).then(groupmessage=>{
@@ -133,7 +138,15 @@ io.on('connection', socket => {
                 socket.emit('groupmessage', groupmessage)}
        
         })
+      
+           conversation.get_group_status(data.to).then(status =>{
+               socket.emit('groupseen', status)
+               console.log("groupemmited----",status )
+           })
+        
+
     })
+
 
     socket.on('disconnect', () => {
         users = users.filter(user => user.socketId !== socket.id)
