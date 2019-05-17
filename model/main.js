@@ -7,8 +7,8 @@ const redis = require('redis');
  var app = express()
 
 
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient()
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient()
 //client.on('connect', ()=>{})
 app.use(bodyParser.json());
 
@@ -40,10 +40,10 @@ app.post('/Creategroup', (req, res, next) =>{
         //  console.log("Admin ==> ", data[0])
             
             client.rpush("grouplist",JSON.stringify(payload))
-            res.send("group created")
+           // res.send("group created")
            
           
-         //res.send(data)
+         res.send(data[data.length -1])
       }
 
     })

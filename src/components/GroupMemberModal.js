@@ -27,7 +27,7 @@ class GroupMemberModal extends React.Component {
 
   render() {  
 
-    const{getMembers, list, admin, deleteMember} = this.props
+    const{ getMembers, list, admin, deleteMember } = this.props
    
     return (
       <div>
