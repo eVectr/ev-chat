@@ -33,7 +33,7 @@ class CreateGroupModal extends Component {
           <Modal.Body className="groupname">
           <Modal.Title> 
             
-              <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} />
+            <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} placeholder='Please Enter Group Name' />
           </Modal.Title>
           </Modal.Body>
           <Modal.Footer>

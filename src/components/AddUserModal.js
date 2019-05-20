@@ -43,7 +43,7 @@ const AddUserModal = (props) => {
     return (
         <div className="adduser">
             <Select options={filteredSameMembers} isMulti onChange={data => props.handleChange(data)} />
-            {error ? <p>Max limit</p> : null}
+            {error ? <p>Max limit Reached</p> : null}
         </div>
     )
 

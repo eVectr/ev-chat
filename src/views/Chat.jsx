@@ -25,7 +25,7 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({sendGroupStatus,  sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
+const ChatWindow = ({ sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
 
    
     const [message, setMessage] = useState('')
@@ -161,8 +161,8 @@ let setMaxUser = (e) => {
 }
 
 let saveMembers= () => {
-   // axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-     axios.post(`http://209.97.142.219:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+    axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+     //axios.post(`http://209.97.142.219:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res mesg')
         let msg = res.data
         console.log(msg, 'msg')
@@ -172,7 +172,6 @@ let saveMembers= () => {
         if (msg) {
             setLogin(true)
             setshowModal(false)
-          
         }
     })    
     .then(console.log("success"))   
@@ -184,7 +183,7 @@ let saveMembers= () => {
 
 useEffect(()=>{
     setTimeout(()=>setShow(false), 5000)
- }, [show])
+}, [show])
 
 useEffect(()=>{
    setTimeout(()=>setLogin(false), 2000)
@@ -196,8 +195,8 @@ useEffect(()=>{
 let getMembers = ()=>{
     let groupId =  activeChatGroup.groupId
     console.log("group id ->", groupId)
-   // axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
-    axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
+    axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+   // axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
     .then(response =>{console.log("active group member==>",response)
         let data = response.data
         console.log(data, 'data')
@@ -211,11 +210,11 @@ let getMembers = ()=>{
 
     let deleteMember = (user) => {
     let groupId =  activeChatGroup.groupId
-   // axios.post(`http://localhost:5000/removeuser`, {groupId, user})
-   axios.post(`http://209.97.142.219:5000/removeuser`, {groupId, user})
+    axios.post(`http://localhost:5000/removeuser`, {groupId, user})
+   //axios.post(`http://209.97.142.219:5000/removeuser`, {groupId, user})
     .then(response =>{
-    //    axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
-       axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
+        axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+       //axios.post(`http://209.97.142.219:5000/getuser`, {groupname:groupname})
         .then(res =>{
             setList(res.data)
         
@@ -253,13 +252,12 @@ console.log("membersmembersmembersmembers", members)
                 activeChatGroup.groupId ? 
                 <div class="show-chat" >
 
-                     <div class="message-header">
+                    <div class="message-header">
                         <div>
                             <h2>{activeChatGroup.groupname}</h2>
                             <GroupMemberModal getMembers = {getMembers} admin ={user.username} list = {list} deleteMember={deleteMember} members={members}/>
                         </div>
                         <span><GroupModal  maxUser = {maxUser} showModal={showModal}  showGroupModal={showGroupModal} saveMembers={saveMembers} user={user.username} list={list}  handleChange={handleChange} setMaxUser = {setMaxUser} getMembers = {getMembers} error ={error} show={show} msg={msg} members={members} ></GroupModal></span>
-                       
                     </div>
                     {login ? <SucessfullMessage/> : null} 
                     <div className="message-list" ref={(el) => { msg = el; }} >
@@ -270,10 +268,11 @@ console.log("membersmembersmembersmembers", members)
                                 (message, index) => (
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
-                                            <div style ={groupstyle}>
+                                             <div style ={groupstyle}>
                                             {message.author}
-                                            </div>
-                                            <pre className="m-0"> {message.content}
+                                            </div> 
+                                           
+                                            <pre className="m-0 messages"> {message.content}
                                             <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
@@ -282,7 +281,7 @@ console.log("membersmembersmembersmembers", members)
 
                                                 <Fragment>{(index == messages.length || index == messages.length -1)?
                                                     <Fragment>
-                                                        { (sendGroupStatus == 'sent' || sendGroupStatus == '' )? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
+                                                        { (sendStatus == 'sent' )? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
                                                   </Fragment>
                                                         :''}
                                                 </Fragment>
@@ -383,7 +382,9 @@ const Chat = (props ) => {
     const [filteredgroups, setFilteredGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
+    const [groupMembers, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
+    const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(false)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
@@ -392,29 +393,24 @@ const Chat = (props ) => {
     const [groupSelected, setGroupSelected] = useState()
     const [checklogin, setCheckLogin] = useState(true)
     const [sendStatus, setSendStatus] = useState('')
-    const [sendGroupStatus, setGroupSendStatus] = useState('')
     const [load, setLoad] = useState(false)
   
    
 
     useEffect(() => {
-         // socket = io('http://localhost:6547')
-           socket = io('http://209.97.142.219:6547')
+          socket = io('http://localhost:6547')
+         //  socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
-                 console.log("seen =>",data)
+                 console.log("seeen =>",data)
                 setSendStatus(data)
             })
-            socket.on('groupseen', data =>{
-                console.log("groupseeen =>",data)
-                setGroupSendStatus(data)
-           })
         })
  
 
     useEffect(() => {
-           // axios.get('http://localhost:5000/Getgroup')
-           axios.get('http://209.97.142.219:5000/Getgroup')
+            axios.get('http://localhost:5000/Getgroup')
+         //  axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
                 console.log("API group",response.data)
@@ -424,26 +420,6 @@ const Chat = (props ) => {
     },[])
 
 
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     if (!Notification) {
-    //       alert('Desktop notifications not available in your browser. Try Chrome.'); 
-    //       return;
-    //     }
-      
-    //     if (Notification.permission !== 'granted')
-    //       Notification.requestPermission();
-    //   })
-      
-    //   function notifyMe() {
-    //     if (Notification.permission !== 'granted')
-    //       Notification.requestPermission();
-    //     else {
-    //       var notification = new Notification('p2p', {
-    //         body: 'New Message'
-    //       });
-      
-    //     }
-    //   }
     
     
 
@@ -467,7 +443,7 @@ const Chat = (props ) => {
              })
         }
        
-       // notifyMe()
+       
      }
 
      let appendGroupMessages = (data) => {
@@ -507,23 +483,30 @@ let saveGroupName = () => {
     var second = today.getSeconds()
     let groupId = (second+1) * (Math.floor(Math.random() * 100000000000000000) + Math.floor(Math.random() * 100000000000000000))
     setLoad(true)
-   // axios.post(`http://localhost:5000/Creategroup`, { groupname:groupname, groupId: groupId, admin:user.username  })
-       axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, groupId: groupId, admin:user.username })
+    axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
+   //    axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
           let users = user.username
-      //  axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
-      // axios.get('http://localhost:5000/Getgroup')
-         axios.get('http://209.97.142.219:5000/Getgroup')
+        axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
+       // axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
+       axios.get('http://localhost:5000/Getgroup')
+       //  axios.get('http://209.97.142.219:5000/Getgroup')
         .then(response => {
+            // arr.filter(list => list.groupid === group.groupId)
+            let active = {
+                groupname, 
+                groupId,
+                admin:user.username
+            }
+            console.log(active, 'Active')
          setGroups(response.data)
            console.log("API groups",response.data)
             setLoad(false)
+           setActiveChatGroup()
         })
       })
      
       setHide(false) 
-     
 }
 
 
@@ -592,8 +575,7 @@ let saveGroupName = () => {
                 const {  data =  {} } = conversation
                 setLoading(false) 
                 setMessages(data) 
-                
-           })
+            })
         }
     }, [activeChatGroup.groupId])
 
@@ -606,11 +588,10 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
-             //return axios.post('http://localhost:5000/getuser', {groupId:groupId})
+             return axios.post('http://localhost:5000/getuser', {groupId:groupId})
              //return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
            
         })
-
         Promise.all(promiseArr)
             .then(values => {
                 const validGroups = groups.filter(
@@ -656,30 +637,41 @@ let saveGroupName = () => {
                 <CreateGroupModal setGroupNames={setGroupNames} groupname={groupname} saveGroupName={saveGroupName} handleClose={handleClose} hide={hide} handleShow={handleShow} load={load}   />
             
                 <div className="aside-item">
+                
                 {load ? <Loader/> : null}
-                { <ul className="list-group">
 
+                {
+                    console.log(filteredgroups, 'FILTEREDGROUP')
+                }
+                
+                { <ul className="list-group">
+                    
                         {
                             filteredgroups.map(
-                                (group, index) =>
-                                    
-                                    
-                                    <li className= 'list-group-item user'
+                                (group, index) => {
+                                    return (
+                                        <li className= 'list-group-item user'
                                         key={index}
-                                       onMouseUp={handleGroupChatMouseUp}
+                                        onMouseUp={handleGroupChatMouseUp}
                                         onClick={() => {
                                             setActiveChatGroup(group)
                                             setActiveChatUser({})
                                         }}
+                                        
                                         className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupId == group.groupId) && groupSelected ? 'selected' : ''}`}
                                     >
                                       <i class="fas fa-users" style ={groupicon} ></i>
                                         <span className="username">{group.groupname}</span> 
                                     
-                                    </li>    
+                                    </li> 
+                                    )
+                                }
+                                   
                             )
                         }
                     </ul> }
+
+                    
                 
                    
                     <ul className="list-group">
@@ -718,7 +710,6 @@ let saveGroupName = () => {
                         activeChatUser={activeChatUser}
                         activeChatGroup={activeChatGroup}
                         sendStatus = {sendStatus}
-                        sendGroupStatus = {sendGroupStatus}
                         updateMessages={
                            message => appendMessages( message)
                         }
