@@ -280,7 +280,7 @@ console.log("membersmembersmembersmembers", members)
 
                                                 <Fragment>{(index == messages.length || index == messages.length -1)?
                                                     <Fragment>
-                                                        { (sendGroupStatus == 'sent' || sendGroupStatus == '' )? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
+                                                        { (sendGroupStatus == 'sent' || sendGroupStatus == '' )? <i class="fa fa-check" aria-hidden="true"></i>: '' }
                                                   </Fragment>
                                                         :''}
                                                 </Fragment>
@@ -406,8 +406,8 @@ const Chat = (props ) => {
                 console.log("groupseeen =>",data)
                 setGroupSendStatus(data)
            })
-        })
- 
+        },[sendStatus])
+    
 
     useEffect(() => {
             axios.get('http://localhost:5000/Getgroup')
@@ -579,7 +579,7 @@ let saveGroupName = () => {
                 setMessages(data)  
            })
         }
-    }, [activeChatUser.username])
+    }, [activeChatUser.username || sendStatus])
 
 
     useEffect(() => {
@@ -637,6 +637,9 @@ let saveGroupName = () => {
         localStorage.clear()
         props.history.push('/')
     }
+
+    console.log(sendStatus,' <--check status')
+
 
    
 
