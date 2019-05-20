@@ -9,16 +9,20 @@ import '../styles/groupbutton.css'
 export class GroupModal extends Component {
 
   render() {
-    const { maxUser, showModal, saveMembers, user, list, handleChange, setMaxUser, getMembers, error, show, showGroupModal, members } = this.props
+    const { maxUser, showModal, saveMembers, admin, user, list, handleChange, setMaxUser, getMembers, error, show, showGroupModal, members } = this.props
     let isdisableSave = true 
     if (members.length) {
       isdisableSave = false
     }
     return (
       <Fragment>
+      
+
         <Button className="user-icon" variant="primary ml-3 mb-3" onClick={getMembers} onMouseUp={() => showGroupModal(true)}>
-          <i class="fas fa-user-plus"></i>
-        </Button>
+        <i class="fas fa-user-plus"></i>
+      </Button>
+        
+       
 
         <Modal show={showModal} onHide={() => showGroupModal(false)} centered>
           <Modal.Header closeButton>
