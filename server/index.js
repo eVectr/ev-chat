@@ -6,14 +6,13 @@ var app = express()
 var server = require('http').Server(app)
 var io = require('socket.io')(server)
 
-console.log(process.env.port)
 
 
 const Conversation = require('../model/main')
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient();
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
 
@@ -52,23 +51,31 @@ io.on('connection', socket => {
 
     socket.on('sendMessage', data => {
         conversation.set_conv_id(data.author, data.to)
-        conversation.get_conv_id(data.author, data.to)
-       .then(conv=> {
-           conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)
-           conversation.save_status(conv, 'sent')
+    //     conversation.get_conv_id(data.author, data.to)
+    //    .then(conv=> {
+    //        conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)
+    //        conversation.save_status(conv, 'sent')
            
-        })
+    //     })
     
         const user = findUser(data.to)
         if (user) 
              {
-                conversation.get_conv_id(data.author, data.to)
-                .then(conv=> {
-                    conversation.save_status(conv, 'seen')
-                    .then(status => { })
-                 })
+                // conversation.get_conv_id(data.author, data.to)
+                // .then(conv=> {
+                //     conversation.save_status(conv, 'seen')
+                //     .then(status => { })
+                //  })
                 
                  socket.broadcast.to(user.socketId).emit('receivedMessage', data)
+            }else{
+                console.log( " nO USER FOUND ")
+                conversation.get_conv_id(data.author, data.to)
+                 .then(conv=> {
+                  conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)
+                  conversation.save_status(conv, 'sent')           
+            })
+
             }
             conversation.get_conv_id(data.author, data.to)
             .then(conv => {
@@ -111,27 +118,48 @@ io.on('connection', socket => {
 
 
     socket.on('join', data => {
+    
         conversation.set_conv_id(data.author, data.to)
+    //     conversation.get_conv_id(data.author, data.to)
+    //     .then(conv=> {
+    //         conversation.get_message(conv).then(message=>{
+    //             if(message == ""){console.log("no message")}else{
+    //             socket.emit('message', message)}
+    //     })
+        
+    // })
+    const user = findUser(data.to)
+    if (user){
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> {
+            conversation.save_status(conv, 'seen')
+            .then(status => { 
+                socket.emit('seen', status)
+                console.log("join status =>", status)
+            })
+            conversation.get_message(conv).then(message=>{
+                if(message == ""){console.log("no message")}else{
+                socket.emit('message', message)}
+        })  
+        })
+    }else{
+        conversation.get_conv_id(data.author, data.to)
+        .then(conv=> {
+            conversation.save_status(conv, 'sent')
+            .then(status => { 
+                socket.emit('seen', status)
+                console.log("join status =>", status)
+            })
             conversation.get_message(conv).then(message=>{
                 if(message == ""){console.log("no message")}else{
                 socket.emit('message', message)}
         })
-        
-    })
-    conversation.get_conv_id(data.author, data.to)
-    .then(conv=> {
-       conversation.get_status(conv).then(status =>{
-           socket.emit('seen', status)
-           console.log("emmited----",status )
-       })
-    })
-    })
+        })
+    }
+})
 
 
     socket.on('groupjoin', data => {
-       console.log("data.to =>",data.to)
         conversation.get_group_message(data.to).then(groupmessage=>{
                 //console.log("groupmessage=>",groupmessage)
                 if(groupmessage == ""){console.log("no message")}else{
