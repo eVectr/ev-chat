@@ -9,7 +9,7 @@ import axios from "axios"
 import { GroupModal } from '../components/GroupModal'
 import Loader from '../components/Loader'
 import CreateGroupModal from '../components/CreateGroupModal'
-import AddUserModal from '../components/AddUserModal'
+
 import GroupMemberModal from '../components/GroupMemberModal'
 
 import { getUser, getGroup } from '../utils/auth'
@@ -17,7 +17,7 @@ import users from '../constants/users'
 
 
 import SucessfullMessage from '../components/SucessfullMessage'
-import { options } from '../constants';
+
 
 
 
@@ -444,7 +444,7 @@ const Chat = (props ) => {
         }
        
        
-     }
+    }
 
      let appendGroupMessages = (data) => {
        
@@ -455,7 +455,8 @@ const Chat = (props ) => {
                  return updatedMessages
                
              })
-        }else{
+        }
+        else{
             console.log("error")
         }
       
@@ -492,24 +493,25 @@ let saveGroupName = () => {
        axios.get('http://localhost:5000/Getgroup')
        //  axios.get('http://209.97.142.219:5000/Getgroup')
         .then(response => {
-            // arr.filter(list => list.groupid === group.groupId)
+           
             let active = {
                 groupname, 
                 groupId,
                 admin:user.username
             }
             console.log(active, 'Active')
-         setGroups(response.data)
-           console.log("API groups",response.data)
+            setGroups(response.data)
+            console.log("API groups",response.data)
             setLoad(false)
-           setActiveChatGroup()
+            setisGroup(true) 
+            setUserSelected(false)
+            setGroupSelected(true)
+            setActiveChatGroup(active)
         })
       })
      
       setHide(false) 
 }
-
-
 
 
     let handleClose = () => {
