@@ -143,7 +143,7 @@ const ChatWindow = ({ sendStatus,activeChatGroup, isGroup, isLoading, activeChat
         
         }
 
-       // updateMessages(messagePayload)
+        updateMessages(messagePayload)
         setMessage('')
 
         if (socket) {
@@ -153,8 +153,6 @@ const ChatWindow = ({ sendStatus,activeChatGroup, isGroup, isLoading, activeChat
     }
 
   
- 
-
 
 let setMaxUser = (e) => {
         setMaxUserLimit(e.target.value)
@@ -180,8 +178,6 @@ let saveMembers= () => {
 
 
 
-
-
 useEffect(()=>{
     setTimeout(()=>setShow(false), 5000)
 }, [show])
@@ -204,9 +200,6 @@ let getMembers = ()=>{
         setList(data)
 })
 }
-
-
-
 
 
     let deleteMember = (user) => {
@@ -240,8 +233,6 @@ let getMembers = ()=>{
     }
 
   
-    
-console.log("membersmembersmembersmembers", members)
 
     return (
 
@@ -397,6 +388,7 @@ const Chat = (props ) => {
     const [sendStatus, setSendStatus] = useState('')
     const [load, setLoad] = useState(false)
    
+    let user = getUser()
 
     useEffect(() => {
             socket = io('http://localhost:6547')
@@ -422,9 +414,26 @@ const Chat = (props ) => {
     },[])
 
 
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chrome.'); 
+          return;
+        }
+      
+        if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+      })
+      
+      function notifyMe() {
+        if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+        else {
+          var notification = new Notification('p2p', {
+            body: 'New Message'
+          })
+        }
+      }
 
-    
-    let user = getUser()
 
     let groupicon = {
         fontSize:'22px',
@@ -435,16 +444,15 @@ const Chat = (props ) => {
     const activeChatUserName = activeChatUser && activeChatUser.username
 
     let appendMessages = (data) => {
-       
+        notifyMe()
         if (data.author == activeChatUserGlobal.username || data.author == user.username) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
                  return updatedMessages
              })
-        }
-       
-       
+        }   
     }
+
 
      let appendGroupMessages = (data) => {
        
