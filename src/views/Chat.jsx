@@ -161,7 +161,7 @@ let setMaxUser = (e) => {
 let saveMembers= () => {
     axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     // axios.post(`http://209.97.142.219:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-    .then(res => { console.log(res,' = res mesg')
+    .then(res => { console.log(res,' = res msg')
         let msg = res.data
         console.log(msg, 'msg')
         if(!msg) {
