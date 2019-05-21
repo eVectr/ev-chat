@@ -19,8 +19,8 @@ client.on('connect', ()=>{
 })
 
 const conversation = new Conversation()
-conversation.delete_message('Trivedi@Love')
-conversation.delete_message('Love@Trivedi')
+//conversation.delete_message('Trivedi@Love')
+///conversation.delete_message('Love@Trivedi')
 
 let users = []
 

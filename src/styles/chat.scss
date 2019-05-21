@@ -62,6 +62,9 @@
     display: flex;
     justify-content: space-between;
     background-color: #f0f4f8;
+    position: fixed;
+    width:75%;
+    z-index: 100;
 }
 
 .message-box {

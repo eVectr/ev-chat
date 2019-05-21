@@ -12,7 +12,7 @@ import CreateGroupModal from '../components/CreateGroupModal'
 
 import GroupMemberModal from '../components/GroupMemberModal'
 
-import { getUser, getGroup } from '../utils/auth'
+import { getUser, removeUser } from '../utils/auth'
 import users from '../constants/users'
 
 
@@ -387,6 +387,7 @@ const Chat = (props ) => {
     const [checklogin, setCheckLogin] = useState(true)
     const [sendStatus, setSendStatus] = useState('')
     const [load, setLoad] = useState(false)
+
    
     let user = getUser()
 
@@ -441,10 +442,13 @@ const Chat = (props ) => {
       }
     
 
-    const activeChatUserName = activeChatUser && activeChatUser.username
-
     let appendMessages = (data) => {
-        notifyMe()
+        console.log("notify data =>", data)
+        console.log(user.username , "==", data.to)
+        if(user.username == data.to){
+            notifyMe()
+        }
+       
         if (data.author == activeChatUserGlobal.username || data.author == user.username) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
@@ -578,7 +582,7 @@ let saveGroupName = () => {
                 setMessages(data)  
            })
         }
-    }, [activeChatUser.username || sendStatus])
+    }, [activeChatUser.username])
 
 
     useEffect(() => {
@@ -624,8 +628,6 @@ let saveGroupName = () => {
 },[groups.length])
 
    
-
-   
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages
@@ -634,10 +636,6 @@ let saveGroupName = () => {
         localStorage.clear()
         props.history.push('/')
     }
-
-    console.log(sendStatus,' <--check status')
-
-
    
 
     return (
