@@ -161,7 +161,7 @@ let setMaxUser = (e) => {
 }
 
 let saveMembers= () => {
-   // axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+    //axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
      axios.post(`http://209.97.142.219:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res mesg')
         let msg = res.data
@@ -211,10 +211,10 @@ let getMembers = ()=>{
 
     let deleteMember = (user) => {
     let groupId =  activeChatGroup.groupId
-   // axios.post(`http://localhost:5000/removeuser`, {groupId, user})
+    //axios.post(`http://localhost:5000/removeuser`, {groupId, user})
    axios.post(`http://209.97.142.219:5000/removeuser`, {groupId, user})
     .then(response =>{
-      //  axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+       // axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
       axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
         .then(res =>{
             setList(res.data)
@@ -411,7 +411,7 @@ const Chat = (props ) => {
     
 
     useEffect(() => {
-          // axios.get('http://localhost:5000/Getgroup')
+         //  axios.get('http://localhost:5000/Getgroup')
            axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
@@ -422,8 +422,6 @@ const Chat = (props ) => {
     },[])
 
 
-    
-    
 
     
     let user = getUser()
@@ -478,43 +476,48 @@ const Chat = (props ) => {
     
     }
 
+let groupparameters = () =>{
+    return new Promise((resolve, reject)=>{
+        var today = new Date()
+        var second = today.getSeconds()
+        let groupId = (second+1) * (Math.floor(Math.random() * 100000000000000000) + Math.floor(Math.random() * 100000000000000000))
+        resolve(groupId)
+    })
+}
    
     
 
 let saveGroupName = () => {
-    var today = new Date()
-    var second = today.getSeconds()
-    let groupId = (second+1) * (Math.floor(Math.random() * 100000000000000000) + Math.floor(Math.random() * 100000000000000000))
-    console.log("group id , ",groupId)
-    console.log("group Admin =>", user.username)
     setLoad(true)
-   // axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
-     axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
-      .then(res => {
-          let users = user.username
-       // axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
-       //axios.get('http://localhost:5000/Getgroup')
-         axios.get('http://209.97.142.219:5000/Getgroup')
-        .then(response => {
-           
-            let active = {
-                groupname, 
-                groupId,
-                admin:user.username
-            }
-            console.log(active, 'Active')
-            setGroups(response.data)
-            console.log("API groups",response.data)
-            setLoad(false)
-            setisGroup(true) 
-            setUserSelected(false)
-            setGroupSelected(true)
-            setActiveChatGroup(active)
-        })
-      })
-     
-      setHide(false) 
+    groupparameters().then(groupId =>{
+
+       // axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
+         axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
+          .then(res => {
+              let users = user.username
+          //  axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
+            axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
+           //axios.get('http://localhost:5000/Getgroup')
+             axios.get('http://209.97.142.219:5000/Getgroup')
+            .then(response => {
+               
+                let active = {
+                    groupname, 
+                    groupId,
+                    admin:user.username
+                }
+                console.log(active, 'Active')
+                setGroups(response.data)
+                console.log("API groups",response.data)
+                setLoad(false)
+                setisGroup(true) 
+                setUserSelected(false)
+                setGroupSelected(true)
+                setActiveChatGroup(active)
+            })
+          })
+          setHide(false) 
+    })     
 }
 
 
