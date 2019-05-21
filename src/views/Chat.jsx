@@ -230,6 +230,7 @@ let getMembers = ()=>{
             array.push(member.value)
         })
         setMembers(array)
+        
     }
 
 
