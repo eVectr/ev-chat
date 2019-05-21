@@ -396,12 +396,11 @@ const Chat = (props ) => {
     const [checklogin, setCheckLogin] = useState(true)
     const [sendStatus, setSendStatus] = useState('')
     const [load, setLoad] = useState(false)
-    let sendGroupStatus= ''
    
 
     useEffect(() => {
-        //  socket = io('http://localhost:6547')
-           socket = io('http://209.97.142.219:6547')
+            socket = io('http://localhost:6547')
+          // socket = io('http://209.97.142.219:6547')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
                  console.log("seeen =>",data)
@@ -412,8 +411,8 @@ const Chat = (props ) => {
     
 
     useEffect(() => {
-           // axios.get('http://localhost:5000/Getgroup')
-           axios.get('http://209.97.142.219:5000/Getgroup')
+           axios.get('http://localhost:5000/Getgroup')
+           //axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
                 console.log("API group",response.data)
@@ -489,14 +488,14 @@ let saveGroupName = () => {
     console.log("group id , ",groupId)
     console.log("group Admin =>", user.username)
     setLoad(true)
-   // axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
-     axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
+    axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
+     //axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname:groupname, admin:user.username })
       .then(res => {
           let users = user.username
-       // axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
-        axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
-       //axios.get('http://localhost:5000/Getgroup')
-         axios.get('http://209.97.142.219:5000/Getgroup')
+        axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
+       // axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
+       axios.get('http://localhost:5000/Getgroup')
+       //  axios.get('http://209.97.142.219:5000/Getgroup')
         .then(response => {
            
             let active = {
@@ -595,8 +594,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
-            // return axios.post('http://localhost:5000/getuser', {groupId:groupId})
-             return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
+             return axios.post('http://localhost:5000/getuser', {groupId:groupId})
+            // return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
            
         })
         Promise.all(promiseArr)
