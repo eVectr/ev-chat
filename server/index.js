@@ -11,8 +11,8 @@ var io = require('socket.io')(server)
 const Conversation = require('../model/main')
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient();
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
 
