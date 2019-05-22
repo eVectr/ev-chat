@@ -25,7 +25,7 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
+const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
 
    
     const [message, setMessage] = useState('')
@@ -49,7 +49,7 @@ const ChatWindow = ({ sendStatus,activeChatGroup, isGroup, isLoading, activeChat
     }, [messages.length])
 
     
-    let user = getUser()
+    //let user = getUser()
     let msg = useRef(null)
 
 
@@ -390,10 +390,11 @@ const Chat = (props ) => {
 
    
     let user = getUser()
+    console.log(user, 'getUser')
 
     useEffect(() => {
-            socket = io('http://localhost:6547')
-          // socket = io('http://209.97.142.219:6547')
+           // socket = io('http://localhost:6565')
+           socket = io('http://209.97.142.219:6565')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
                  console.log("seeen =>",data)
@@ -404,8 +405,8 @@ const Chat = (props ) => {
     
 
     useEffect(() => {
-           axios.get('http://localhost:5000/Getgroup')
-         //  axios.get('http://209.97.142.219:5000/Getgroup')
+           //axios.get('http://localhost:5000/Getgroup')
+           axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
                 console.log("API group",response.data)
@@ -422,6 +423,7 @@ const Chat = (props ) => {
         }
       
         if (Notification.permission !== 'granted')
+        
           Notification.requestPermission();
       })
       
@@ -429,7 +431,8 @@ const Chat = (props ) => {
         if (Notification.permission !== 'granted')
           Notification.requestPermission();
         else {
-          var notification = new Notification('p2p', {
+            console.log("NEW NOTIFICATION")
+            var notification = new Notification('p2p', {
             body: 'New Message'
           })
         }
@@ -443,13 +446,14 @@ const Chat = (props ) => {
     
 
     let appendMessages = (data) => {
-        console.log("notify data =>", data)
-        console.log(user.username , "==", data.to)
-        if(user.username == data.to){
-            notifyMe()
+         console.log("user.username =>",user.username , "data.to==>", data.to)
+         let check = (user.username == data.to)
+         
+        if(check){
+            console.log("check =>", check)
+           notifyMe()
         }
-       
-        if (data.author == activeChatUserGlobal.username || data.author == user.username) {
+        if (data.author == activeChatUserGlobal.username || data.author == user.username ) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
                  return updatedMessages
@@ -459,19 +463,23 @@ const Chat = (props ) => {
 
 
      let appendGroupMessages = (data) => {
-       
         if (data.to == activeChatGroupGlobal.groupId || data.author == user.username) {
-        
              setMessages(prevGroupMessages => {
                  const updatedMessages = prevGroupMessages.concat(data)
                  return updatedMessages
-               
              })
+             notifyMe()
+            //  return axios.post('http://localhost:5000/getuser', {groupId:activeChatGroupGlobal.groupId})
+            //  .then(members =>{
+            //      members.data.map(member=>{
+            //          console.log(member , '=', user.username)
+            //          if(member == user.username){notifyMe()}
+            //      })
+            //  })
         }
         else{
             console.log("error")
         }
-      
      }
 
      let handleChatMouseUp = () =>{
@@ -503,14 +511,14 @@ let saveGroupName = () => {
     setLoad(true)
     groupparameters().then(groupId =>{
         console.log("group id ======>", groupId)
-        axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
-        // axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname, groupId, admin:user.username })
+       // axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
+         axios.post(`http://209.97.142.219:5000/Creategroup`, { groupname, groupId, admin:user.username })
           .then(res => {
               let users = user.username
-            axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
-          //  axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
-            axios.get('http://localhost:5000/Getgroup')
-             //axios.get('http://209.97.142.219:5000/Getgroup')
+            //axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
+            axios.post(`http://209.97.142.219:5000/adduser`, { groupId:groupId, users:[user.username] })
+          //  axios.get('http://localhost:5000/Getgroup')
+             axios.get('http://209.97.142.219:5000/Getgroup')
             .then(response => {
                 let active = {
                     groupname, 
@@ -607,8 +615,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
-             return axios.post('http://localhost:5000/getuser', {groupId:groupId})
-           //  return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
+             //return axios.post('http://localhost:5000/getuser', {groupId:groupId})
+             return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
            
         })
         Promise.all(promiseArr)
@@ -633,6 +641,7 @@ let saveGroupName = () => {
     const activeChatMessages = messages
 
     let userLogOut = () => {
+        user = ''
         localStorage.clear()
         props.history.push('/')
     }
@@ -719,6 +728,7 @@ let saveGroupName = () => {
                     </div>
                 </aside>
                     <ChatWindow
+                        user = {user}
                         isGroup ={isGroup}
                         isLoading={isLoading}
                         groups ={groups}

@@ -11,8 +11,8 @@ var io = require('socket.io')(server)
 const Conversation = require('../model/main')
 
 
-//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient();
+let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+//let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
 
@@ -60,13 +60,7 @@ io.on('connection', socket => {
     
         const user = findUser(data.to)
         if (user) 
-             {
-                // conversation.get_conv_id(data.author, data.to)
-                // .then(conv=> {
-                //     conversation.save_status(conv, 'seen')
-                //     .then(status => { })
-                //  })
-                
+             {   
                  socket.broadcast.to(user.socketId).emit('receivedMessage', data)
             }else{
                 console.log( " nO USER FOUND ")
@@ -183,4 +177,4 @@ io.on('connection', socket => {
 
 // io.set('transports', ['websocket'])
 
-server.listen(6547, () => 'API listeneing')
+server.listen(6565, () => 'API listeneing')

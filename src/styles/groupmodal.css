@@ -9,6 +9,14 @@
     background-color: #00827c;
 }
 
+.addmembers{
+    display:none
+}
+
+.user-icon:hover p{
+    display: block;
+}
+
 .members{
     display: flex;
     flex-direction: column;
