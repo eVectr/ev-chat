@@ -6,9 +6,10 @@ const redis = require('redis');
  var app = express()
 
 
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient()
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient()
 app.use(bodyParser.json());
+
 
 app.use((req, res, next)=>{
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,6 +17,12 @@ app.use((req, res, next)=>{
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
     next();
 })
+
+
+
+////////////// API //////////////////////////////
+
+
 
 //////////========== CREATE GROUP /////////////////////////
 

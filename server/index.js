@@ -3,16 +3,19 @@ const path = require('path')
 const express = require('express')
 
 var app = express()
+var bodyParser = require('body-parser')
 var server = require('http').Server(app)
 var io = require('socket.io')(server)
+
+app.use(bodyParser.json());
 
 
 
 const Conversation = require('../model/main')
 
 
-let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-//let client = redis.createClient();
+//let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
+let client = redis.createClient();
 client.on('connect', ()=>{
     console.log("Redis Connected")
 
@@ -24,12 +27,7 @@ const conversation = new Conversation()
 
 let users = []
 
-// app.use((req, res, next)=>{
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-//     next();
-// })
+
 
 app.use(express.static(path.join(__dirname, '../build')))
 
@@ -48,6 +46,9 @@ io.on('connection', socket => {
             socketId: socket.id
         })
     })
+
+///////////////////////////// API //////////////////////////////////////////////////
+
 
     socket.on('sendMessage', data => {
         conversation.set_conv_id(data.author, data.to)
@@ -177,4 +178,7 @@ io.on('connection', socket => {
 
 // io.set('transports', ['websocket'])
 
-server.listen(6565, () => 'API listeneing')
+server.listen(6565, () => {
+    console.log("Api Listening")
+})
+

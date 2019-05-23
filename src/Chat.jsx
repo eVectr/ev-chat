@@ -159,8 +159,8 @@ let setMaxUser = (e) => {
 }
 
 let saveMembers= () => {
-    axios.post(`http://localhost:6565/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-    // axios.post(`http://209.97.142.219:4000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+    //axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+     axios.post(`https://reactchat.softuvo.xyz/:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res msg')
         let msg = res.data
         console.log(msg, 'msg')
@@ -192,8 +192,8 @@ useEffect(()=>{
 let getMembers = ()=>{
     let groupId =  activeChatGroup.groupId
     console.log("group id ->", groupId)
-    axios.post(`http://localhost:6565/getuser`, {groupId:groupId})
-   // axios.post(`http://209.97.142.219:4000/getuser`, {groupId:groupId})
+    //axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+    axios.post(`https://reactchat.softuvo.xyz/:5000/getuser`, {groupId:groupId})
     .then(response =>{console.log("active group member==>",response)
         let data = response.data
         console.log(data, 'data')
@@ -204,11 +204,11 @@ let getMembers = ()=>{
 
     let deleteMember = (user) => {
     let groupId =  activeChatGroup.groupId
-    axios.post(`http://localhost:6565/removeuser`, {groupId, user})
-    // axios.post(`http://209.97.142.219:4000/removeuser`, {groupId, user})
+    //axios.post(`http://localhost:5000/removeuser`, {groupId, user})
+     axios.post(`https://reactchat.softuvo.xyz/:5000/removeuser`, {groupId, user})
     .then(response =>{
-        axios.post(`http://localhost:6565/getuser`, {groupId:groupId})
-     // axios.post(`http://209.97.142.219:4000/getuser`, {groupId:groupId})
+        //axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+      axios.post(`https://reactchat.softuvo.xyz/:5000/getuser`, {groupId:groupId})
         .then(res =>{
             setList(res.data)
         
@@ -393,8 +393,8 @@ const Chat = (props ) => {
     console.log(user, 'getUser')
 
     useEffect(() => {
-            socket = io('http://localhost:6565')
-         //  socket = io('http://209.97.142.219:6565')
+           // socket = io('http://localhost:6565')
+           socket = io('https://reactchat.softuvo.xyz/')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
                  console.log("seeen =>",data)
@@ -405,8 +405,8 @@ const Chat = (props ) => {
     
 
     useEffect(() => {
-           axios.get('http://localhost:6565/Getgroup')
-           //axios.get('http://209.97.142.219:4000/Getgroup')
+           //axios.get('http://localhost:5000/Getgroup')
+           axios.get('https://reactchat.softuvo.xyz/:5000/Getgroup')
             .then(response => {
                 setGroups(response.data)
                 console.log("API group",response.data)
@@ -511,14 +511,14 @@ let saveGroupName = () => {
     setLoad(true)
     groupparameters().then(groupId =>{
         console.log("group id ======>", groupId)
-        axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
-         //axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname, groupId, admin:user.username })
+       // axios.post(`http://localhost:5000/Creategroup`, { groupname, groupId, admin:user.username  })
+         axios.post(`https://reactchat.softuvo.xyz/:5000/Creategroup`, { groupname, groupId, admin:user.username })
           .then(res => {
               let users = user.username
-            axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[users] })
-           // axios.post(`http://209.97.142.219:4000/adduser`, { groupId:groupId, users:[user.username] })
-            axios.get('http://localhost:6565/Getgroup')
-             //axios.get('http://209.97.142.219:4000/Getgroup')
+            //axios.post(`http://localhost:5000/adduser`, { groupId:groupId, users:[users] })
+            axios.post(`https://reactchat.softuvo.xyz/:5000/adduser`, { groupId:groupId, users:[user.username] })
+          //  axios.get('http://localhost:5000/Getgroup')
+             axios.get('https://reactchat.softuvo.xyz/:5000/Getgroup')
             .then(response => {
                 let active = {
                     groupname, 
@@ -615,8 +615,8 @@ let saveGroupName = () => {
     useEffect(() => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
-             return axios.post('http://localhost:6565/getuser', {groupId:groupId})
-            // return axios.post('http://209.97.142.219:4000/getuser', {groupId:groupId})
+             //return axios.post('http://localhost:5000/getuser', {groupId:groupId})
+             return axios.post('https://reactchat.softuvo.xyz/:5000/getuser', {groupId:groupId})
            
         })
         Promise.all(promiseArr)
