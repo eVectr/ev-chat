@@ -159,8 +159,8 @@ let setMaxUser = (e) => {
 }
 
 let saveMembers= () => {
-    axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-    // axios.post(`http://209.97.142.219:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+    //axios.post(`http://localhost:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+     axios.post(`http://209.97.142.219:5000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res msg')
         let msg = res.data
         console.log(msg, 'msg')
@@ -192,8 +192,8 @@ useEffect(()=>{
 let getMembers = ()=>{
     let groupId =  activeChatGroup.groupId
     console.log("group id ->", groupId)
-    axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
-   // axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
+    //axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+    axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
     .then(response =>{console.log("active group member==>",response)
         let data = response.data
         console.log(data, 'data')
@@ -204,11 +204,11 @@ let getMembers = ()=>{
 
     let deleteMember = (user) => {
     let groupId =  activeChatGroup.groupId
-    axios.post(`http://localhost:5000/removeuser`, {groupId, user})
-  // axios.post(`http://209.97.142.219:5000/removeuser`, {groupId, user})
+    //axios.post(`http://localhost:5000/removeuser`, {groupId, user})
+     axios.post(`http://209.97.142.219:5000/removeuser`, {groupId, user})
     .then(response =>{
-        axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
-    //  axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
+        //axios.post(`http://localhost:5000/getuser`, {groupId:groupId})
+      axios.post(`http://209.97.142.219:5000/getuser`, {groupId:groupId})
         .then(res =>{
             setList(res.data)
         
@@ -616,7 +616,7 @@ let saveGroupName = () => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
              //return axios.post('http://localhost:5000/getuser', {groupId:groupId})
-             return axios.post(' http://209.97.142.219:5000/getuser', {groupId:groupId})
+             return axios.post('http://209.97.142.219:5000/getuser', {groupId:groupId})
            
         })
         Promise.all(promiseArr)
