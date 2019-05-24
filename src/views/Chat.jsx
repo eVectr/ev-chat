@@ -25,13 +25,14 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, updateGroupMessages }) => {
+const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, notifyMe }) => {
 
    
     const [message, setMessage] = useState('')
     const [members, setMembers] = useState([])
     const [list, setList] = useState([])
-    const [maxUser, setMaxUserLimit] = useState(5)
+    //const [maxUser, setMaxUserLimit] = useState([{groupId:'',maxLimit: 5}])
+   const [maxUser, setMaxUserLimit] = useState(5)
     const [login, setLogin] = useState(false)
     const [error, setError] = useState('')
     const [show, setShow] = useState(false)
@@ -90,8 +91,15 @@ const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, acti
     }
 
     const sendMessage = () => {
+        console.log("before send")
+        if (!message.trim().length) 
+        {
+            console.log("return")
+            return
+        }
+        console.log("send message =>", message)
 
-        if (!message.trim().length) return
+       
 
         var today = new Date()
         var hour = today.getHours();         
@@ -117,11 +125,20 @@ const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, acti
         setMessage('')
 
         if (socket) {
+        
             socket.emit('sendMessage', messagePayload)   
         }
     }
 
     const sendGroupMessage = () => {
+        // axios.post('http://localhost:5000/getuser', {groupId:activeChatGroupGlobal.groupId})
+        //      .then(members =>{
+        //          members.data.map(member=>{
+        //              console.log(member , '=', data.author)
+        //              if(member == data.author){notifyMe()}
+        //          })
+        //      })
+        notifyMe()
       
         if (!message.trim().length) return
         var today = new Date()
@@ -155,12 +172,13 @@ const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, acti
   
 
 let setMaxUser = (e) => {
+    console.log("group id =>",activeChatGroupGlobal)
         setMaxUserLimit(e.target.value)
 }
 
 let saveMembers= () => {
     axios.post(`http://localhost:6565/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-    // axios.post(`http://209.97.142.219:4000/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+    // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res msg')
         let msg = res.data
         console.log(msg, 'msg')
@@ -193,7 +211,7 @@ let getMembers = ()=>{
     let groupId =  activeChatGroup.groupId
     console.log("group id ->", groupId)
     axios.post(`http://localhost:6565/getuser`, {groupId:groupId})
-   // axios.post(`http://209.97.142.219:4000/getuser`, {groupId:groupId})
+    //axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
     .then(response =>{console.log("active group member==>",response)
         let data = response.data
         console.log(data, 'data')
@@ -205,10 +223,10 @@ let getMembers = ()=>{
     let deleteMember = (user) => {
     let groupId =  activeChatGroup.groupId
     axios.post(`http://localhost:6565/removeuser`, {groupId, user})
-    // axios.post(`http://209.97.142.219:4000/removeuser`, {groupId, user})
+    // axios.post(`https://reactchat.softuvo.xyz/removeuser`, {groupId, user})
     .then(response =>{
         axios.post(`http://localhost:6565/getuser`, {groupId:groupId})
-     // axios.post(`http://209.97.142.219:4000/getuser`, {groupId:groupId})
+      //axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
         .then(res =>{
             setList(res.data)
         
@@ -232,6 +250,8 @@ let getMembers = ()=>{
         setError(false)
     }
 
+    console.log("messages12 ==>",messages) 
+    console.log("activechat user", activeChatUser)
   
 
     return (
@@ -394,7 +414,7 @@ const Chat = (props ) => {
 
     useEffect(() => {
             socket = io('http://localhost:6565')
-         //  socket = io('http://209.97.142.219:6565')
+           // socket = io('https://reactchat.softuvo.xyz')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
                  console.log("seeen =>",data)
@@ -406,7 +426,7 @@ const Chat = (props ) => {
 
     useEffect(() => {
            axios.get('http://localhost:6565/Getgroup')
-           //axios.get('http://209.97.142.219:4000/Getgroup')
+          // axios.get('https://reactchat.softuvo.xyz/Getgroup')
             .then(response => {
                 setGroups(response.data)
                 console.log("API group",response.data)
@@ -446,19 +466,22 @@ const Chat = (props ) => {
     
 
     let appendMessages = (data) => {
-         console.log("user.username =>",user.username , "data.to==>", data.to)
+        
          let check = (user.username == data.to)
          
         if(check){
             console.log("check =>", check)
            notifyMe()
         }
+      
         if (data.author == activeChatUserGlobal.username || data.author == user.username ) {
+            console.log("data  reached == > ", data)
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
                  return updatedMessages
              })
-        }   
+        }
+         
     }
 
 
@@ -468,14 +491,8 @@ const Chat = (props ) => {
                  const updatedMessages = prevGroupMessages.concat(data)
                  return updatedMessages
              })
-             notifyMe()
-            //  return axios.post('http://localhost:5000/getuser', {groupId:activeChatGroupGlobal.groupId})
-            //  .then(members =>{
-            //      members.data.map(member=>{
-            //          console.log(member , '=', user.username)
-            //          if(member == user.username){notifyMe()}
-            //      })
-            //  })
+            // notifyMe()
+              
         }
         else{
             console.log("error")
@@ -512,13 +529,13 @@ let saveGroupName = () => {
     groupparameters().then(groupId =>{
         console.log("group id ======>", groupId)
         axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
-         //axios.post(`http://209.97.142.219:4000/Creategroup`, { groupname, groupId, admin:user.username })
+       //  axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin:user.username })
           .then(res => {
               let users = user.username
             axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[users] })
-           // axios.post(`http://209.97.142.219:4000/adduser`, { groupId:groupId, users:[user.username] })
+           // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:groupId, users:[user.username] })
             axios.get('http://localhost:6565/Getgroup')
-             //axios.get('http://209.97.142.219:4000/Getgroup')
+           //  axios.get('https://reactchat.softuvo.xyz/Getgroup')
             .then(response => {
                 let active = {
                     groupname, 
@@ -616,7 +633,7 @@ let saveGroupName = () => {
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
              return axios.post('http://localhost:6565/getuser', {groupId:groupId})
-            // return axios.post('http://209.97.142.219:4000/getuser', {groupId:groupId})
+            // return axios.post('https://reactchat.softuvo.xyz/getuser', {groupId:groupId})
            
         })
         Promise.all(promiseArr)
@@ -742,6 +759,7 @@ let saveGroupName = () => {
                         updateGroupMessages={
                             message => appendGroupMessages( message)
                          }
+                         notifyMe = {notifyMe}
                       
                     />
             </div>

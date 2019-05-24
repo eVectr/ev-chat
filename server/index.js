@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 
 
 const Conversation = require('../model/main')
+let convapi = require("../model/api");
 
 
 //let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
@@ -22,12 +23,12 @@ client.on('connect', ()=>{
 })
 
 const conversation = new Conversation()
-//conversation.delete_message('Trivedi@Love')
-///conversation.delete_message('Love@Trivedi')
+conversation.delete_message('Trivedi@Love')
+conversation.delete_message('Love@Trivedi')
 
 let users = []
 
-
+convapi(app)
 
 app.use(express.static(path.join(__dirname, '../build')))
 
@@ -90,9 +91,7 @@ io.on('connection', socket => {
         conversation.getusers(groupname)
         .then(members => {
             members.map((member)=>{
-                console.log("member -->", member)
                 const user = findUser(member)
-                console.log("user ==>", user)
                 if (user) 
                 {
                     socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
