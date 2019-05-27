@@ -37,15 +37,15 @@ class GroupMemberModal extends React.Component {
            <ModalHeader toggle={this.toggle}>Group Members</ModalHeader> 
             
           <ModalBody>
-                <ul >
-                    {
-                      list.map((user, index) => {
+              <ul >
+                  {
+                    list.map((user, index) => {
                         
-                          let showAdmin = user
-                          if (!index) {
-                            showAdmin = `${showAdmin} ~admin`
-                          }
-                         let check =true
+                      let showAdmin = user
+                        if (!index) {
+                          showAdmin = `${showAdmin} ~admin`
+                        }
+                        let check =true
                           if (!index) {
                             check = false
                           }
@@ -57,25 +57,20 @@ class GroupMemberModal extends React.Component {
                           }else{
                             isAdmin = false
                           }
-                            return(
-                               <div className="group-list">
-
-                                {isAdmin?<Fragment>
-                                    <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
-                                     {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>: ''}
-                                 </Fragment>:
-                                 <Fragment>
-                                 <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
-                                  
+                          return(
+                            <div className="group-list">
+                              {isAdmin? <Fragment>
+                                  <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
+                                  {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>: ''}
+                              </Fragment>:
+                              <Fragment>
+                                <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
                               </Fragment>
-                                }
-
-                           </div> 
-                            )
-                        
-                            
+                              }
+                            </div> 
+                          )
                         })
-                    }
+                  }
                 </ul>  
           </ModalBody>
           <ModalFooter>

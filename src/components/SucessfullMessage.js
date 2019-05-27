@@ -3,8 +3,8 @@ import { Alert } from 'reactstrap';
 
 const SucessfullMessage = (props) => {
   return (
-    <div>
-      <Alert color="primary">
+    <div style={{marginTop:"150px"}}>
+      <Alert color="primary" > 
             Added Sucessfully
       </Alert>
     </div>

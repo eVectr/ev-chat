@@ -4,12 +4,7 @@ import '../styles/creategroupmodal.css'
 
 class CreateGroupModal extends Component {
   
-  
-
   render() {
-    
-    
-    
 
     const { setGroupNames, groupname, saveGroupName, hide, handleClose, handleShow, load, } = this.props
     console.log(groupname, 'groupname')
@@ -31,10 +26,9 @@ class CreateGroupModal extends Component {
             <Modal.Title className='group-title'>Enter Group Name</Modal.Title>
           </Modal.Header>
           <Modal.Body className="groupname">
-          <Modal.Title> 
-            
-            <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} placeholder='Please Enter Group Name' />
-          </Modal.Title>
+            <Modal.Title> 
+              <input  type="text" name="groupname" onChange={setGroupNames} value={groupname} placeholder='Please Enter Group Name' />
+            </Modal.Title>
           </Modal.Body>
           <Modal.Footer>
             <Button className="close-btn" variant="secondary" show={hide} onClick={handleClose} >

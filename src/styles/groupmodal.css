@@ -1,20 +1,29 @@
-.user-icon{
+.user-icon {
     background-color: #00827c;
     border: 1px solid #00827c;
 }
 
-.user-icon:hover{
+.addmembers {
+    display: none;
+}
+
+.user-icon:hover {
     outline:0;
     border: 1px solid #00827c;
     background-color: #00827c;
+    
 }
 
-.members{
+.user-icon:hover p {
+    display: block;
+}
+
+.members {
     display: flex;
     flex-direction: column;
 }
 
-.members label{
+.members label {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
@@ -37,20 +46,20 @@
 
 
 
-.save-btn{
+.save-btn {
     padding: 5px 15px;
     background-color: #00B5AD;
     border: 1px solid #00b5ad;
     color:#fff;
 }
 
-.save-btn:hover{
+.save-btn:hover {
     background-color: #00827c;
     outline: 0;
 }
 
 
-.close-btn{
+.close-btn {
     padding: 5px 15px;
 
     background-color:transparent;
@@ -58,7 +67,7 @@
     color:#545b62;
 }
 
-.close-btn:focus{
+.close-btn:focus {
     background-color: #545b62;
     color:#fff;
 }

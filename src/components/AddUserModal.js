@@ -8,7 +8,6 @@ import '../styles/groupbutton.css'
 
 const AddUserModal = (props) => {
 
-
     let admin = props.user
     let users = []
     
@@ -34,13 +33,11 @@ const AddUserModal = (props) => {
         
         }
 
-
-
-      let filteredSameMembers = users.filter(
+        let filteredSameMembers = users.filter(
           user => !list.find(member => member == user.value)
       )
        
-    return (
+      return (
         <div className="adduser">
             <Select options={filteredSameMembers} isMulti onChange={data => props.handleChange(data)} />
             {error ? <p>Max limit Reached</p> : null}
