@@ -145,6 +145,7 @@ io.on('connection', socket => {
                 console.log("join status =>", status)
             })
             conversation.get_message(conv).then(message=>{
+                console.log("get_messages =>", message)
                 if(message == ""){console.log("no message")}else{
                 socket.emit('message', message)}
         })

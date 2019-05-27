@@ -91,13 +91,9 @@ const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, acti
     }
 
     const sendMessage = () => {
-        console.log("before send")
-        if (!message.trim().length) 
-        {
-            console.log("return")
-            return
-        }
-        console.log("send message =>", message)
+       
+        if (!message.trim().length)  return
+        
 
        
 
@@ -250,12 +246,9 @@ let getMembers = ()=>{
         setError(false)
     }
 
-    console.log("messages12 ==>",messages) 
-    console.log("activechat user", activeChatUser)
-  
+    console.log("messages check ==>",messages) 
 
     return (
-
        <div className="col-9 chat-window">
        
             {
@@ -335,14 +328,14 @@ let getMembers = ()=>{
                     </div>
                     <div className="message-list" ref={(el) => { msg = el; }} >
                     {isLoading ? <Loader /> : null }
-
-                        {
+                         {
                             messages.map(
                                 (message, index) => (
+                                 
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
                                         
-                                        <pre className="m-0">{message.content}
+                                        <pre className="m-0">{message.content}ghjj
                                         <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
@@ -360,15 +353,15 @@ let getMembers = ()=>{
                                                  :null }</p>
                                            
                                         </div>
-                                        </pre>
-                                            
+                                        </pre>    
                                         </div>                                        
-                                    </div>
-                                    
-                                )
-                            )
-                        }
+                                 </div>       
+                                 )
+                ) 
+            } 
                        
+                        
+
                     </div>
                     <div class="input-group message-box">
                         <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
@@ -382,8 +375,7 @@ let getMembers = ()=>{
             }
                 </Fragment>
             }
-
-       </div>
+        </div>
        
    )
 }
@@ -475,7 +467,6 @@ const Chat = (props ) => {
         }
       
         if (data.author == activeChatUserGlobal.username || data.author == user.username ) {
-            console.log("data  reached == > ", data)
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
                  return updatedMessages
@@ -598,11 +589,11 @@ let saveGroupName = () => {
 
   
     useEffect(() => {
-        
         if (activeChatUser && activeChatUser.username) {
             socket.emit('join', {author:user.username, to: activeChatUser.username })
             socket.on('message', conversation =>{
                 const {  data =  {} } = conversation
+                console.log("saved conversation =>", data)
                 setLoading(false)
                 setMessages(data)  
            })
