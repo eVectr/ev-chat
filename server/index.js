@@ -40,8 +40,7 @@ app.get('*', function(req, res) {
 const findUser = username => users.find(user => user.username == username)
 
 io.on('connection', socket => {
-    socket.on('newConnection', data => {
-      
+    socket.on('newConnection', data => { 
         users.push({
             username: data.username,
             socketId: socket.id
@@ -62,10 +61,11 @@ io.on('connection', socket => {
     
         const user = findUser(data.to)
         if (user) 
-             {   
+             {   console.log("emit received data =>", data)
                  socket.broadcast.to(user.socketId).emit('receivedMessage', data)
             }else{
                 console.log( " nO USER FOUND ")
+                console.log("emit received data =>", data)
                 conversation.get_conv_id(data.author, data.to)
                  .then(conv=> {
                   conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)
@@ -80,7 +80,6 @@ io.on('connection', socket => {
                 socket.emit('seen', status )
             })
         })
-
     })
 
     socket.on('sendGroupMessage', data => {
@@ -125,30 +124,44 @@ io.on('connection', socket => {
     const user = findUser(data.to)
     if (user){
         conversation.get_conv_id(data.author, data.to)
-        .then(conv=> {
-            conversation.save_status(conv, 'seen')
-            .then(status => { 
-                socket.emit('seen', status)
-                console.log("join status =>", status)
-            })
-            conversation.get_message(conv).then(message=>{
-                if(message == ""){console.log("no message")}else{
-                socket.emit('message', message)}
-        })  
-        })
+        .then(conv=> 
+            {
+            if(conv){
+                conversation.save_status(conv, 'seen')
+                .then(status => { 
+                    socket.emit('seen', status)
+                    console.log("join status =>", status)
+                })
+                conversation.get_message(conv).then(message=>{
+                    if(message == ""){console.log("no message")}else{
+                    socket.emit('message', message)}
+            }) 
+            }  else{
+                socket.emit('seen', 'sent')
+            }
+            
+        }
+
+        )
     }else{
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> {
-            conversation.save_status(conv, 'sent')
-            .then(status => { 
-                socket.emit('seen', status)
-                console.log("join status =>", status)
+            if(conv){
+                conversation.save_status(conv, 'sent')
+                .then(status => { 
+                    socket.emit('seen', status)
+                    console.log("join status =>", status)
+                })
+                conversation.get_message(conv).then(message=>{
+                    console.log("get_messages =>", message)
+                    if(message == ""){console.log("no message")}else{
+                    socket.emit('message', message)}
             })
-            conversation.get_message(conv).then(message=>{
-                console.log("get_messages =>", message)
-                if(message == ""){console.log("no message")}else{
-                socket.emit('message', message)}
-        })
+            }else{
+                socket.emit('seen', 'sent')
+            }
+          
+
         })
     }
 })

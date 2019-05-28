@@ -36,6 +36,13 @@
     padding: 5px 15px;
 }
 
+.edit-user-limit-btn{
+    font-size: 1rem;
+   border:1px solid #00B5AD;
+   color:#fff;
+   border-radius: 4px;
+}
+
 
 
 .members input:focus {
@@ -43,6 +50,14 @@
     outline:0;
 }
 
+.user-limit{
+    display: flex!important;
+    align-items: center!important;
+    justify-content: space-between!important;
+    display: block;
+    width: 100%!important;
+    font-size: 1.5rem;
+ }
 
 
 .save-btn{
@@ -69,4 +84,9 @@
 .close-btn:focus{
     background-color: #545b62;
     color:#fff;
+}
+
+.save-button{
+    display: flex;
+   justify-content: space-between;
 }

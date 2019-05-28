@@ -25,7 +25,7 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, notifyMe }) => {
+const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, notifyMe }) => {
 
    
     const [message, setMessage] = useState('')
@@ -49,8 +49,6 @@ const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, acti
         scrollToBottom();
     }, [messages.length])
 
-    
-    //let user = getUser()
     let msg = useRef(null)
 
 
@@ -121,7 +119,6 @@ const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, acti
         setMessage('')
 
         if (socket) {
-        
             socket.emit('sendMessage', messagePayload)   
         }
     }
@@ -246,7 +243,7 @@ let getMembers = ()=>{
         setError(false)
     }
 
-    console.log("messages check ==>",messages) 
+   
 
     return (
        <div className="col-9 chat-window">
@@ -275,7 +272,7 @@ let getMembers = ()=>{
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
                                              <div style ={groupstyle}>
-                                            {message.author}
+                                          {message.author}
                                             </div> 
                                            
                                             <pre className="m-0 messages"> {message.content}
@@ -335,7 +332,7 @@ let getMembers = ()=>{
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
                                         
-                                        <pre className="m-0">{message.content}ghjj
+                                        <pre className="m-0 messages">{message.content}
                                         <div className="date">
                                             <div style = {DateTimeStyle}>
                                                 {message.DateTime}
@@ -380,6 +377,7 @@ let getMembers = ()=>{
    )
 }
 
+
 const Chat = (props ) => {
 
 
@@ -387,9 +385,7 @@ const Chat = (props ) => {
     const [filteredgroups, setFilteredGroups] = useState([])
     const [groupname, setGroupName] = useState()
     const [isGroup, setisGroup] = useState()
-    const [groupMembers, setGroupMember] = useState()
     const [messages, setMessages] = useState([])
-    const [groupMessages, setgroupMessages] = useState([])
     const [isLoading, setLoading] = useState(false)
     const [activeChatUser, setActiveChatUser] = useState({username : ''})
     const [activeChatGroup, setActiveChatGroup] = useState({groupname : ''})
@@ -399,7 +395,7 @@ const Chat = (props ) => {
     const [checklogin, setCheckLogin] = useState(true)
     const [sendStatus, setSendStatus] = useState('')
     const [load, setLoad] = useState(false)
-
+   
    
     let user = getUser()
     console.log(user, 'getUser')
@@ -409,11 +405,10 @@ const Chat = (props ) => {
            // socket = io('https://reactchat.softuvo.xyz')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
-                 console.log("seeen =>",data)
                 setSendStatus(data)
             })
 
-        },[sendStatus])
+        },[])
     
 
     useEffect(() => {
@@ -457,24 +452,28 @@ const Chat = (props ) => {
       }
     
 
+      let check = (data)=>{
+        console.log("check fun data =>",data)
+        setMessages([data])
+    }
+
+
     let appendMessages = (data) => {
-        
+        console.log("append messages =>", data)
          let check = (user.username == data.to)
-         
-        if(check){
-            console.log("check =>", check)
-           notifyMe()
+            if(check){
+                notifyMe()
         }
-      
+        console.log(data.author, "==", activeChatUserGlobal.username, data.author, "==", user.username )
         if (data.author == activeChatUserGlobal.username || data.author == user.username ) {
              setMessages(prevMessages => {
                  const updatedMessages = prevMessages.concat(data)
                  return updatedMessages
              })
         }
-         
     }
 
+   
 
      let appendGroupMessages = (data) => {
         if (data.to == activeChatGroupGlobal.groupId || data.author == user.username) {
@@ -482,8 +481,6 @@ const Chat = (props ) => {
                  const updatedMessages = prevGroupMessages.concat(data)
                  return updatedMessages
              })
-            // notifyMe()
-              
         }
         else{
             console.log("error")
@@ -570,7 +567,6 @@ let saveGroupName = () => {
         activeChatUserGlobal = activeChatUser
         socket.on('receivedMessage', appendMessages)
         return () => {
-            console.log(`socket.removeListener('receivedMessage', appendMessages)`)
             socket.removeListener('receivedMessage', appendMessages)
             setLoading(false)
         }
@@ -647,6 +643,7 @@ let saveGroupName = () => {
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages
+   
 
     let userLogOut = () => {
         user = ''
@@ -655,6 +652,8 @@ let saveGroupName = () => {
     }
    
 
+    console.log("Messagessss =>", messages)
+    console.log("activeChatMessages =>", activeChatMessages)
     return (
         
         <div className="chat-container full-height container-fluid"  >
