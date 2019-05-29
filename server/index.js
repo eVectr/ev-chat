@@ -23,8 +23,8 @@ client.on('connect', ()=>{
 })
 
 const conversation = new Conversation()
-conversation.delete_message('Trivedi@Love')
-conversation.delete_message('Love@Trivedi')
+// conversation.delete_message('Trivedi@Love')
+// conversation.delete_message('Love@Trivedi')
 
 let users = []
 
@@ -61,8 +61,13 @@ io.on('connection', socket => {
     
         const user = findUser(data.to)
         if (user) 
-             {   console.log("emit received data =>", data)
+             {   
                  socket.broadcast.to(user.socketId).emit('receivedMessage', data)
+                 conversation.get_conv_id(data.author, data.to)
+                 .then(conv=> {
+                    conversation.save_message(data.author, data.to, conv, data.content, data.DateTime)
+                    conversation.save_status(conv, 'seen')           
+              })
             }else{
                 console.log( " nO USER FOUND ")
                 console.log("emit received data =>", data)
@@ -121,32 +126,31 @@ io.on('connection', socket => {
     //     })
         
     // })
+
     const user = findUser(data.to)
+    console.log("user ==>", user)
     if (user){
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> 
             {
-            if(conv){
+                console.log("conv  ===>", conv)
                 conversation.save_status(conv, 'seen')
                 .then(status => { 
                     socket.emit('seen', status)
                     console.log("join status =>", status)
                 })
                 conversation.get_message(conv).then(message=>{
+                    console.log("get_message =>", message)
                     if(message == ""){console.log("no message")}else{
                     socket.emit('message', message)}
-            }) 
-            }  else{
-                socket.emit('seen', 'sent')
-            }
-            
+            })     
         }
 
         )
     }else{
         conversation.get_conv_id(data.author, data.to)
         .then(conv=> {
-            if(conv){
+            
                 conversation.save_status(conv, 'sent')
                 .then(status => { 
                     socket.emit('seen', status)
@@ -156,11 +160,7 @@ io.on('connection', socket => {
                     console.log("get_messages =>", message)
                     if(message == ""){console.log("no message")}else{
                     socket.emit('message', message)}
-            })
-            }else{
-                socket.emit('seen', 'sent')
-            }
-          
+            })  
 
         })
     }
@@ -184,8 +184,20 @@ io.on('connection', socket => {
     })
 
 
+    socket.on('add_member', members =>{
+        members.map((member)=>{
+            const user = findUser(member)
+            if (user) 
+            {
+                console.log("add_member =>" ,user)
+                socket.broadcast.to(user.socketId).emit('get_add_members', 'test test test')
+            }         
+  })
+})
+
     socket.on('disconnect', () => {
         users = users.filter(user => user.socketId !== socket.id)
+        console.log("user disconnected")
     })
 })
 

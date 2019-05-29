@@ -128,6 +128,20 @@ let convapi = function (app) {
       }
     })
   })
+
+  app.get('/delete_conv_id', (req, res, next) =>{
+
+    participats = "Love,Trivedi"
+  
+    client.del("conversation"+participats,(err, data)=>{
+      if(err){
+        console.log('err')
+      }else{
+        res.send("deleted")
+        console.log('deleted')
+      }
+    })
+    })
   
   
   app.post('/removeuser', (req, res, next) =>{

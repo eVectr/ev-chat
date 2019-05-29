@@ -171,7 +171,7 @@ delete_group(group){
                      if (typeof(data[1]) != "undefined"){
                       resolve(data[1])
                        console.log(data[1])
-                     }else{console.log("no id")}
+                     }else{resolve("no id")}
                    }
                  })
                }

@@ -124,14 +124,7 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     }
 
     const sendGroupMessage = () => {
-        // axios.post('http://localhost:5000/getuser', {groupId:activeChatGroupGlobal.groupId})
-        //      .then(members =>{
-        //          members.data.map(member=>{
-        //              console.log(member , '=', data.author)
-        //              if(member == data.author){notifyMe()}
-        //          })
-        //      })
-        notifyMe()
+     
       
         if (!message.trim().length) return
         var today = new Date()
@@ -173,6 +166,7 @@ let saveMembers= () => {
     axios.post(`http://localhost:6565/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
     .then(res => { console.log(res,' = res msg')
+        socket.emit('add_member', members)
         let msg = res.data
         console.log(msg, 'msg')
         if(!msg) {
@@ -407,7 +401,11 @@ const Chat = (props ) => {
              socket.on('seen', data =>{
                 setSendStatus(data)
             })
-
+            socket.on('get_add_members', test=>{
+               console.log(test)
+               window.location.reload()
+            })
+           
         },[])
     
 
@@ -452,10 +450,7 @@ const Chat = (props ) => {
       }
     
 
-      let check = (data)=>{
-        console.log("check fun data =>",data)
-        setMessages([data])
-    }
+
 
 
     let appendMessages = (data) => {
@@ -482,9 +477,18 @@ const Chat = (props ) => {
                  return updatedMessages
              })
         }
-        else{
-            console.log("error")
-        }
+        axios.post('https://reactchat.softuvo.xyz/getuser', {groupId:data.to})
+        .then(members =>{
+           let array = members.data
+           for (let i = 0; i < array.length; i++) {
+               if ( array[i] != data.author)  {
+                   notifyMe()
+                 break
+               }else{
+                   continue
+               } 
+             }
+        })
      }
 
      let handleChatMouseUp = () =>{
@@ -519,6 +523,7 @@ let saveGroupName = () => {
         axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
        //  axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin:user.username })
           .then(res => {
+            window.location.reload()
               let users = user.username
             axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[users] })
            // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:groupId, users:[user.username] })
@@ -540,6 +545,7 @@ let saveGroupName = () => {
             })
           })
           setHide(false) 
+          setGroupName('')
     })     
 }
 
@@ -565,9 +571,13 @@ let saveGroupName = () => {
     useEffect(() => {
         setLoading(true)
         activeChatUserGlobal = activeChatUser
-        socket.on('receivedMessage', appendMessages)
+        const func = (data) => {
+            console.log('recieved', data)
+            appendMessages(data)
+        }
+        socket.on('receivedMessage', func)
         return () => {
-            socket.removeListener('receivedMessage', appendMessages)
+            socket.removeListener('receivedMessage', func)
             setLoading(false)
         }
      }, [activeChatUser.username])
@@ -643,12 +653,22 @@ let saveGroupName = () => {
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
     const activeUserName = activeChatUser && activeChatUser.username || ''
     const activeChatMessages = messages
+
+
+    let check = () =>{
+        return new Promise((resolve, reject)=>{
+            window.location.reload()
+            resolve()
+        })
+    }
    
 
     let userLogOut = () => {
-        user = ''
+       check().then(res =>{
+       user = ''
         localStorage.clear()
-        props.history.push('/')
+       props.history.push('/')
+       })
     }
    
 

@@ -6,6 +6,7 @@ import { authenticateUser } from '../utils/auth'
 import loginValidation from '../utils/Validation'
 
 import '../styles/login.css'
+
 import { sucessfullLogin } from '../redux/actions/auth';
 
 const Login = (props) => {
@@ -66,6 +67,7 @@ const Login = (props) => {
     }
 
     return (
+        
         <div className="p2p-login">
             <div className="login-form">
                 <div className="user-info">
@@ -78,7 +80,7 @@ const Login = (props) => {
                     <p className='error-message-text'>{(errors.credentialsError && errors.credentialsError[0]) || ''}</p>
                 </div>
             </div>
-
+            
         </div>
     )
 }
