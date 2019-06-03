@@ -16,8 +16,8 @@ const users = [
     },
     {
         user_id: 4,
-        username: 'Kirpal',
-        password: 'kirpal@123'
+        username: 'Kripal',
+        password: 'kripal@123'
     },
     {
         user_id: 5,
@@ -25,12 +25,12 @@ const users = [
         password: 'manoj@123'
     },
     {
-        user_id: 5,
+        user_id: 6,
         username: 'Rajat',
         password: 'rajat@123'
     },
     {
-        user_id: 5,
+        user_id: 7,
         username: 'Joshua',
         password: 'joshua@123'
     }

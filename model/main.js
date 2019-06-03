@@ -171,7 +171,9 @@ delete_group(group){
                      if (typeof(data[1]) != "undefined"){
                       resolve(data[1])
                        console.log(data[1])
-                     }else{resolve("no id")}
+                     }else{
+                      resolve("no id")
+                      }
                    }
                  })
                }
@@ -205,6 +207,8 @@ save_message(author, to, conversation_id, content, DateTime){
     }
   })
 } //////////// method end /////////////////////
+
+
 
 //////////////// Save Read Status //////////////////////////////////
 
@@ -295,13 +299,14 @@ update_status(conversation_id, status){
 } ////////////////////////////////////////////////////
 
 
-save_group_message(author, to, content, DateTime){
+save_group_message(author, to, content, DateTime, notice){
 
   const data ={
     author:author,
     to:to,
     content:content,
-    DateTime: DateTime
+    DateTime: DateTime,
+    notice: notice
   }
   client.rpush("message"+to, JSON.stringify(data));
   client.lrange(to , 0, -1,
@@ -309,10 +314,13 @@ save_group_message(author, to, content, DateTime){
     if(err){
         console.log(err)
     }else{
-      console.log("message saved")
+
+      console.log("message saved=>", data)
   }
 })
 } 
+
+
 
 //>>>>>>>>>>>>>>>>>>>>> GET  MESSAGES <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 get_message(conversation_id){
@@ -398,6 +406,14 @@ getusers(groupname){
   )}
   ) 
   }
+
+/////// create collection    ///
+
+
+
+ 
+
+
 
 } //////////////////// CLASS END /////////////////////////////////////
 

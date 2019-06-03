@@ -157,6 +157,93 @@ let convapi = function (app) {
         }
       })
     })
+
+      
+  app.post('/removegroup', (req, res, next) =>{
+    let groupname = req.body.groupname
+    let groupId = req.body.groupId
+    let admin = req.body.admin
+    let group = {
+      groupname: groupname,
+      groupId: groupId,
+      admin: admin
+    }
+      client.lrem("grouplist", 0, JSON.stringify(group), (err, data)=>{
+        if(err){
+          console.log(err)
+        }else{
+          console.log("group deleted")
+          res.send(" group deleted")
+    
+        }
+      })
+    })
+
+
+    app.post('/save_group_note', (req, res, next) =>{
+
+      let to = req.body.to
+      let note = req.body.note
+
+      let data = {
+        to: to,
+        note: note
+      }
+
+      client.rpush("note"+to, JSON.stringify(data), 
+      (err,data) =>  {
+        if(err){
+            console.log(err)
+            res.send(err)
+        }else{
+          console.log("note saved")
+          res.send("note saved")
+         
+      }
+    })
+    }) //////////// method end /////////////////////
+    
+    
+    app.post('/get_group_note', (req, res, next) =>{
+
+      let to = req.body.to
+
+      //return new Promise((resolve, reject)=>{
+      client.lrange("note"+to, -1, -1,
+      (err,data) =>  {
+        if(err){
+            console.log(err)
+            res.send(err)
+        }else{
+          console.log(data)
+          res.send(data) 
+      }
+      })
+    //})
+  }) 
+
+
+  app.get('/create', (req, res, next) =>{
+
+   
+
+ 
+    client.lrange("col12", -0, -1,
+    (err,data) =>  {
+      if(err){
+          console.log(err)
+          res.send(err)
+      }else{
+        let array = []
+        for(let i = 0; i <data.length; i++){
+          array.push(JSON.parse(data[i]))
+        }
+        console.log(array)
+        res.send(array)
+       
+    }
+  })
+  }) 
   
 }
 

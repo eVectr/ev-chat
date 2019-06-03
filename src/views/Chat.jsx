@@ -25,7 +25,7 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, notifyMe }) => {
+const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, groupNote, setGroupNote}) => {
 
    
     const [message, setMessage] = useState('')
@@ -52,10 +52,7 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     let msg = useRef(null)
 
 
-    let groupstyle = {
-        color:"red"
-    }
-
+    
     let DateTimeStyle = {
         color:"green",
         fontSize:'.7rem',
@@ -142,12 +139,13 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
             DateTime:DateTime,
             author: user.username,
             content: message,
-            to: activeChatGroup.groupId
-        
+            to: activeChatGroup.groupId,
+            notice: groupNote
         }
 
         updateMessages(messagePayload)
         setMessage('')
+        setGroupNote('')
 
         if (socket) {
             socket.emit('sendGroupMessage', messagePayload)
@@ -178,7 +176,34 @@ let saveMembers= () => {
             setMembers([])
         }
     })    
-    .then(console.log("success"))   
+    .then(console.log("success")) 
+    let note = user.username+"  "+'Added'+"  "+  members 
+    axios.post(`http://localhost:6565/save_group_note`, { to:activeChatGroup.groupId, note:note})
+    .then(save_res =>{
+        console.log("note saved =>", save_res.data)
+        axios.post(`http://localhost:6565/get_group_note`, { to:activeChatGroup.groupId})
+        .then(get_res =>{
+            console.log("get note =>",get_res.data)
+            setGroupNote(JSON.parse(get_res.data[0]))
+///////////////////////////////////////
+            const messagePayload = {
+                DateTime:'',
+                author: '',
+                content: '',
+                to: activeChatGroup.groupId,
+                notice: note
+            }
+    
+            updateMessages(messagePayload)
+            setMessage('')
+            setGroupNote('')
+    
+            if (socket) {
+                socket.emit('sendGroupMessage', messagePayload)
+            }
+////////////////////////////////////////////////////////
+        })
+    })
 }
 
 
@@ -237,7 +262,10 @@ let getMembers = ()=>{
         setError(false)
     }
 
-   
+    String.prototype.capitalize = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    }
+    console.log(" console messages note =>", messages)
 
     return (
        <div className="col-9 chat-window">
@@ -245,13 +273,14 @@ let getMembers = ()=>{
             {
                 isGroup? <Fragment>
             {
+    
                 
                 activeChatGroup.groupId ? 
                 <div class="show-chat" >
 
                     <div class="message-header">
                         <div>
-                            <h2>{activeChatGroup.groupname}</h2>
+                            <h2>{(activeChatGroup.groupname).capitalize()}</h2>
                             <GroupMemberModal getMembers = {getMembers} admin ={user.username} list = {list} deleteMember={deleteMember} members={members}/>
                         </div>
                        <span><GroupModal  maxUser = {maxUser} showModal={showModal}  showGroupModal={showGroupModal} saveMembers={saveMembers} admin={activeChatGroup.admin} user ={user.username} list={list}  handleChange={handleChange} setMaxUser = {setMaxUser} getMembers = {getMembers} error ={error} show={show} msg={msg} members={members} ></GroupModal></span>
@@ -260,20 +289,24 @@ let getMembers = ()=>{
                     <div className="message-list" ref={(el) => { msg = el; }} >
                         {isLoading ? <Loader /> : null }
                         
+                        
                         {
                             messages.map(
                                 (message, index) => (
                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
-                                             <div style ={groupstyle}>
+                                             <div className='username'>
                                           {message.author}
                                             </div> 
                                            
                                             <pre className="m-0 messages"> {message.content}
+                                          
+                                            
                                             <div className="date">
-                                            <div style = {DateTimeStyle}>
+                                            <div className='msg-date-time'>
                                                 {message.DateTime}
                                                 </div>
+                                                
                                                 <p className='status'>{ user.username == message.author ? 
 
                                                 <Fragment>{(index == messages.length || index == messages.length -1)?
@@ -290,12 +323,24 @@ let getMembers = ()=>{
                                             </div></pre>
                                            
                                         </div>
+                                        {/* <div className='notification'>{messages.notice} notice</div>  */}
+                                        {/* <div className='group-msg-notification'>{groupNote}</div> */}
+                                        <div className='user-add-msg-notification'>{message.notice}</div>
                                     </div>
+                                    
+                    
                                 )
                             )
+                           
                         }
-                        {/* {login ? <SucessfullMessage/> : null}  */}
+                       
+                        {/* {activeChatGroup.groupId == groupNote.to?
+                         <div className='group-msg-notification'>{groupNote.note}</div>:
+                         ''
+                        } */}
+                      
                     </div>
+                         
                     <div class="input-group message-box">
                         <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleGroupEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
                         <div class="input-group-append" onClick={isGroup? sendGroupMessage : ''}>
@@ -389,6 +434,7 @@ const Chat = (props ) => {
     const [checklogin, setCheckLogin] = useState(true)
     const [sendStatus, setSendStatus] = useState('')
     const [load, setLoad] = useState(false)
+    const [groupNote, setGroupNote] = useState('')
    
    
     let user = getUser()
@@ -436,10 +482,14 @@ const Chat = (props ) => {
         if (Notification.permission !== 'granted')
           Notification.requestPermission();
         else {
-            console.log("NEW NOTIFICATION")
             var notification = new Notification('p2p', {
             body: 'New Message'
           })
+          notification.onclick = function () {
+            window.open('https://reactchat.softuvo.xyz');
+          }
+      
+      
         }
       }
 
@@ -471,6 +521,7 @@ const Chat = (props ) => {
    
 
      let appendGroupMessages = (data) => {
+         console.log("jhdkfxgjszdhkfhoszkufiolf =>", data.notice)
         if (data.to == activeChatGroupGlobal.groupId || data.author == user.username) {
              setMessages(prevGroupMessages => {
                  const updatedMessages = prevGroupMessages.concat(data)
@@ -523,7 +574,7 @@ let saveGroupName = () => {
         axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
        //  axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin:user.username })
           .then(res => {
-            window.location.reload()
+                //window.location.reload()
               let users = user.username
             axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[users] })
            // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:groupId, users:[user.username] })
@@ -587,6 +638,9 @@ let saveGroupName = () => {
         setLoading(true)
         activeChatGroupGlobal = activeChatGroup
         socket.on('receivedGroupMessage', appendGroupMessages)
+        // socket.on('receivedGroupMessage', data =>{
+        //     console.log("kvzds,jhdxkllkkkkkkkkk=>", data)
+        // })
         return () => {
             socket.removeListener('receivedGroupMessage', appendGroupMessages)
             setLoading(true)
@@ -655,20 +709,14 @@ let saveGroupName = () => {
     const activeChatMessages = messages
 
 
-    let check = () =>{
-        return new Promise((resolve, reject)=>{
-            window.location.reload()
-            resolve()
-        })
-    }
+  
    
 
     let userLogOut = () => {
-       check().then(res =>{
-       user = ''
+        window.location.reload()
+        user = ''
         localStorage.clear()
-       props.history.push('/')
-       })
+        props.history.push('/')
     }
    
 
@@ -770,6 +818,8 @@ let saveGroupName = () => {
                             message => appendGroupMessages( message)
                          }
                          notifyMe = {notifyMe}
+                         groupNote = {groupNote}
+                         setGroupNote = {setGroupNote}
                       
                     />
             </div>

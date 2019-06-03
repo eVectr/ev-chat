@@ -26,6 +26,8 @@ const conversation = new Conversation()
 // conversation.delete_message('Trivedi@Love')
 // conversation.delete_message('Love@Trivedi')
 
+conversation.create('col12', 'first name', 'logan', 'lastname', 'verma', 'age', 'twenty', 'city', 'mohali')
+
 let users = []
 
 convapi(app)
@@ -89,11 +91,13 @@ io.on('connection', socket => {
 
     socket.on('sendGroupMessage', data => {
         socket.emit('groupmessageSent', 'sent')
-        conversation.save_group_message(data.author, data.to, data.content, data.DateTime)
+        conversation.save_group_message(data.author, data.to, data.content, data.DateTime, data.notice)
         conversation.save_group_status(data.to, 'sent')
         let groupname = data.to
+        console.log("group  name   oooo=>", groupname)
         conversation.getusers(groupname)
         .then(members => {
+            console.log("data.to ===>", members)
             members.map((member)=>{
                 const user = findUser(member)
                 if (user) 
@@ -103,7 +107,6 @@ io.on('connection', socket => {
                 if (user && (member != data.author))  
                 {
                      conversation.get_group_status(data.to).then(status=>{
-                     console.log("groupstatus ======>>>",status)
                     socket.emit('groupseen', status )
             })      
        
@@ -169,7 +172,7 @@ io.on('connection', socket => {
 
     socket.on('groupjoin', data => {
         conversation.get_group_message(data.to).then(groupmessage=>{
-                //console.log("groupmessage=>",groupmessage)
+             //   console.log("groupmessage ===========>",groupmessage)
                 if(groupmessage == ""){console.log("no message")}else{
                 socket.emit('groupmessage', groupmessage)}
        
@@ -197,7 +200,7 @@ io.on('connection', socket => {
 
     socket.on('disconnect', () => {
         users = users.filter(user => user.socketId !== socket.id)
-        console.log("user disconnected")
+       // console.log("user disconnected")
     })
 })
 

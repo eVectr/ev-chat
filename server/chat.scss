@@ -1,6 +1,6 @@
-// .full-height{
-//     position: relative;
-// }
+.full-height{
+    position: relative;
+}
 
 
 .users-list {
@@ -91,11 +91,9 @@
 }
 
 
-// .message-bubble {
-//     background-color: #f8f8f8;
-//     max-width: 80%;
-//     word-wrap: break-word;
-// }
+.message-bubble {
+    max-width: 100%;
+}
 
 
 .message-list {
@@ -106,19 +104,16 @@
 
 .message-bubble-container {
     display: flex;
-    position: relative;
 
     &.right {
         justify-content: flex-end;
         .message-bubble {
             background-color: #f5f9ff;
-            max-width: 50%;
         }
     }
 
     &.left {
         justify-content: flex-start;
-        max-width: 50%;
     }
 }
 
@@ -177,9 +172,3 @@
     word-wrap: break-word;
 }
 
-.group-msg-notification{
-    position: absolute;
-    left:50%;
-    transform: translate(-50%);
-    top: 75%;
-}
