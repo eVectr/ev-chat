@@ -407,14 +407,61 @@ getusers(groupname){
   ) 
   }
 
+
+  editgroupcounter(groupcounter, groupId, members){
+    return new Promise((resolve, reject)=>{
+
+      members.data.map((member)=>{
+
+        let db = groupId.toString().concat(member)
+        client.lrange("groupcounter1"+db, -1, -1,
+        (err, data) =>{
+        if(err){reject(err)}
+        else{
+          let temp 
+          if(data.length > 0){
+            temp =  JSON.parse(data[0]).groupcounter + groupcounter
+          }else{
+          temp = groupcounter
+        }
+        const payload = {
+          groupcounter:temp,
+          groupId: groupId,
+        }
+        client.rpush("groupcounter1"+db, JSON.stringify(payload))
+        //res.send(JSON.parse(data[0]))
+        resolve()
+      }
+   })
+      })
+   
+})
+}
+
+getgroupcounter(groupId, members){
+  return new Promise((resolve, reject)=>{
+
+    members.data.map((member)=>{
+
+      let db = groupId.toString().concat(member)
+      console.log("get counter reached =============================================================")
+      client.lrange("groupcounter1"+db, -1, -1,
+      (err, data) =>{
+        if(err){reject(err)}
+        else{
+        resolve(JSON.parse(data[0]))
+        console.log("res cccccccccc data =>", JSON.parse(data[0]))
+        }
+     })
+    })
+})
+}
+
 /////// create collection    ///
 
 
-
- 
 
 
 
 } //////////////////// CLASS END /////////////////////////////////////
 
-//app.listen(4000)

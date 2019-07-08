@@ -25,7 +25,8 @@ let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, groupNote, setGroupNote}) => {
+const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, activeChatUser, messages, 
+    updateMessages, groupNote, setGroupNote,  messageCounter, setMessageCounter}) => {
 
    
     const [message, setMessage] = useState('')
@@ -88,9 +89,6 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     const sendMessage = () => {
        
         if (!message.trim().length)  return
-        
-
-       
 
         var today = new Date()
         var hour = today.getHours();         
@@ -293,7 +291,8 @@ let getMembers = ()=>{
                         {
                             messages.map(
                                 (message, index) => (
-                                    <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
+                                    <Fragment> {message.content.length? 
+                                        <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
                                         <div class="alert alert-light message-bubble" >
                                              <div className='username'>
                                           {message.author}
@@ -323,12 +322,15 @@ let getMembers = ()=>{
                                             </div></pre>
                                            
                                         </div>
-                                        {/* <div className='notification'>{messages.notice} notice</div>  */}
-                                        {/* <div className='group-msg-notification'>{groupNote}</div> */}
-                                        <div className='user-add-msg-notification'>{message.notice}</div>
+                                     
                                     </div>
+                                    :
+                                
+                                    <div className='user-add-msg-notification'>{message.notice}</div>
                                     
-                    
+                                    }
+                                   
+                                    </Fragment>
                                 )
                             )
                            
@@ -435,6 +437,9 @@ const Chat = (props ) => {
     const [sendStatus, setSendStatus] = useState('')
     const [load, setLoad] = useState(false)
     const [groupNote, setGroupNote] = useState('')
+    let [messageCounter, setMessageCounter] = useState(0)
+    let [counterCheck, setCounterCheck] = useState(false)
+    let [counterGroup, setCounterGroup] = useState('')
    
    
     let user = getUser()
@@ -521,7 +526,8 @@ const Chat = (props ) => {
    
 
      let appendGroupMessages = (data) => {
-         console.log("jhdkfxgjszdhkfhoszkufiolf =>", data.notice)
+        setCounterCheck(true)
+         setCounterGroup(data.to)
         if (data.to == activeChatGroupGlobal.groupId || data.author == user.username) {
              setMessages(prevGroupMessages => {
                  const updatedMessages = prevGroupMessages.concat(data)
@@ -530,6 +536,17 @@ const Chat = (props ) => {
         }
         axios.post('https://reactchat.softuvo.xyz/getuser', {groupId:data.to})
         .then(members =>{
+            let counter_data = {
+                groupcounter: 1,
+                groupId:data.to,
+                members: members
+               }
+               console.log(" check11 check11 check11 check11")
+               socket.emit('set_counter', counter_data)
+               socket.on('get_counter', get_counter =>{
+                  setMessageCounter(get_counter)
+                   console.log("get_counter ==>", get_counter)
+               })
            let array = members.data
            for (let i = 0; i < array.length; i++) {
                if ( array[i] != data.author)  {
@@ -760,9 +777,17 @@ let saveGroupName = () => {
                                         
                                         className={`list-group-item user ${(activeChatGroup && activeChatGroup.groupId == group.groupId) && groupSelected ? 'selected' : ''}`}
                                     >
-                                      <i class="fas fa-users" style ={groupicon} ></i>
-                                        <span className="username">{group.groupname}</span> 
-                                    
+                                    <div className='group-list'>
+                                        <div>
+                                            <i class="fas fa-users" style ={groupicon} ></i>
+                                            <span className="username">{group.groupname}</span> 
+                                        </div>
+                                        {(counterCheck && counterGroup == group.groupId && (activeChatGroup.groupId != group.groupId))
+                                            
+                                            ?<Fragment>
+                                       {messageCounter >0? <span className='msg-counter'>{messageCounter}</span>:''}
+                                       </Fragment> :''}
+                                        </div>
                                     </li> 
                                     )
                                 }
@@ -820,6 +845,8 @@ let saveGroupName = () => {
                          notifyMe = {notifyMe}
                          groupNote = {groupNote}
                          setGroupNote = {setGroupNote}
+                         messageCounter = {messageCounter}
+                         setMessageCounter = {setMessageCounter}
                       
                     />
             </div>

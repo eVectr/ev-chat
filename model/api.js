@@ -1,6 +1,13 @@
 const redis = require('redis');
 let client = redis.createClient()
+const mongoose = require('mongoose')
 
+const Chatgroup = require('../db/chatgroup')
+
+mongoose.connect('mongodb://contact:contact123@ds337377.mlab.com:37377/contact',  (err) => {
+   if (err) throw err
+   console.log('Mongoose connected')
+})
 
 
 let convapi = function (app) {
@@ -34,6 +41,23 @@ let convapi = function (app) {
   
       })
   })//////////////////////////////////////
+
+  //////////////////////// MONGO DB //////////////////////////////////////////////
+
+  app.post('/Creategroup', (req, res, next) =>{
+   
+    let groupname = req.body.groupname
+    let groupId = req.body.groupId
+    let admin = req.body.admin
+    var chatgroup = new Chatgroup({
+      groupname: groupname,
+      groupId: groupId,
+      admin:admin
+    })
+    chatgroup.save()
+  })
+
+  ////////////////////////  END MONGO   ///////////////////////////////////
   
   app.get('/Getgroup', (req, res, next) =>{
   
@@ -221,30 +245,6 @@ let convapi = function (app) {
       })
     //})
   }) 
-
-
-  app.get('/create', (req, res, next) =>{
-
-   
-
- 
-    client.lrange("col12", -0, -1,
-    (err,data) =>  {
-      if(err){
-          console.log(err)
-          res.send(err)
-      }else{
-        let array = []
-        for(let i = 0; i <data.length; i++){
-          array.push(JSON.parse(data[i]))
-        }
-        console.log(array)
-        res.send(array)
-       
-    }
-  })
-  }) 
-  
 }
 
 module.exports = convapi;
