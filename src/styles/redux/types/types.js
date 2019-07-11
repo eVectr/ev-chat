@@ -1,0 +1,1 @@
+export const SUCESSFULL_LOGIN = 'SUCESSFULL_LOGIN'

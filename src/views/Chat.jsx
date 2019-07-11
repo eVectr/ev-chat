@@ -20,25 +20,28 @@ import SucessfullMessage from '../components/SucessfullMessage'
 
 
 
-
 let socket = null
 let activeChatUserGlobal = {}
 let activeChatGroupGlobal = {}
 
-const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, activeChatUser, messages, 
-    updateMessages, groupNote, setGroupNote,  messageCounter, setMessageCounter}) => {
+const ChatWindow = ({ user, sendStatus,activeChatGroup, isGroup, isLoading, activeChatUser, messages, updateMessages, 
+    setGroups, messageCounter, setCounterCheck }) => {
 
    
     const [message, setMessage] = useState('')
     const [members, setMembers] = useState([])
     const [list, setList] = useState([])
-    //const [maxUser, setMaxUserLimit] = useState([{groupId:'',maxLimit: 5}])
-   const [maxUser, setMaxUserLimit] = useState(5)
+    const [maxUser, setMaxUserLimit] = useState('')
+    const [userLimit, setuserLimit] = useState('')
     const [login, setLogin] = useState(false)
     const [error, setError] = useState('')
     const [show, setShow] = useState(false)
     const [showModal, setshowModal] = useState(false)
+    let [limit_disable, set_limit_disable] = useState(true)
     let sendGroupStatus = ''
+    let [editUser, setEditUser] = useState(false)
+    
+  
 
 
     useEffect(() => {
@@ -50,10 +53,18 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
         scrollToBottom();
     }, [messages.length])
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages.notice])
+    
+    //let user = getUser()
     let msg = useRef(null)
 
 
-    
+    // let groupstyle = {
+    //     color:"red"
+    // }
+
     let DateTimeStyle = {
         color:"green",
         fontSize:'.7rem',
@@ -87,8 +98,8 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     }
 
     const sendMessage = () => {
-       
-        if (!message.trim().length)  return
+
+        if (!message.trim().length) return
 
         var today = new Date()
         var hour = today.getHours();         
@@ -119,7 +130,10 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     }
 
     const sendGroupMessage = () => {
-     
+        // setMessageCounter(prev => {
+        //     const updatedcounter = parseInt(prev) + 1
+        //     return updatedcounter
+        // })
       
         if (!message.trim().length) return
         var today = new Date()
@@ -138,12 +152,12 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
             author: user.username,
             content: message,
             to: activeChatGroup.groupId,
-            notice: groupNote
+            counter: messageCounter
+        
         }
 
         updateMessages(messagePayload)
         setMessage('')
-        setGroupNote('')
 
         if (socket) {
             socket.emit('sendGroupMessage', messagePayload)
@@ -154,54 +168,63 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
   
 
 let setMaxUser = (e) => {
-    console.log("group id =>",activeChatGroupGlobal)
-        setMaxUserLimit(e.target.value)
+    
+    let groupId = activeChatGroupGlobal.groupId
+    let maxLimit = e.target.value
+    console.log("group id =>",groupId)
+    console.log("maxlimit =>", maxLimit)
+    let data = [{groupId:groupId, maxLimit:maxLimit}]
+    //setMaxUserLimit([data])
+
+
+    setMaxUserLimit(maxUser => ({
+        ...maxUser, data
+    }))
+        
+   
 }
 
 let saveMembers= () => {
-    axios.post(`http://localhost:6565/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-    // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
-    .then(res => { console.log(res,' = res msg')
+     axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:activeChatGroup.groupId, users:members, maxuser:maxUser })
+     .then(res => { console.log(res,' = res msg')
         socket.emit('add_member', members)
         let msg = res.data
-        console.log(msg, 'msg')
         if(!msg) {
-        setError(true)
+            setError(true)
         }
         if (msg) {
             setLogin(true)
             setshowModal(false)
             setMembers([])
         }
-    })    
-    .then(console.log("success")) 
-    let note = user.username+"  "+'Added'+"  "+  members 
-    axios.post(`http://localhost:6565/save_group_note`, { to:activeChatGroup.groupId, note:note})
-    .then(save_res =>{
-        console.log("note saved =>", save_res.data)
-        axios.post(`http://localhost:6565/get_group_note`, { to:activeChatGroup.groupId})
-        .then(get_res =>{
-            console.log("get note =>",get_res.data)
-            setGroupNote(JSON.parse(get_res.data[0]))
-///////////////////////////////////////
-            const messagePayload = {
-                DateTime:'',
-                author: '',
-                content: '',
-                to: activeChatGroup.groupId,
-                notice: note
-            }
-    
-            updateMessages(messagePayload)
-            setMessage('')
-            setGroupNote('')
-    
-            if (socket) {
-                socket.emit('sendGroupMessage', messagePayload)
-            }
-////////////////////////////////////////////////////////
+       /////////////////////////
+        if(msg){
+        let note = user.username+"  "+'Added'+"  "+  members 
+        axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to:activeChatGroup.groupId, note:note})
+        .then(save_res =>{
+           axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to:activeChatGroup.groupId})
+           .then(get_res =>{
+             //  setGroupNote(JSON.parse(get_res.data[0]))
+                setMessage(JSON.parse(get_res.data[0]))
+               setMessage(note)
+
+               const messagePayload = {
+                   DateTime:'',
+                   author: user.username,
+                   content: '',
+                   to: activeChatGroup.groupId,
+                   notice: note
+               }
+       
+               updateMessages(messagePayload)
+               setMessage('')
+               //setGroupNote('')
+               socket.emit('sendGroupMessage', messagePayload) 
+                
         })
     })
+   } /////// end if 
+ })       
 }
 
 
@@ -219,29 +242,130 @@ useEffect(()=>{
 
 let getMembers = ()=>{
     let groupId =  activeChatGroup.groupId
-    console.log("group id ->", groupId)
-    axios.post(`http://localhost:6565/getuser`, {groupId:groupId})
-    //axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
+    axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
     .then(response =>{console.log("active group member==>",response)
         let data = response.data
         console.log(data, 'data')
         setList(data)
-})
+}) //////////////////////// LIMIT
+axios.post(`https://reactchat.softuvo.xyz/getgrouplimit`, {groupId:groupId})
+   .then(res => {
+       setMaxUserLimit(res.data.grouplimit)
+   })
 }
 
 
-    let deleteMember = (user) => {
-    let groupId =  activeChatGroup.groupId
-    axios.post(`http://localhost:6565/removeuser`, {groupId, user})
-    // axios.post(`https://reactchat.softuvo.xyz/removeuser`, {groupId, user})
-    .then(response =>{
-        axios.post(`http://localhost:6565/getuser`, {groupId:groupId})
-      //axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
-        .then(res =>{
-            setList(res.data)
-        
+let deleteMember = (user) => {
+        let groupId =  activeChatGroup.groupId
+        axios.post(`https://reactchat.softuvo.xyz/removeuser`, {groupId, user})
+        .then(response =>{
+         socket.emit('remove_member', user)
+         axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
+         .then(res =>{
+             setList(res.data)
+         })
+        })
+///////////////////////////////////////////////////////////
+        let note = activeChatGroup.admin+" "+ "Removed"+ " "+ user
+        axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to:activeChatGroup.groupId, note:note})
+        .then(save_res =>{
+            axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to:activeChatGroup.groupId})
+            .then(get_res =>{
+               // setGroupNote(JSON.parse(get_res.data[0]))
+                setMessage(note)
+            const messagePayload = {
+                DateTime:'',
+                author: user.username,
+                content: '',
+                to: activeChatGroup.groupId,
+                notice: note
+            }
+    
+            updateMessages(messagePayload)
+            setMessage('')
+          //  setGroupNote('')
+    
+            if (socket) {
+               // setIsGroupNotice(true)
+                socket.emit('sendGroupMessage', messagePayload)
+            }
+
         })
     })
+///////////////////////////////////////////////////////////
+}
+
+
+let leftgroup = (user) =>{
+    return new Promise((resolve, reject)=>{
+        ////////////////
+      let note = user+"  "+'Left'+"  "+ "Group"
+      axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to:activeChatGroup.groupId, note:note})
+      .then(save_res =>{
+          axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to:activeChatGroup.groupId})
+          .then(get_res =>{
+             // setGroupNote(JSON.parse(get_res.data[0]))
+              setMessage(note)
+              const messagePayload = {
+                  DateTime:'',
+                  author: '',
+                  content: '',
+                  to: activeChatGroup.groupId,
+                  notice: note
+              }
+              updateMessages(messagePayload)
+              setMessage('')
+             // setGroupNote('')
+      
+              if (socket) {
+                 //setIsGroupNotice(true)
+                 resolve(socket.emit('sendGroupMessage', messagePayload))
+              }
+  
+          })
+      })
+      ///////////////
+
+    })
+}
+
+let exitGroup = (user) =>{
+      
+    let groupId =  activeChatGroup.groupId
+    axios.post(`https://reactchat.softuvo.xyz/removeuser`, {groupId, user})
+    .then(response =>{
+      axios.post(`https://reactchat.softuvo.xyz/getuser`, {groupId:groupId})
+        .then(res =>{
+            setList(res.data) 
+            
+        })
+    })
+    
+   leftgroup(user).then(res =>{
+    window.location.reload()
+   }) 
+}
+
+
+let deleteGroup = () =>{
+    let groupname =  activeChatGroup.groupname
+    let groupId =  activeChatGroup.groupId
+    let admin =  activeChatGroup.admin
+    let groupcounter = activeChatGroup.groupcounter
+    axios.post(`https://reactchat.softuvo.xyz/getuser`,{groupId:groupId})
+    .then(member =>{
+              
+                socket.emit('delete_group', member.data) 
+            })
+    axios.post(`https://reactchat.softuvo.xyz/removegroup`, {groupname, groupId, admin, groupcounter})
+    .then(response =>{
+        axios.get(`https://reactchat.softuvo.xyz/Getgroup`,)
+        .then(res =>{
+            setGroups(res.data)
+           
+        })
+    })
+    window.location.reload() 
 }
 
 
@@ -260,163 +384,213 @@ let getMembers = ()=>{
         setError(false)
     }
 
+    let changeUserLimit = (e) => {
+        
+        if (e.target.value.length){
+            set_limit_disable(false)
+        }else{
+            set_limit_disable(true)
+        }
+        console.log("e.targete.",e.target.value)
+        console.log("limit_diszable =>", limit_disable)
+        setuserLimit(e.target.value)
+    }
+
+    let saveUserLimit = (editUser) => {
+        axios.post(`https://reactchat.softuvo.xyz/editlimit`, {grouplimit:userLimit, groupId: activeChatGroup.groupId})
+        .then(res =>{
+                setMaxUserLimit(res.data.grouplimit)
+        })
+
+        setMaxUserLimit ('')
+        setEditUser(editUser)
+        
+ 
+    }
+  
     String.prototype.capitalize = function() {
         return this.charAt(0).toUpperCase() + this.slice(1);
     }
-    console.log(" console messages note =>", messages)
 
-    return (
-       <div className="col-9 chat-window">
-       
-            {
-                isGroup? <Fragment>
-            {
+  
     
-                
-                activeChatGroup.groupId ? 
-                <div class="show-chat" >
-
-                    <div class="message-header">
-                        <div>
-                            <h2>{(activeChatGroup.groupname).capitalize()}</h2>
-                            <GroupMemberModal getMembers = {getMembers} admin ={user.username} list = {list} deleteMember={deleteMember} members={members}/>
-                        </div>
-                       <span><GroupModal  maxUser = {maxUser} showModal={showModal}  showGroupModal={showGroupModal} saveMembers={saveMembers} admin={activeChatGroup.admin} user ={user.username} list={list}  handleChange={handleChange} setMaxUser = {setMaxUser} getMembers = {getMembers} error ={error} show={show} msg={msg} members={members} ></GroupModal></span>
-                    </div>
-                    {login ? <SucessfullMessage/> : null} 
-                    <div className="message-list" ref={(el) => { msg = el; }} >
-                        {isLoading ? <Loader /> : null }
-                        
-                        
-                        {
-                            messages.map(
-                                (message, index) => (
-                                    <Fragment> {message.content.length? 
-                                        <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
-                                        <div class="alert alert-light message-bubble" >
-                                             <div className='username'>
-                                          {message.author}
-                                            </div> 
-                                           
-                                            <pre className="m-0 messages"> {message.content}
-                                          
-                                            
-                                            <div className="date">
-                                            <div className='msg-date-time'>
-                                                {message.DateTime}
-                                                </div>
-                                                
-                                                <p className='status'>{ user.username == message.author ? 
-
-                                                <Fragment>{(index == messages.length || index == messages.length -1)?
-                                                    <Fragment>
-                                                        { (sendGroupStatus == 'sent' || sendGroupStatus == '' )? <i class="fa fa-check" aria-hidden="true"></i>: '' }
-                                                  </Fragment>
-                                                        :''}
-                                                </Fragment>
-                                              
-                                                
-                                                 :null }</p>
-                                                
-                                           
-                                            </div></pre>
-                                           
-                                        </div>
-                                     
-                                    </div>
-                                    :
-                                
-                                    <div className='user-add-msg-notification'>{message.notice}</div>
-                                    
-                                    }
-                                   
-                                    </Fragment>
-                                )
-                            )
-                           
-                        }
-                       
-                        {/* {activeChatGroup.groupId == groupNote.to?
-                         <div className='group-msg-notification'>{groupNote.note}</div>:
-                         ''
-                        } */}
-                      
-                    </div>
-                         
-                    <div class="input-group message-box">
-                        <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleGroupEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-                        <div class="input-group-append" onClick={isGroup? sendGroupMessage : ''}>
-                            <span class="input-group-text send-icon-container">
-                                <i class="fas fa-paper-plane"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-               : null
-            }
-
-            </Fragment>:
-                <Fragment>
-
-            {
-                activeChatUser.username ? 
-                <div class="show-chat">
+    return (
+        <div className="col-9 chat-window">
+        
+             {
+                 isGroup? <Fragment>
+             {
+     
+                 
+                 activeChatGroup.groupId ? 
+                 <div class="show-chat" >
+ 
                      <div class="message-header">
-                        <h2>{activeChatUser.username}</h2>
-                    </div>
-                    <div className="message-list" ref={(el) => { msg = el; }} >
-                    {isLoading ? <Loader /> : null }
+                         <div>
+                             <h2>{(activeChatGroup.groupname).capitalize()}</h2>
+                             <GroupMemberModal deleteGroup={deleteGroup} exitGroup = {exitGroup} getMembers = {getMembers} user ={user.username} admin ={activeChatGroup.admin} list = {list} deleteMember={deleteMember} members={members}/>
+                         </div>
+                         <span><GroupModal  maxUser = {maxUser} 
+                        editUser={editUser}
+                        changeUserLimit = {changeUserLimit}
+                        saveUserLimit = {saveUserLimit}
+                        setEditUser={setEditUser}
+                        showModal={showModal} 
+                         showGroupModal={showGroupModal} 
+                         saveMembers={saveMembers} admin={activeChatGroup.admin} 
+                         user ={user.username} list={list}  handleChange={handleChange} 
+                         setMaxUser = {setMaxUser} 
+                         limit_disable = {limit_disable}
+                         getMembers = {getMembers} error ={error} show={show} msg={msg} members={members} ></GroupModal></span>
+                     </div>
+                     {login ? <SucessfullMessage/> : null} 
+                     <div className="message-list" ref={(el) => { msg = el; }} >
+                         {isLoading ? <Loader /> : null }
+                         
+                         
                          {
                             messages.map(
                                 (message, index) => (
-                                 
-                                    <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
-                                        <div class="alert alert-light message-bubble" >
-                                        
-                                        <pre className="m-0 messages">{message.content}
-                                        <div className="date">
-                                            <div style = {DateTimeStyle}>
-                                                {message.DateTime}
-                                                
-                                            </div>
-                                            <p className='status'>{ user.username == message.author ? 
-                                                
-                                               <Fragment>{(index == messages.length || index == messages.length -1)?
-                                                    <Fragment>
-                                                        { (sendStatus == 'sent' || sendStatus == '')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
-                                                  </Fragment>
-                                                        :''}
-                                                </Fragment>
-                                                
-                                                 :null }</p>
+                                    <Fragment>
+                                        {
+                                            // (index == messages.length-1 && user.username != message.author)?
+                                            // setCounterCheck(true):'' 
+                                            
                                            
-                                        </div>
-                                        </pre>    
-                                        </div>                                        
-                                 </div>       
-                                 )
-                ) 
-            } 
-                       
-                        
+                                        }
 
-                    </div>
-                    <div class="input-group message-box">
-                        <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
-                        <div class="input-group-append" onClick={isGroup? '': sendMessage}>
-                            <span class="input-group-text send-icon-container">
-                                <i class="fas fa-paper-plane"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div> : null
-            }
-                </Fragment>
-            }
-        </div>
-       
-   )
-}
+                                        {message.content? 
+                                        <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
+                                            <div class="alert alert-light message-bubble" >
+    
+                                                {user.username == message.author ?
+                                                <div className='group-user'>
+                                                {message.author}
+                                                </div> :
+                                                <div className='group-user2'>
+                                                {message.author}
+                                                </div>
+                                                }
+                                            
+                                            <pre className="m-0 messages"> {message.content}
+                                                <div className="date">
+                                                <div className = 'msg-date-time'>
+                                                    {message.DateTime}
+                                                    </div>
+                                                    <p className='status'>{ user.username == message.author ? 
+    
+                                                    <Fragment>{(index == messages.length || index == messages.length -1)?
+                                                        <Fragment>
+                                                            { (sendGroupStatus == 'sent' || sendGroupStatus == '' )? <i class="fa fa-check" aria-hidden="true"></i>: '' }
+                                                      </Fragment>
+                                                            :''}
+                                                    </Fragment>
+                                                  
+                                                    
+                                                     :null }</p>
+                                                    
+                                               
+                                                </div></pre>
+                                            
+                                         </div>
+                                      
+                                     </div>
+                                     :
+                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container notification-center`}>
+                                     <div class="alert alert-light message-bubble" >
+                                     <div className='user-add-msg-notification'>{message.notice}</div>
+                                     </div>
+                                     </div>
+                                     
+                                     }
+                                    
+                                     </Fragment>
+                                 )
+                             )
+                            
+                         }
+                        
+                         {/* {activeChatGroup.groupId == groupNote.to?
+                          <div className='group-msg-notification'>{groupNote.note}</div>:
+                          ''
+                         } */}
+                       
+                     </div>
+                          
+                     <div class="input-group message-box">
+                         <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleGroupEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+                         <div class="input-group-append" onClick={isGroup? sendGroupMessage : ''}>
+                             <span class="input-group-text send-icon-container">
+                                 <i class="fas fa-paper-plane"></i>
+                             </span>
+                         </div>
+                     </div>
+                 </div>
+                : null
+             }
+ 
+             </Fragment>:
+                 <Fragment>
+ 
+             {
+                 activeChatUser.username ? 
+                 <div class="show-chat">
+                      <div class="message-header">
+                         <h2>{activeChatUser.username}</h2>
+                     </div>
+                     <div className="message-list" ref={(el) => { msg = el; }} >
+                     {isLoading ? <Loader /> : null }
+                          {
+                             messages.map(
+                                 (message, index) => (
+                                  
+                                     <div key={index}  id="last-msg" id={index == messages.length - 1 ? 'last-msg' : ''} className={`message-bubble-container ${user.username == message.author ? 'right' : 'left'}`}>
+                                         <div class="alert alert-light message-bubble" >
+                                         
+                                         <pre className="m-0 messages">{message.content}
+                                         <div className="date">
+                                             <div style = {DateTimeStyle}>
+                                                 {message.DateTime}
+                                                 
+                                             </div>
+                                             <p className='status'>{ user.username == message.author ? 
+                                                 
+                                                <Fragment>{(index == messages.length || index == messages.length -1)?
+                                                     <Fragment>
+                                                         { (sendStatus == 'sent' || sendStatus == '')? <i class="fa fa-check" aria-hidden="true"></i>: <i class="fas fa-check-double"></i> }
+                                                   </Fragment>
+                                                         :''}
+                                                 </Fragment>
+                                                 
+                                                  :null }</p>
+                                            
+                                         </div>
+                                         </pre>    
+                                         </div>                                        
+                                  </div>       
+                                  )
+                 ) 
+             } 
+                        
+                         
+ 
+                     </div>
+                     <div class="input-group message-box">
+                         <textarea onChange={e => setMessage(e.target.value)} onKeyPress={handleEnterShiftPress} value={message} class="form-control message-input" placeholder="Write your message..."></textarea>
+                         <div class="input-group-append" onClick={isGroup? '': sendMessage}>
+                             <span class="input-group-text send-icon-container">
+                                 <i class="fas fa-paper-plane"></i>
+                             </span>
+                         </div>
+                     </div>
+                 </div> : null
+             }
+                 </Fragment>
+             }
+         </div>
+        
+    )
+ }
 
 
 const Chat = (props ) => {
@@ -438,7 +612,7 @@ const Chat = (props ) => {
     const [load, setLoad] = useState(false)
     const [groupNote, setGroupNote] = useState('')
     let [messageCounter, setMessageCounter] = useState(0)
-    let [counterCheck, setCounterCheck] = useState(false)
+    let [counterCheck, setCounterCheck] = useState(true)
     let [counterGroup, setCounterGroup] = useState('')
    
    
@@ -446,29 +620,61 @@ const Chat = (props ) => {
     console.log(user, 'getUser')
 
     useEffect(() => {
-            socket = io('http://localhost:6565')
-           // socket = io('https://reactchat.softuvo.xyz')
+            //socket = io('http://localhost:6565')
+            socket = io('https://reactchat.softuvo.xyz')
              socket.emit('newConnection', user)
              socket.on('seen', data =>{
                 setSendStatus(data)
             })
             socket.on('get_add_members', test=>{
-               console.log(test)
                window.location.reload()
             })
+            socket.on('get_remove_members', test=>{
+                window.location.reload()
+             })
+             socket.on('get_delete_group', test=>{
+                window.location.reload()
+             })
+            //  socket.on('delete_counter', data=>{
+            //      console.log(" counter deleted ", data)
+            //    // axios.post('https://reactchat.softuvo.xyz/deletegroupcounter', {groupId:data})
+            //  })
            
         },[])
     
 
     useEffect(() => {
-           axios.get('http://localhost:6565/Getgroup')
-          // axios.get('https://reactchat.softuvo.xyz/Getgroup')
+          
+           axios.get('https://reactchat.softuvo.xyz/Getgroup')
             .then(response => {
+                socket.on('get_counter', get_counter =>{
+                    console.log("get_counter new counter==>", get_counter)
+                    console.log("API group",response.data)
+                    response.data.map((group, index)=>{
+                        if(get_counter.groupId == group.groupId){
+                           
+                            axios.post('https://reactchat.softuvo.xyz/updategroup', {index:index, admin : group.admin, groupId : group.groupId,
+                            groupcounter : group.groupcounter,
+                            groupname : group.groupname,
+                            newgroupcounter: get_counter.groupcounter})
+                            .then(res =>{
+                                console.log("updated group response =>",res.data)
+                                setGroups(res.data)
+                            })
+
+                           
+                        }else{
+                           
+                        }
+                    })
+                  //  setGroups(array)
+                 })
+                 console.log("API group",response.data)
                 setGroups(response.data)
-                console.log("API group",response.data)
+              
          })
         
-    
+        // axios.get('https://reactchat.softuvo.xyz/Deletegroup')
     },[])
 
 
@@ -526,8 +732,10 @@ const Chat = (props ) => {
    
 
      let appendGroupMessages = (data) => {
-        setCounterCheck(true)
+       
+         //setCounterCheck(true)
          setCounterGroup(data.to)
+       
         if (data.to == activeChatGroupGlobal.groupId || data.author == user.username) {
              setMessages(prevGroupMessages => {
                  const updatedMessages = prevGroupMessages.concat(data)
@@ -541,12 +749,9 @@ const Chat = (props ) => {
                 groupId:data.to,
                 members: members
                }
-               console.log(" check11 check11 check11 check11")
+
                socket.emit('set_counter', counter_data)
-               socket.on('get_counter', get_counter =>{
-                  setMessageCounter(get_counter)
-                   console.log("get_counter ==>", get_counter)
-               })
+              
            let array = members.data
            for (let i = 0; i < array.length; i++) {
                if ( array[i] != data.author)  {
@@ -587,16 +792,13 @@ let groupparameters = () =>{
 let saveGroupName = () => {
     setLoad(true)
     groupparameters().then(groupId =>{
-        console.log("group id ======>", groupId)
-        axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
-       //  axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin:user.username })
+      
+         axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin:user.username , groupcounter: 0 })
+         axios.post(`https://reactchat.softuvo.xyz/grouplimit`, {grouplimit:5, groupId:groupId })
           .then(res => {
-                //window.location.reload()
               let users = user.username
-            axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[users] })
-           // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:groupId, users:[user.username] })
-            axios.get('http://localhost:6565/Getgroup')
-           //  axios.get('https://reactchat.softuvo.xyz/Getgroup')
+            axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId:groupId, users:[user.username] })
+             axios.get('https://reactchat.softuvo.xyz/Getgroup')
             .then(response => {
                 let active = {
                     groupname, 
@@ -655,9 +857,7 @@ let saveGroupName = () => {
         setLoading(true)
         activeChatGroupGlobal = activeChatGroup
         socket.on('receivedGroupMessage', appendGroupMessages)
-        // socket.on('receivedGroupMessage', data =>{
-        //     console.log("kvzds,jhdxkllkkkkkkkkk=>", data)
-        // })
+    
         return () => {
             socket.removeListener('receivedGroupMessage', appendGroupMessages)
             setLoading(true)
@@ -678,10 +878,15 @@ let saveGroupName = () => {
     }, [activeChatUser.username])
 
 
+    let delete_counter_data ={
+        groupId : activeChatGroup.groupId,
+        member : user.username
+    }
     useEffect(() => {
        
         if (activeChatGroup && activeChatGroup.groupId) {
             socket.emit('groupjoin', {author:user.username, to: activeChatGroup.groupId })
+            socket.emit('delete_counter', delete_counter_data)
             socket.on('groupmessage', conversation =>{
                 console.log("conversation ===>", conversation)
                 const {  data =  {} } = conversation
@@ -692,18 +897,17 @@ let saveGroupName = () => {
     }, [activeChatGroup.groupId])
 
 
-    useEffect(() => {
-        setTimeout(function(){ setCheckLogin(false) }, 1000);
-    }, [])
 
 
     useEffect(() => {
+       // console.log("groups groups groups -===>",groups)
         const promiseArr = groups.map((group)=>{
             let groupId = group.groupId
-             return axios.post('http://localhost:6565/getuser', {groupId:groupId})
-            // return axios.post('https://reactchat.softuvo.xyz/getuser', {groupId:groupId})
+            // return axios.post('http://localhost:6565/getuser', {groupId:groupId})
+             return axios.post('https://reactchat.softuvo.xyz/getuser', {groupId:groupId})
            
         })
+        
         Promise.all(promiseArr)
             .then(values => {
                 const validGroups = groups.filter(
@@ -715,10 +919,10 @@ let saveGroupName = () => {
                         }
                     }
                 )
-
+               // console.log(validGroups, 'validGroups')
                 setFilteredGroups(validGroups)
             })
-},[groups.length])
+},[groups])
 
    
     const filteredUser = users.filter(exisitingUser => user.username != exisitingUser.username)
@@ -735,10 +939,25 @@ let saveGroupName = () => {
         localStorage.clear()
         props.history.push('/')
     }
-   
 
-    console.log("Messagessss =>", messages)
-    console.log("activeChatMessages =>", activeChatMessages)
+    useEffect(() => {
+        setTimeout(function(){ setCheckLogin(false) }, 1000)
+
+    }, [])
+   
+  
+    useEffect(() => {
+        setTimeout(function(){ setCheckLogin(false) }, 1000)
+        socket.on('get_counter', get_counter =>{
+            console.log("get_counter new counter==>", get_counter)
+            setMessageCounter(get_counter.groupcounter)
+         })
+    
+    }, [])
+
+    console.log("groupssssssssssss =======>", groups)
+    console.log("filtered groupssssss =======>", filteredgroups)
+    
     return (
         
         <div className="chat-container full-height container-fluid"  >
@@ -766,6 +985,8 @@ let saveGroupName = () => {
                         {
                             filteredgroups.map(
                                 (group, index) => {
+                                    let { groupcounter = 0 } = group
+                        
                                     return (
                                         <li className= 'list-group-item user'
                                         key={index}
@@ -781,13 +1002,12 @@ let saveGroupName = () => {
                                         <div>
                                             <i class="fas fa-users" style ={groupicon} ></i>
                                             <span className="username">{group.groupname}</span> 
+                                           {counterCheck && groupcounter >0?
+                                            <span className='msg-counter'>{groupcounter}</span>
+                                            :''
+                                        }
                                         </div>
-                                        {(counterCheck && counterGroup == group.groupId && (activeChatGroup.groupId != group.groupId))
-                                            
-                                            ?<Fragment>
-                                       {messageCounter >0? <span className='msg-counter'>{messageCounter}</span>:''}
-                                       </Fragment> :''}
-                                        </div>
+                                    </div>
                                     </li> 
                                     )
                                 }
@@ -847,6 +1067,8 @@ let saveGroupName = () => {
                          setGroupNote = {setGroupNote}
                          messageCounter = {messageCounter}
                          setMessageCounter = {setMessageCounter}
+                   
+                         setCounterCheck = {setCounterCheck}
                       
                     />
             </div>

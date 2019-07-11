@@ -1,0 +1,10 @@
+.adduser{
+    border:1px solid #00827c;
+    border-radius:4px;
+    padding: 5px 15px;
+}
+
+/* .adduser:focus{
+    border:1px solid #00827c;
+    outline:0;    
+} */

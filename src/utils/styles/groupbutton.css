@@ -1,0 +1,22 @@
+
+.group{
+    margin-left: 20px;
+    
+}
+.groupbtn{
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    bottom: 20px;
+   
+}
+
+.adduser{
+    margin-bottom: 20px;
+    display: block;
+}
+
+.center-block {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+  }
