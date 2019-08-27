@@ -37,10 +37,11 @@
     "jest-watch-typeahead": "^0.2.1",
     "micro-validator": "0.0.5",
     "mini-css-extract-plugin": "0.5.0",
-    "mongoose": "^5.6.3",
+    "mongoose": "^5.6.4",
     "node-sass": "^4.11.0",
-    "nodemon": "^1.18.10",
+    "nodemon": "^1.19.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
+    "pm2": "^3.5.1",
     "pnp-webpack-plugin": "1.2.1",
     "postcss-flexbugs-fixes": "4.1.0",
     "postcss-loader": "3.0.0",
@@ -75,8 +76,8 @@
     "workbox-webpack-plugin": "3.6.3"
   },
   "scripts": {
-    "start-server": "export port=6565 && nodemon server/index.js",
-    "start": "export PORT=6565 && export && node scripts/start.js",
+    "start-server": "HTTPS=true  export port=6565 && nodemon server/index.js",
+    "start": "HTTPS=true export PORT=6565 && export && node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "mocha"
   },
