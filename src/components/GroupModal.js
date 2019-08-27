@@ -13,17 +13,24 @@ import users from '../constants/users'
 
 export class GroupModal extends Component {
 
+  // state={
+  //   editUser : false
+  // }
+ 
+  // showUserEditField = () => {
+  //   this.setState({
+  //     editUser:!this.state.editUser
+  //   })
+  // }
+
  render() {
-   const { maxUser, showModal, saveMembers, admin, user, list, handleChange, setMaxUser, getMembers, error, show, showGroupModal, members } = this.props
+   const { editUser,limit_disable ,maxUser, setEditUser, changeUserLimit, saveUserLimit, showModal, saveMembers, admin, user, list, handleChange,  getMembers, error, show, showGroupModal, members } = this.props
    let isdisableSave = true
    if (members.length) {
      isdisableSave = false
    }
 
-
-   console.log(users, 'USERITEMS')
-
-
+console.log(maxUser)
 
  var isdisableOn
 
@@ -37,8 +44,7 @@ export class GroupModal extends Component {
 
    console.log(admin, 'Admin')
 
-
-
+ 
    return (
      <Fragment>
 
@@ -51,12 +57,27 @@ export class GroupModal extends Component {
 
        <Modal show={showModal} onHide={() => showGroupModal(false)} centered>
          <Modal.Header closeButton>
-           <Modal.Title>Add Users | Max User limit: {maxUser}</Modal.Title>
+           <Modal.Title className='user-limit'>Add Users | Max User limit: {maxUser}
+           <span className='fas fa-edit' onClick={()=>setEditUser(true)}></span>
+           </Modal.Title>
+           {/* <span className='fas fa-edit' onClick={this.showUserEditField}></span> */}
          </Modal.Header>
 
          <Modal.Body className="members">
+
+         {editUser ?
+         <div className>
            <label for="MaxMember">Enter Max Members: </label>
-           <input type="Number" name="MaxMember" onChange={setMaxUser} ></input>
+           <div className='save-button'>
+           <div className = 'edit-user'>
+           
+              <input type="Number" name="MaxMember" required onChange={changeUserLimit} ></input>
+              <button className='edit-user-limit-btn btn-primary'  onClick={()=>saveUserLimit(false)}  disabled={limit_disable}>Save</button>
+              
+           </div>
+           </div>
+         </div>
+         : null }
          </Modal.Body>
 
          <Modal.Body >

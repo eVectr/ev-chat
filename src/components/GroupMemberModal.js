@@ -27,7 +27,7 @@ class GroupMemberModal extends React.Component {
 
   render() {  
 
-    const{ getMembers, list, admin, deleteMember } = this.props
+    const{ getMembers, list, admin, user, deleteMember, exitGroup, deleteGroup } = this.props
    
     return (
       <div>
@@ -36,23 +36,28 @@ class GroupMemberModal extends React.Component {
           toggle={this.toggle} className={this.props.className}>
            <ModalHeader toggle={this.toggle}>Group Members</ModalHeader> 
             
+           
           <ModalBody>
+          
                 <ul >
                     {
-                      list.map((user, index) => {
-                        
-                          let showAdmin = user
+
+                      list.map((user1, index) => {
+                       
+                          let showAdmin = user1
                           if (!index) {
                             showAdmin = `${showAdmin} ~admin`
                           }
-                         let check =true
+
+                          let check =true
                           if (!index) {
                             check = false
                           }
-                          let isAdmin
-                  
-                          console.log(("check ===;;",admin == list[0]))
-                          if((admin == list[0])){
+
+                     
+                          console.log("check ===list[0]",list[0]== user)
+                         let isAdmin
+                          if(list[0] == user){
                             isAdmin = true
                           }else{
                             isAdmin = false
@@ -60,13 +65,12 @@ class GroupMemberModal extends React.Component {
                             return(
                                <div className="group-list">
 
-                                {isAdmin?<Fragment>
+                                {(isAdmin)?<Fragment>
                                     <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
-                                     {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user)} ></span>: ''}
+                                     {check? <span className='far fa-trash-alt' onClick={()=>deleteMember(user1)} ></span>: ''}
                                  </Fragment>:
                                  <Fragment>
-                                 <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li>
-                                  
+                                 <li className="group-user"> <span  className="fas fa-user-circle user-profile-photo icon"></span>{showAdmin}</li> 
                               </Fragment>
                                 }
 
@@ -77,6 +81,11 @@ class GroupMemberModal extends React.Component {
                         })
                     }
                 </ul>  
+
+                {(admin == user)?<button type="button" className="btn btn-danger remove" onClick ={deleteGroup}> <i class="far fa-trash-alt"></i>Delete Group</button>
+                :<button type="button" className="btn btn-danger remove" onClick ={()=>exitGroup(user)}> <i class="fas fa-sign-out-alt"></i>Exit Group</button>}
+
+    
           </ModalBody>
           <ModalFooter>
             <Button className='close-modal' color="secondary" onClick={this.toggle}>close</Button>
