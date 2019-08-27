@@ -60,7 +60,7 @@ const Login = (props) => {
         if (user) {
             localStorage.setItem('user', JSON.stringify(user))
             props.dispatch(sucessfullLogin("Login Sucessfully"))
-            props.history.push('/chat') 
+            props.history.push('/chat')
         }
     }
 
