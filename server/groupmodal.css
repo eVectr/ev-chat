@@ -1,0 +1,125 @@
+.user-icon{
+    background-color: #00827c;
+    border: 1px solid #00827c;
+}
+
+.user-icon:hover{
+    outline:0;
+    border: 1px solid #00827c;
+    background-color: #00827c;
+}
+
+.addmembers{
+    display:none
+}
+
+.user-icon:hover p{
+    display: block;
+}
+
+.members{
+    display: flex;
+    flex-direction: column;
+}
+
+.members label{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+}
+
+.members input {
+    border:1px solid #00827c;
+    border-radius:4px;
+    padding: 5px 15px;
+}
+
+.edit-user-limit-btn{
+    font-size: 1rem;
+   border:1px solid #00B5AD;
+   color:#fff;
+   border-radius: 4px;
+   background-color: #00827c
+}
+
+.edit-user-limit-btn:hover{
+    outline:0;
+}
+
+.members input:focus {
+    border:1px solid #00827c;
+    outline:0;
+}
+
+.user-limit{
+    display: flex!important;
+    align-items: center!important;
+    justify-content: space-between!important;
+    display: block;
+    width: 100%!important;
+    font-size: 1.5rem;
+ }
+
+
+.save-btn{
+    padding: 5px 15px;
+    background-color: #00B5AD;
+    border: 1px solid #00b5ad;
+    color:#fff;
+}
+
+.save-btn:hover{
+    background-color: #00827c;
+    outline: 0;
+}
+
+
+.close-btn{
+    padding: 5px 15px;
+
+    background-color:transparent;
+    border: 1px solid rgba(0, 0, 0, 0.27);
+    color:#545b62;
+}
+
+.close-btn:focus{
+    background-color: #545b62;
+    color:#fff;
+}
+
+.save-button{
+   display: inline-block;
+}
+
+.save-button:hover{
+    outline:0;
+    border:none;
+}
+
+.edit-user{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.save-button .edit-user-limit-btn{
+    width: 30%;
+    border: none;
+    padding: 7px 14px;
+    margin-left: 40px;
+}
+.save-button .edit-user-limit-btn:focus{
+    outline:none;
+}
+.close{
+    display: block;
+    font-size: 2rem;
+    margin-left: 16px!important;
+    
+}
+
+.close:focus{
+    outline:none;
+}

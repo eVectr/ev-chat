@@ -1,0 +1,40 @@
+.group-member{
+    border: 1px solid rgba(0, 0, 0, .27);
+    font-size:.8rem;
+    border-radius:3px;
+    color: #495057;
+    background-color: transparent;
+}
+
+.group-list{
+    list-style: none;
+    display:flex;
+    align-items: center;
+    justify-content:space-between;
+    margin:0;
+    color:rgba(0, 0, 0, .27);
+    padding:3px 0px;
+}
+
+.group-user{
+    font-size: 1rem;
+}
+
+.icon{
+    font-size:20px;
+}
+
+.close-modal{
+    border: 1px solid rgba(0, 0, 0, .27);
+    font-size:.8rem;
+    border-radius:3px;
+    color: #495057;
+    background-color: transparent;
+}
+
+.close-modal:hover{
+background-color: 495057;
+color:#fff;
+border-color: rgba(0, 0, 0, .27);
+
+}
