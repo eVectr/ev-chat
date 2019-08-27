@@ -21,11 +21,11 @@ mongoose.connect('mongodb://contact:contact123@ds337377.mlab.com:37377/contact',
 })
 
 //let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient();
-client.on('connect', ()=>{
-    //console.log("Redis Connected")
+// let client = redis.createClient();
+// client.on('connect', ()=>{
+//     //console.log("Redis Connected")
 
-})
+// })
 
 const conversation = new Conversation()
 // conversation.delete_message('Trivedi@Love')
@@ -103,7 +103,8 @@ io.on('connection', socket => {
     })
 
     socket.on('sendGroupMessage', data => {
-       // console.log("counter data =>", data)
+        
+        console.log("counter data =>", data)
         socket.emit('groupmessageSent', 'sent')
         conversation.save_group_message(data.author, data.to, data.content, data.DateTime, data.notice)
         conversation.save_group_status(data.to, 'sent')
@@ -113,7 +114,7 @@ io.on('connection', socket => {
            // console.log("all group mongo members =>", members)
             members.map((member)=>{
                 const user = findUser(member)
-              //  console.log("user ==>", user)
+                console.log("user ==>", user)
                 if (user) 
                 {
                     socket.broadcast.to(user.socketId).emit('receivedGroupMessage', data)
@@ -121,9 +122,9 @@ io.on('connection', socket => {
                 }
                 if (user && (member != data.author))  
                 {
-                     conversation.get_group_status(data.to).then(status=>{
-                     socket.emit('groupseen', status )   
-            })      
+                    //  conversation.get_group_status(data.to).then(status=>{
+                    //  socket.emit('groupseen', status )   
+                    // })      
         }         
     })
 })           
@@ -175,7 +176,7 @@ io.on('connection', socket => {
     socket.on('groupjoin', data => {
        // socket.emit('delete_counter', data.to)
         conversation.get_group_message(data.to).then(groupmessage=>{
-                //console.log("groupmessage=>",groupmessage)
+                console.log("groupmessage=>",groupmessage)
                 if(groupmessage == ""){console.log("no message")}else{
                 socket.emit('groupmessage', groupmessage)}
        
@@ -186,10 +187,10 @@ io.on('connection', socket => {
         }
         socket.emit('delete_counter', delete_data)
       
-           conversation.get_group_status(data.to).then(status =>{
-               socket.emit('groupseen', status)
-              /// console.log("groupemmited----",status )
-           })
+        //    conversation.get_group_status(data.to).then(status =>{
+        //        socket.emit('groupseen', status)
+        //        console.log("groupemmited----",status )
+        //    })
     })
 
     socket.on('add_member', members =>{

@@ -162,7 +162,7 @@ io.on('connection', socket => {
     socket.on('groupjoin', data => {
        console.log('delete_counter', data)
         conversation.get_group_message(data.to).then(groupmessage=>{
-                //console.log("groupmessage=>",groupmessage)
+                console.log("groupmessage=>",groupmessage)
                 if(groupmessage == ""){console.log("no message")}else{
                 socket.emit('groupmessage', groupmessage)}
        
@@ -174,10 +174,10 @@ io.on('connection', socket => {
         socket.emit('delete_counter', delete_data)
        // conversation.deletecounter(data.to, data.author)
       
-           conversation.get_group_status(data.to).then(status =>{
-               socket.emit('groupseen', status)
-               console.log("groupemmited----",status )
-           })
+        //    conversation.get_group_status(data.to).then(status =>{
+        //        socket.emit('groupseen', status)
+        //        console.log("groupemmited----",status )
+        //    })
     })
 
     //////////// Add member reload

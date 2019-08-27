@@ -171,8 +171,7 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
 
         let groupId = activeChatGroupGlobal.groupId
         let maxLimit = e.target.value
-        console.log("group id =>", groupId)
-        console.log("maxlimit =>", maxLimit)
+      
         let data = [{ groupId: groupId, maxLimit: maxLimit }]
         //setMaxUserLimit([data])
 
@@ -185,9 +184,11 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     }
 
     let saveMembers = () => {
-        axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId: activeChatGroup.groupId, users: members, maxuser: maxUser })
+        
+        axios.post(`http://localhost:6565/adduser`, { groupId: activeChatGroup.groupId, users: members, maxuser: maxUser })
+       // axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId: activeChatGroup.groupId, users: members, maxuser: maxUser })
             .then(res => {
-                console.log(res, ' = res msg')
+                
                 socket.emit('add_member', members)
                 let msg = res.data
                 if (!msg) {
@@ -201,9 +202,13 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
                 /////////////////////////
                 if (msg) {
                     let note = user.username + "  " + 'Added' + "  " + members
-                    axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to: activeChatGroup.groupId, note: note })
+                   
+                    axios.post(` http://localhost:6565/save_group_note`, { to: activeChatGroup.groupId, note: note })
+                    //axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to: activeChatGroup.groupId, note: note })
                         .then(save_res => {
-                            axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to: activeChatGroup.groupId })
+                          
+                            axios.post(`  http://localhost:6565/get_group_note`, { to: activeChatGroup.groupId })
+                           // axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to: activeChatGroup.groupId })
                                 .then(get_res => {
                                     //  setGroupNote(JSON.parse(get_res.data[0]))
                                     setMessage(JSON.parse(get_res.data[0]))
@@ -243,14 +248,18 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
 
     let getMembers = () => {
         let groupId = activeChatGroup.groupId
-        axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
+      
+        axios.post(`http://localhost:6565/getuser`, { groupId: groupId })
+       // axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
             .then(response => {
-                console.log("active group member==>", response)
+              
                 let data = response.data
-                console.log(data, 'data')
+                
                 setList(data)
             }) //////////////////////// LIMIT
-        axios.post(`https://reactchat.softuvo.xyz/getgrouplimit`, { groupId: groupId })
+           
+            axios.post(`http://localhost:6565/getgrouplimit`, { groupId: groupId })
+        //axios.post(`https://reactchat.softuvo.xyz/getgrouplimit`, { groupId: groupId })
             .then(res => {
                 setMaxUserLimit(res.data.grouplimit)
             })
@@ -259,19 +268,26 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
 
     let deleteMember = (user) => {
         let groupId = activeChatGroup.groupId
-        axios.post(`https://reactchat.softuvo.xyz/removeuser`, { groupId, user })
+        axios.post(`http://localhost:6565/removeuser`, { groupId, user })
+       // axios.post(`https://reactchat.softuvo.xyz/removeuser`, { groupId, user })
             .then(response => {
                 socket.emit('remove_member', user)
-                axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
+                axios.post(`http://localhost:6565/getuser`, { groupId: groupId })
+                //axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
                     .then(res => {
                         setList(res.data)
                     })
             })
         ///////////////////////////////////////////////////////////
         let note = activeChatGroup.admin + " " + "Removed" + " " + user
-        axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to: activeChatGroup.groupId, note: note })
+  
+
+        axios.post(`http://localhost:6565/save_group_note`, { to: activeChatGroup.groupId, note: note })
+        //axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to: activeChatGroup.groupId, note: note })
             .then(save_res => {
-                axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to: activeChatGroup.groupId })
+               
+                axios.post(`http://localhost:6565/get_group_note`, { to: activeChatGroup.groupId })
+               // axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to: activeChatGroup.groupId })
                     .then(get_res => {
                         // setGroupNote(JSON.parse(get_res.data[0]))
                         setMessage(note)
@@ -302,9 +318,13 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
         return new Promise((resolve, reject) => {
             ////////////////
             let note = user + "  " + 'Left' + "  " + "Group"
-            axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to: activeChatGroup.groupId, note: note })
+           
+            axios.post(`http://localhost:6565/save_group_note`, { to: activeChatGroup.groupId, note: note })
+           // axios.post(`https://reactchat.softuvo.xyz/save_group_note`, { to: activeChatGroup.groupId, note: note })
                 .then(save_res => {
-                    axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to: activeChatGroup.groupId })
+                   
+                    axios.post(` http://localhost:6565/get_group_note`, { to: activeChatGroup.groupId })
+                   // axios.post(`https://reactchat.softuvo.xyz/get_group_note`, { to: activeChatGroup.groupId })
                         .then(get_res => {
                             // setGroupNote(JSON.parse(get_res.data[0]))
                             setMessage(note)
@@ -334,9 +354,13 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
     let exitGroup = (user) => {
 
         let groupId = activeChatGroup.groupId
-        axios.post(`https://reactchat.softuvo.xyz/removeuser`, { groupId, user })
+       
+
+        axios.post(`http://localhost:6565/removeuser`, { groupId, user })
+       // axios.post(`https://reactchat.softuvo.xyz/removeuser`, { groupId, user })
             .then(response => {
-                axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
+                axios.post(`http://localhost:6565/getuser`, { groupId: groupId })
+                //axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
                     .then(res => {
                         setList(res.data)
 
@@ -353,14 +377,19 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
         let groupname = activeChatGroup.groupname
         let groupId = activeChatGroup.groupId
         let admin = activeChatGroup.admin
-        axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
+        
+        axios.post(`http://localhost:6565/getuser`, { groupId: groupId })
+        //axios.post(`https://reactchat.softuvo.xyz/getuser`, { groupId: groupId })
             .then(member => {
 
                 socket.emit('delete_group', member.data)
             })
-        axios.post(`https://reactchat.softuvo.xyz/removegroup`, { groupname, groupId, admin })
+        
+            axios.post(`http://localhost:6565/removegroup`, { groupname, groupId, admin })
+      //  axios.post(`https://reactchat.softuvo.xyz/removegroup`, { groupname, groupId, admin })
             .then(response => {
-                axios.get(`https://reactchat.softuvo.xyz/Getgroup`)
+                axios.get(`http://localhost:6565/Getgroup`)
+               // axios.get(`https://reactchat.softuvo.xyz/Getgroup`)
                     .then(res => {
                         setGroups(res.data)
                     })
@@ -392,13 +421,14 @@ const ChatWindow = ({ user, sendStatus, activeChatGroup, isGroup, isLoading, act
         } else {
             set_limit_disable(true)
         }
-        console.log("e.targete.", e.target.value)
-        console.log("limit_diszable =>", limit_disable)
+       
         setuserLimit(e.target.value)
     }
 
     let saveUserLimit = (editUser) => {
-        axios.post(`https://reactchat.softuvo.xyz/editlimit`, { grouplimit: userLimit, groupId: activeChatGroup.groupId })
+       
+        axios.post(` http://localhost:6565/editlimit`, { grouplimit: userLimit, groupId: activeChatGroup.groupId })
+       // axios.post(`https://reactchat.softuvo.xyz/editlimit`, { grouplimit: userLimit, groupId: activeChatGroup.groupId })
             .then(res => {
                 setMaxUserLimit(res.data.grouplimit)
             })
@@ -611,11 +641,11 @@ const Chat = (props) => {
 
 
     let user = getUser()
-    console.log(user, 'getUser')
+   
 
     useEffect(() => {
-        //socket = io('http://localhost:6565')
-        socket = io('https://reactchat.softuvo.xyz')
+        socket = io('http://localhost:6565')
+        //socket = io('https://reactchat.softuvo.xyz')
         socket.emit('newConnection', user)
         socket.on('seen', data => {
             setSendStatus(data)
@@ -630,7 +660,7 @@ const Chat = (props) => {
             window.location.reload()
         })
         socket.on('delete_counter', data => {
-            console.log(" counter deleted ", data)
+       
             // axios.post('https://reactchat.softuvo.xyz/deletegroupcounter', {groupId:data})
         })
 
@@ -639,10 +669,11 @@ const Chat = (props) => {
 
     useEffect(() => {
 
-        axios.get('https://reactchat.softuvo.xyz/Getgroup')
+        axios.get('http://localhost:6565/Getgroup')
+       // axios.get('https://reactchat.softuvo.xyz/Getgroup')
             .then(response => {
                 setGroups(response.data)
-                console.log("API group", response.data)
+               
             })
 
         // axios.get('https://reactchat.softuvo.xyz/Deletegroup')
@@ -668,6 +699,7 @@ const Chat = (props) => {
                 body: 'New Message'
             })
             notification.onclick = function () {
+
                 window.open('https://reactchat.softuvo.xyz');
             }
 
@@ -686,12 +718,12 @@ const Chat = (props) => {
 
 
     let appendMessages = (data) => {
-        console.log("append messages =>", data)
+       
         let check = (user.username == data.to)
         if (check) {
             notifyMe()
         }
-        console.log(data.author, "==", activeChatUserGlobal.username, data.author, "==", user.username)
+      
         if (data.author == activeChatUserGlobal.username || data.author == user.username) {
             setMessages(prevMessages => {
                 const updatedMessages = prevMessages.concat(data)
@@ -711,11 +743,13 @@ const Chat = (props) => {
         //     const updatedcounter = parseInt(prev) + 1
         //     return updatedcounter
         // })
-        console.log("Trying to reach counter ...............................")
-        axios.post('https://reactchat.softuvo.xyz/editgroupcounter', { groupcounter: 1, groupId: data.to })
-        axios.post('https://reactchat.softuvo.xyz/getgroupcounter', { groupId: data.to })
+      
+        axios.post(' http://localhost:6565/editgroupcounter', { groupcounter: 1, groupId: data.to })
+        axios.post(' http://localhost:6565/getgroupcounter', { groupId: data.to })
+        // axios.post('https://reactchat.softuvo.xyz/editgroupcounter', { groupcounter: 1, groupId: data.to })
+        // axios.post('https://reactchat.softuvo.xyz/getgroupcounter', { groupId: data.to })
             .then(res => {
-                console.log("res counter data =>", res.data.groupcounter)
+                
                 setMessageCounter(res.data.groupcounter)
             })
         if (data.to == activeChatGroupGlobal.groupId || data.author == user.username) {
@@ -724,7 +758,9 @@ const Chat = (props) => {
                 return updatedMessages
             })
         }
-        axios.post('https://reactchat.softuvo.xyz/getuser', { groupId: data.to })
+       
+        axios.post('http://localhost:6565/getuser', { groupId: data.to })
+        //axios.post('https://reactchat.softuvo.xyz/getuser', { groupId: data.to })
             .then(members => {
                 let array = members.data
                 for (let i = 0; i < array.length; i++) {
@@ -766,15 +802,16 @@ const Chat = (props) => {
     let saveGroupName = () => {
         setLoad(true)
         groupparameters().then(groupId => {
-            // axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
-            axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin: user.username })
-            axios.post(`https://reactchat.softuvo.xyz/grouplimit`, { grouplimit: 5, groupId: groupId })
+            axios.post(`http://localhost:6565/Creategroup`, { groupname, groupId, admin:user.username  })
+            //axios.post(`https://reactchat.softuvo.xyz/Creategroup`, { groupname, groupId, admin: user.username })
+            axios.post(`http://localhost:6565/grouplimit`, { grouplimit: 5, groupId: groupId })
+           // axios.post(`https://reactchat.softuvo.xyz/grouplimit`, { grouplimit: 5, groupId: groupId })
                 .then(res => {
                     let users = user.username
-                    //     axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[users] })
-                    axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId: groupId, users: [user.username] })
-                    // axios.get('http://localhost:6565/Getgroup')
-                    axios.get('https://reactchat.softuvo.xyz/Getgroup')
+                    axios.post(`http://localhost:6565/adduser`, { groupId:groupId, users:[user.username] })
+                    //axios.post(`https://reactchat.softuvo.xyz/adduser`, { groupId: groupId, users: [user.username] })
+                     axios.get('http://localhost:6565/Getgroup')
+                    //axios.get('https://reactchat.softuvo.xyz/Getgroup')
                         .then(response => {
                             let active = {
                                 groupname,
@@ -782,7 +819,7 @@ const Chat = (props) => {
                                 admin: user.username
                             }
                             setGroups(response.data)
-                            console.log("API groups", response.data)
+                           
                             setLoad(false)
                             setisGroup(true)
                             setUserSelected(false)
@@ -818,7 +855,7 @@ const Chat = (props) => {
         setLoading(true)
         activeChatUserGlobal = activeChatUser
         const func = (data) => {
-            console.log('recieved', data)
+           
             appendMessages(data)
         }
         socket.on('receivedMessage', func)
@@ -846,7 +883,7 @@ const Chat = (props) => {
             socket.emit('join', { author: user.username, to: activeChatUser.username })
             socket.on('message', conversation => {
                 const { data = {} } = conversation
-                console.log("saved conversation =>", data)
+               
                 setLoading(false)
                 setMessages(data)
             })
@@ -859,7 +896,7 @@ const Chat = (props) => {
         if (activeChatGroup && activeChatGroup.groupId) {
             socket.emit('groupjoin', { author: user.username, to: activeChatGroup.groupId })
             socket.on('groupmessage', conversation => {
-                console.log("conversation ===>", conversation)
+            
                 const { data = {} } = conversation
                 setLoading(false)
                 setMessages(data)
@@ -876,8 +913,8 @@ const Chat = (props) => {
     useEffect(() => {
         const promiseArr = groups.map((group) => {
             let groupId = group.groupId
-            // return axios.post('http://localhost:6565/getuser', {groupId:groupId})
-            return axios.post('https://reactchat.softuvo.xyz/getuser', { groupId: groupId })
+             return axios.post('http://localhost:6565/getuser', {groupId:groupId})
+           // return axios.post('https://reactchat.softuvo.xyz/getuser', { groupId: groupId })
 
         })
         Promise.all(promiseArr)
@@ -914,9 +951,11 @@ const Chat = (props) => {
 
     let counter = (groupId) => {
         return new Promise((resolve, reject) => {
-            axios.post('https://reactchat.softuvo.xyz/getgroupcounter', { groupId: groupId })
+           
+            axios.post(' http://localhost:6565/getgroupcounter', { groupId: groupId })
+           // axios.post('https://reactchat.softuvo.xyz/getgroupcounter', { groupId: groupId })
                 .then(res => {
-                    console.log("promise res counter =>", res.data.messagecounter)
+                  
                 })
 
         })
@@ -943,7 +982,7 @@ const Chat = (props) => {
                         {load ? <Loader /> : null}
 
                         {
-                            console.log(filteredgroups, 'FILTEREDGROUP')
+                           
                         }
 
                         {<ul className="list-group">

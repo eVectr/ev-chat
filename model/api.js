@@ -1,8 +1,10 @@
 const redis = require('redis');
-let client = redis.createClient()
-const Chatgroup = require('../db/chatgroup')
+//let client = redis.createClient()
+
 const GroupNote = require('../db/groupnote')
+const Chatgroup = require('../db/chatgroup')
 const GroupCounter = require('../db/groupcounter')
+const ChatStatus = require('../db/chatstatus')
 
 let convapi = function (app) {
 
@@ -40,17 +42,15 @@ let convapi = function (app) {
   app.post('/Creategroup', (req, res, next) => {
 
     let groupname = req.body.groupname
-    let groupId = req.body.groupId
     let admin = req.body.admin
     let grouplimit = req.body.grouplimit
     let members =  req.body.members
     let groupcounter = req.body.groupcounter
     var chatgroup = new Chatgroup({
       groupname: groupname,
-      groupId: groupId,
       admin: admin,
       grouplimit: grouplimit,
-      members : members
+      members : [admin]
     })
     chatgroup.save((err, data)=>{
       if(err){
@@ -185,13 +185,18 @@ app.get('/Getgroup', (req, res, next) =>{
   app.post('/adduser', (req, res, next) => {
     let groupId = req.body.groupId
     let users = req.body.users
+    console.log("users   ==>", users)
+    console.log("Id   ==>", groupId)
     Chatgroup.find({ _id: groupId }, (err, data) => {
       if (err) {
-       // console.log(err)
+        console.log("ee",err)
         res.send(err)
       } else {
+       
         let initialusers = data[0].members
         let updatedusers = initialusers.concat(users)
+        console.log("initialusers ==>", initialusers)
+        console.log("updatedusers ==>", updatedusers)
         if (data[0].grouplimit >= updatedusers.length) {
           Chatgroup.findOneAndUpdate(
             {
@@ -237,11 +242,13 @@ app.get('/Getgroup', (req, res, next) =>{
 
   app.post('/getuser', (req, res, next) => {
     let groupId = req.body.groupId
+    console.log("group id === >", groupId)
     Chatgroup.find({_id:groupId}, (err, data)=>{
       if(err){
         //console.log(err)
         res.send(err)
       }else{
+        
         res.send(data[0].members)
        // console.log("get group user mongo data =>", data[0].members)
       }
@@ -285,6 +292,7 @@ app.get('/Getgroup', (req, res, next) =>{
        // console.log(err)
         res.send(err)
       } else {
+        console.log("member data =>", data)
         let initialusers = data[0].members
        // console.log("initia user ==>", initialusers)
 
@@ -641,6 +649,35 @@ app.post('/removegroup', (req, res, next) =>{
       } else {
        // console.log("group notice mongo data =>", data)
        res.send(data)
+      }
+    })
+  })
+
+  app.post('/teststatus', (req, res) => {
+    ChatStatus.find({ ConvId: '123' }, (err, data) => {
+      if (err) {
+        console.log(err)
+        res.send(err)
+      } else {
+        console.log('data ' , data)
+        if (data.length < 1) {
+          var chatstatus = new ChatStatus({
+            ConvId: '123',
+            Status: 'status'
+          })
+          chatstatus.save()
+          res.send("done")
+        } else {
+          ChatStatus.findOneAndUpdate({ ConvId: '123' }, { $set: { Status: "open" } },
+            (err, data) => {
+              if (err) {
+                res.send(err)
+              } else {
+                console.log(data)
+                res.send(data)
+              }
+            })
+        }
       }
     })
   })

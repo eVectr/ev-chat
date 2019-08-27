@@ -14,7 +14,7 @@ const ChatStatus = require('../db/chatstatus')
 const GroupChatStatus = require('../db/groupchatstatus')
 
 //let client = redis.createClient({ host: '209.97.142.219', port: '6379' });
-let client = redis.createClient()
+//let client = redis.createClient()
 app.use(bodyParser.json());
 
 
@@ -306,7 +306,36 @@ save_message(sender, receiver, conversation_id, content, DateTime){
   //     })
   //   })
   // } 
-
+  // save_status(conversation_id, status) {
+  //   return new Promise((resolve, reject) => {
+  //     ChatStatus.find({ ConvId: conversation_id }, (err, data) => {
+  //       if (err) {
+  //         console.log(err)
+  //         reject(err)
+  //       } else {
+  //         console.log('data ' , data)
+  //         if (data.length < 1) {
+  //           var chatstatus = new ChatStatus({
+  //             ConvId: conversation_id,
+  //             Status:  status
+  //           })
+  //           chatstatus.save()
+  //           resolve("done")
+  //         } else {
+  //           ChatStatus.findOneAndUpdate({ ConvId: conversation_id  }, { $set: { Status: status } },
+  //             (err, data) => {
+  //               if (err) {
+  //                 reject(err)
+  //               } else {
+  //                 console.log(data)
+  //                 resolve(data)
+  //               }
+  //             })
+  //         }
+  //       }
+  //     })
+  //   })
+  // } 
 
   save_status(conversation_id, status) {
     return new Promise((resolve, reject) => {
@@ -328,7 +357,7 @@ save_message(sender, receiver, conversation_id, content, DateTime){
 
   // get_status(conversation_id) {
   //   return new Promise((resolve, reject) => {
-  //     ChatStatus.find({ConversationId:conversation_id}, (err, data)=>{
+  //     ChatStatus.find({ConvId:conversation_id}, (err, data)=>{
   //       if(err){
   //         reject(err)
   //       }else{
@@ -354,65 +383,66 @@ save_message(sender, receiver, conversation_id, content, DateTime){
 
 ///////////////////////////// SAVE GROUP STATUS /////////////////////////////
 
-// save_group_status(to, status) {   ///////// Save mongo group status
-//   return new Promise((resolve, reject) => {
-//     var groupchatstatus = new GroupChatStatus({
-//       To: to,
-//       Status: status
-//     })
-//     groupchatstatus.save((err, data)=>{
-//       if(err){
-//         reject(err)
-//       }else{
-//         resolve(data[0])
-//       }
-//     })
-//   })
-// } 
-
-
-  save_group_status(to, status) {
-    return new Promise((resolve, reject) => {
-      client.del("status" + to)
-      client.rpush("status" + to, status)
-      client.lrange("status" + to, 0, -1,
-        (err, data) => {
-          if (err) {
-            resolve(console.log(err))
-          } else {
-            resolve(data[0])
-          }
-        })
+save_group_status(to, status) {   ///////// Save mongo group status
+  return new Promise((resolve, reject) => {
+    var groupchatstatus = new GroupChatStatus({
+      To: to,
+      Status: status
     })
-  } 
+    groupchatstatus.save((err, data)=>{
+      if(err){
+        reject(err)
+      }else{
+        resolve(data[0])
+      }
+    })
+  })
+} 
+
+
+  // save_group_status(to, status) {
+  //   return new Promise((resolve, reject) => {
+  //     client.del("status" + to)
+  //     client.rpush("status" + to, status)
+  //     client.lrange("status" + to, 0, -1,
+  //       (err, data) => {
+  //         if (err) {
+  //           resolve(console.log(err))
+  //         } else {
+  //           resolve(data[0])
+  //         }
+  //       })
+  //   })
+  // } 
 
 //////////////// Get Read Status //////////////////////////////////
 
-  // get_status(to) {
-  //   return new Promise((resolve, reject) => {
-  //     GroupChatStatus.find({ To: to }, (err, data) => {
-  //       if (err) {
-  //         reject(err)
-  //       } else {
-  //         resolve(data[0])
-  //       }
-  //     })
-  //   })
-  // }
-
-  get_group_status(to) {
+  get_status(to) {
+    console.log("too =>", to)
     return new Promise((resolve, reject) => {
-      client.lrange("status" + to, 0, -1,
-        (err, data) => {
-          if (err) {
-            reject(err)
-          } else {
-        //    console.log("get group status =>", data[0])
-            resolve(data[0])
-          }
-        })
+      GroupChatStatus.find({ To: to }, (err, data) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(data[0])
+        }
+      })
     })
   }
+
+  // get_group_status(to) {
+  //   return new Promise((resolve, reject) => {
+  //     client.lrange("status" + to, 0, -1,
+  //       (err, data) => {
+  //         if (err) {
+  //           reject(err)
+  //         } else {
+  //       //    console.log("get group status =>", data[0])
+  //           resolve(data[0])
+  //         }
+  //       })
+  //   })
+  // }
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -623,6 +653,7 @@ getusers(groupname){
       //  console.log(err)
         reject(err)
       }else{
+        console.log("members   ==>", data)
         resolve(data[0].members)
       }
     })
